@@ -8,7 +8,7 @@ using namespace std::chrono;
 // second argument - timeout in second
 // third argument - args to function
 template <typename TFunction, typename ...Args>
-void Benchmark(TFunction func, double timeout, Args... args) noexcept {
+void Benchmark(TFunction func, double timeout, std::string name, Args... args) noexcept {
     const auto start = high_resolution_clock::now();
     std::chrono::duration<double> diff;
     bool check = true;
@@ -21,7 +21,7 @@ void Benchmark(TFunction func, double timeout, Args... args) noexcept {
             const auto now = high_resolution_clock::now();
             diff = now - start;
             if (diff.count() > timeout) {
-                std::cout << "Executed " << i << " times in " << diff.count() << " seconds" << std::endl;
+                std::cout << name << " Executed " << i << " times in " << diff.count() << " seconds" << std::endl;
                 double avg = diff.count() / i;
                 avg *= 1'000'000;
                 std::cout << "Avg time is " << std::setprecision(9) << avg << " microseconds" << std::endl;
