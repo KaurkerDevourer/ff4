@@ -30,6 +30,14 @@ uint64_t sum_simd(const std::vector<uint32_t>& a) {
     return sum;
 }
 
+uint64_t sum_simd2(const std::vector<uint32_t>& a) {
+    uint64_t sum = 0;
+    for (int i = 0; i < a.size(); i += 16) {
+        sum += _mm512_reduce_add_epi32(_mm512_loadu_epi32(&a[i]));
+        __builtin_prefetch(&a[i + 16]);
+    }
+    return sum;
+}
 
 int main() {
     std::vector<uint32_t> a(65536); // 2 ^ 16
@@ -39,4 +47,5 @@ int main() {
     Benchmark(sum_simple, 10, "sum_simple", a);
     Benchmark(sum_parallel, 10, "sum_parallel", a);
     Benchmark(sum_simd, 10, "sum_simd", a);
+    Benchmark(sum_simd2, 10, "sum_simd2", a);
 }
