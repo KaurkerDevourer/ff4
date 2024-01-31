@@ -7,7 +7,6 @@ Monomial::Monomial(std::vector<int64_t>&& term, Rational coef_)
     Normalize(term_);
 }
 
-
 TTerm& Monomial::GetTerm() const noexcept {
     return term_;
 }
@@ -98,6 +97,14 @@ bool operator!=(const Monomial& left, const Monomial& right) noexcept {
     return false;
 }
 
+Monomial& Monomial::operator+() const noexcept {
+    return *this;
+}
+
+Monomial Monomial::operator-() const noexcept {
+    return Monomial(term_, -coef_);
+}
+
 Monomial& Monomial::operator*=(const Monomial& other) noexcept {
     coef_ *= other.GetCoef();
     if (other.term_.size() > term_.size()) {
@@ -112,6 +119,16 @@ Monomial& Monomial::operator*=(const Monomial& other) noexcept {
 
 Monomial operator*(Monomial left, const Monomial& right) noexcept {
     left *= right;
+    return left;
+}
+
+Monomial& Monomial::operator*=(const Rational& coef) noexcept {
+    coef_ *= coef;
+    return *this;
+}
+
+Monomial operator*(Monomial left, const Rational& coef) noexcept {
+    left *= coef;
     return left;
 }
 

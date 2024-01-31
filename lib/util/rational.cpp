@@ -6,7 +6,7 @@ Rational::Rational(int64_t numerator, int64_t denominator) {
         numerator = -numerator;
         denominator = -denominator;
     }
-    // MakeIrreducible();
+    MakeIrreducible();
 }
 
 Rational::GetNumerator() const noexcept {
@@ -41,13 +41,13 @@ bool operator!=(const Rational& left, const Rational& right) noexcept {
     return left.numerator_ != right.numerator_ || left.denominator_ != right.denominator_;
 }
 
-/* Rational& Rational::operator+() const noexcept {
+Rational& Rational::operator+() const noexcept {
     return *this;
 }
 
 Rational Rational::operator-() const noexcept {
     return Rational(-GetNumerator(), GetDenominator());
-} */
+}
 
 Rational& Rational::operator+=(const Rational& other) noexcept {
     numerator_ = GetNumerator() * other.GetDenominator() + other.GetNumerator() * GetDenominator();

@@ -15,8 +15,8 @@ public:
     friend bool operator==(const Rational&, const Rational&) noexcept;
     friend bool operator!=(const Rational&, const Rational&) noexcept;
 
-    //Rational operator+() const noexcept;
-    //Rational operator-() const noexcept;
+    Rational operator+() const noexcept;
+    Rational operator-() const noexcept;
 
     Rational& operator+=(const Rational&) noexcept;
     friend Rational operator+(Rational, const Rational&) noexcept;

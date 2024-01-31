@@ -4,6 +4,7 @@
 
 using TTerm = std::vector<int64_t>;
 class Monomial {
+public:
     explicit Monomial(TTerm&& term, Rational coef = 1);
 
     TTerm& GetTerm() const noexcept;
@@ -19,11 +20,14 @@ class Monomial {
     friend bool operator==(const Monomial&, const Monomial&) noexcept;
     friend bool operator!=(const Monomial&, const Monomial&) noexcept;
 
-    //Rational operator+() const noexcept;
-    //Rational operator-() const noexcept;
+    Monomial operator+() const noexcept;
+    Monomial operator-() const noexcept;
 
     Monomial& operator*=(const Monomial&) noexcept;
     friend Monomial operator*(Monomial, const Monomial&) noexcept;
+
+    Monomial& operator*=(const Rational&) noexcept;
+    friend Monomial operator*(Monomial, const Rational&) noexcept;
 
     Monomial& operator/=(const Monomial&);
     friend Monomial operator/(Monomial, const Monomial&);
@@ -32,7 +36,7 @@ class Monomial {
 
     friend Monomial lcm(const Monomial&, const Monomial&) noexcept;
 private:
-    void Normalize();
+    static void Normalize(TTerm&);
 
 private:
     TTerm term_;
