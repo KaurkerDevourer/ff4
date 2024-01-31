@@ -120,7 +120,7 @@ std::ostream& operator<<(std::ostream& out, const Rational& rational) noexcept {
     return out << " / " << rational.denominator_ << ')';
 }
 
-
+// private
 void Rational::MakeIrreducible() noexcept {
     int64_t gcd = NMath::gcd(numerator_, denominator_);
     numerator_ /= gcd;
