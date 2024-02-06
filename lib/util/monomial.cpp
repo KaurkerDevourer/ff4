@@ -1,19 +1,27 @@
 #include "monomial.h"
 
 namespace NUtils {
-    Monomial::Monomial(std::vector<int64_t>&& term, Rational coef_)
+    Monomial::Monomial(std::vector<int64_t> term, Rational coef)
     : term_(std::move(term))
     , coef_(coef)
     {
         Normalize(term_);
     }
 
-    TTerm& Monomial::GetTerm() const noexcept {
+    const TTerm& Monomial::GetTerm() const noexcept {
         return term_;
     }
 
-    Rational& Monomial::GetCoef() const noexcept {
+    const Rational& Monomial::GetCoef() const noexcept {
         return coef_;
+    }
+
+    void Monomial::AddCoef(const Monomial& other) noexcept {
+        coef_ += other.GetCoef();
+    }
+
+    void Monomial::SubCoef(const Monomial& other) noexcept {
+        coef_ -= other.GetCoef();
     }
 
     bool Monomial::IsDivisibleBy(const Monomial& other) const noexcept {
@@ -25,7 +33,7 @@ namespace NUtils {
             return false;
         }
         for (size_t i = 0; i < other_term.size(); i++) {
-            if (other_term[i] > term[i]) {
+            if (other_term[i] > term_[i]) {
                 return false;
             }
         }
@@ -35,7 +43,7 @@ namespace NUtils {
     bool operator<(const Monomial& left, const Monomial& right) noexcept {
         for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
             if (left.term_[i] != right.term_[i]) {
-                return left.term[i] < right.term[i];
+                return left.term_[i] < right.term_[i];
             }
         }
         return left.term_.size() < right.term_.size();
@@ -44,7 +52,7 @@ namespace NUtils {
     bool operator>(const Monomial& left, const Monomial& right) noexcept {
         for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
             if (left.term_[i] != right.term_[i]) {
-                return left.term[i] > right.term[i];
+                return left.term_[i] > right.term_[i];
             }
         }
         return left.term_.size() > right.term_.size();
@@ -53,7 +61,7 @@ namespace NUtils {
     bool operator<=(const Monomial& left, const Monomial& right) noexcept {
         for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
             if (left.term_[i] != right.term_[i]) {
-                return left.term[i] < right.term[i];
+                return left.term_[i] < right.term_[i];
             }
         }
         return left.term_.size() <= right.term_.size();
@@ -62,7 +70,7 @@ namespace NUtils {
     bool operator>=(const Monomial& left, const Monomial& right) noexcept {
         for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
             if (left.term_[i] != right.term_[i]) {
-                return left.term[i] > right.term[i];
+                return left.term_[i] > right.term_[i];
             }
         }
         return left.term_.size() >= right.term_.size();
@@ -98,7 +106,7 @@ namespace NUtils {
         return false;
     }
 
-    Monomial& Monomial::operator+() const noexcept {
+    Monomial Monomial::operator+() const noexcept {
         return *this;
     }
 
@@ -150,28 +158,34 @@ namespace NUtils {
         return left;
     }
 
-    Monomial gcd(Monomial left, const Monomial& right) noexcept {
-        size_t sz = std::min(left.term_.size(), right.term_.size());
+    Monomial gcd(const Monomial& left, const Monomial& right) noexcept {
+        const TTerm& leftTerm = left.GetTerm();
+        const TTerm& rightTerm = right.GetTerm();
+
+        size_t sz = std::min(leftTerm.size(), rightTerm.size());
         TTerm term(sz);
         for (size_t i = 0; i < sz; i++) {
-            term[i] = std::min(left.term_[i], right.term_[i]);
+            term[i] = std::min(leftTerm[i], rightTerm[i]);
         }
-        Normalize(term);
+        Monomial::Normalize(term);
         return Monomial(std::move(term), 1);
     }
 
-    Monomial lcm(Monomial left, const Monomial& right) noexcept {
-        size_t sz = std::min(left.term_.size(), right.term_.size());
-        size_t lcm_sz = std::max(left.term_.size(), right.term_.size());
+    Monomial lcm(const Monomial& left, const Monomial& right) noexcept {
+        const TTerm& leftTerm = left.GetTerm();
+        const TTerm& rightTerm = right.GetTerm();
+    
+        size_t sz = std::min(leftTerm.size(), rightTerm.size());
+        size_t lcm_sz = std::max(leftTerm.size(), rightTerm.size());
         TTerm term(lcm_sz);
         for (size_t i = 0; i < sz; i++) {
-            term[i] = std::max(left.term_[i], right.term_[i]);
+            term[i] = std::max(leftTerm[i], rightTerm[i]);
         }
-        for (size_t i = left.term_.size(); i < lcm_sz; i++) {
-            term[i] = right.term_[i];
+        for (size_t i = leftTerm.size(); i < lcm_sz; i++) {
+            term[i] = rightTerm[i];
         }
-        for (size_t i = right.term_.size(); i < lcm_sz; i++) {
-            term[i] = left.term_[i];
+        for (size_t i = rightTerm.size(); i < lcm_sz; i++) {
+            term[i] = leftTerm[i];
         }
         return Monomial(std::move(term), 1);
     }

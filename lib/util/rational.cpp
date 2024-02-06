@@ -1,20 +1,22 @@
 #include "rational.h"
-#include "math.h"
 
 namespace NUtils {
-    Rational::Rational(int64_t numerator, int64_t denominator) {
-        if (denominator < 0) {
-            numerator = -numerator;
-            denominator = -denominator;
+    Rational::Rational(int64_t numerator, int64_t denominator)
+    : numerator_(numerator)
+    , denominator_(denominator)
+    {
+        if (denominator_ < 0) {
+            numerator_ = -numerator_;
+            denominator_ = -denominator_;
         }
         MakeIrreducible();
     }
 
-    Rational::GetNumerator() const noexcept {
+    int64_t Rational::GetNumerator() const noexcept {
         return numerator_;
     }
 
-    Rational::GetDenominator() const noexcept {
+    int64_t Rational::GetDenominator() const noexcept {
         return denominator_;
     }
 
@@ -42,7 +44,7 @@ namespace NUtils {
         return left.numerator_ != right.numerator_ || left.denominator_ != right.denominator_;
     }
 
-    Rational& Rational::operator+() const noexcept {
+    Rational Rational::operator+() const noexcept {
         return *this;
     }
 
@@ -107,7 +109,7 @@ namespace NUtils {
         if (power % 2 != 0) {
             return number * pow(number, power - 1);
         } else {
-            int64_t tmp = pow(number, power / 2);
+            Rational tmp = pow(number, power / 2);
             return tmp * tmp;
         }
     }

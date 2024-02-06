@@ -1,15 +1,20 @@
 #pragma once
-#include "rational.h"
 #include <vector>
+#include "rational.h"
 
 namespace NUtils {
     using TTerm = std::vector<int64_t>;
     class Monomial {
     public:
-        explicit Monomial(TTerm&& term, Rational coef = 1);
+        Monomial(TTerm term, Rational coef = (int64_t)1);
 
-        TTerm& GetTerm() const noexcept;
-        Rational& GetCoef() const noexcept;
+        Monomial() = default;
+
+        const TTerm& GetTerm() const noexcept;
+        const Rational& GetCoef() const noexcept;
+
+        void AddCoef(const Monomial& other) noexcept;
+        void SubCoef(const Monomial& other) noexcept;
 
         bool IsDivisibleBy(const Monomial&) const noexcept __attribute__((pure));
 
@@ -36,12 +41,12 @@ namespace NUtils {
         friend Monomial gcd(const Monomial&, const Monomial&) noexcept;
 
         friend Monomial lcm(const Monomial&, const Monomial&) noexcept;
-    private:
+
         static void Normalize(TTerm&);
 
     private:
         TTerm term_;
         Rational coef_;
-    }
+    };
     using TMonomials = std::vector<Monomial>;
 }

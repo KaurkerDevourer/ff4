@@ -1,8 +1,8 @@
 #pragma once
-#include "polynomial.h"
+#include "../util/polynomial.h"
 
 namespace NAlgo {
     namespace Buchberger {
-        void DoProcess(TPolynomials& F);
+        void DoProcess(NUtils::TPolynomials& F);
     }
 }
