@@ -2,7 +2,7 @@
 
 namespace NUtils {
     Monomial::Monomial(std::vector<int64_t> term, Rational coef)
-    : term_(std::move(term))
+    : term_(term)
     , coef_(coef)
     {
         Normalize(term_);

@@ -119,6 +119,9 @@ namespace NUtils {
     }
 
     bool Polynomial::ReduceBy(const std::vector<Polynomial>& F) noexcept {
+        if (IsZero()) {
+            return true;
+        }
         bool changed = true;
         while(changed) {
             changed = false;
@@ -126,6 +129,9 @@ namespace NUtils {
                 while (GetHeadMonomial().IsDivisibleBy(F[i].GetHeadMonomial())) {
                     (*this) -= F[i] * (GetHeadMonomial() / F[i].GetHeadMonomial());
                     changed = true;
+                    if (IsZero()) {
+                        return true;
+                    }
                 }
             }
         }

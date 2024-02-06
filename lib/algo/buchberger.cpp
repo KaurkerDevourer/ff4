@@ -13,7 +13,7 @@ namespace NAlgo {
                         const NUtils::Monomial& gj = F[j].GetHeadMonomial();
                         NUtils::Monomial glcm = lcm(gi, gj);
                         NUtils::Polynomial S = F[i] * (glcm/gi) - F[j] * (glcm/gj);
-                        if (S.ReduceBy(F)) {
+                        if (!S.ReduceBy(F)) {
                             ready = false;
                             F.push_back(S);
                         }

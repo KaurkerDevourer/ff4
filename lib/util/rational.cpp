@@ -37,11 +37,11 @@ namespace NUtils {
     }
 
     bool operator==(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ == right.numerator_ && left.denominator_ == right.denominator_;
+        return left.numerator_ == right.numerator_ && (left.numerator_ == 0 || left.denominator_ == right.denominator_);
     }
 
     bool operator!=(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ != right.numerator_ || left.denominator_ != right.denominator_;
+        return (left.numerator_ != right.numerator_) || (left.numerator_ != 0 && (left.denominator_ != right.denominator_));
     }
 
     Rational Rational::operator+() const noexcept {
