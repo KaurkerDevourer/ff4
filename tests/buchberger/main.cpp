@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "../buchberger.h"
+#include "../../lib/algo/buchberger.h"
 
 int main() {
     NUtils::TMonomials amon;
@@ -18,5 +18,5 @@ int main() {
 
     NUtils::TPolynomials test = {a, b};
     NAlgo::Buchberger::DoProcess(test);
-    std::cout << test.size() << std::endl;
+    std::cout << "Size of Graebner basis by Buchberger: " << test.size() << std::endl;
 }
