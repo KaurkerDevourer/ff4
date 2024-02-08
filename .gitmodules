@@ -1,0 +1,3 @@
+[submodule "GroebnerBasis"]
+	path = GroebnerBasis
+	url = https://github.com/cdraugr/GroebnerBasis.git
