@@ -1,15 +1,13 @@
 #include "rational.h"
+#include <algorithm>
+#include <numeric>
 
 namespace NUtils {
     Rational::Rational(int64_t numerator, int64_t denominator)
     : numerator_(numerator)
     , denominator_(denominator)
     {
-        if (denominator_ < 0) {
-            numerator_ = -numerator_;
-            denominator_ = -denominator_;
-        }
-        MakeIrreducible();
+        Normalize();
     }
 
     int64_t Rational::GetNumerator() const noexcept {
@@ -25,7 +23,7 @@ namespace NUtils {
     }
 
     bool operator>(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ * right.denominator_ > right.numerator_ * left.denominator_;
+        return right < left;
     }
 
     bool operator<=(const Rational& left, const Rational& right) noexcept {
@@ -33,7 +31,7 @@ namespace NUtils {
     }
 
     bool operator>=(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ * right.denominator_ >= right.numerator_ * left.denominator_;
+        return right <= left;
     }
 
     bool operator==(const Rational& left, const Rational& right) noexcept {
@@ -41,7 +39,7 @@ namespace NUtils {
     }
 
     bool operator!=(const Rational& left, const Rational& right) noexcept {
-        return (left.numerator_ != right.numerator_) || (left.numerator_ != 0 && (left.denominator_ != right.denominator_));
+        return !(left == right);
     }
 
     Rational Rational::operator+() const noexcept {
@@ -49,13 +47,13 @@ namespace NUtils {
     }
 
     Rational Rational::operator-() const noexcept {
-        return Rational(-GetNumerator(), GetDenominator());
+        return Rational(-numerator_, denominator_);
     }
 
     Rational& Rational::operator+=(const Rational& other) noexcept {
-        numerator_ = GetNumerator() * other.GetDenominator() + other.GetNumerator() * GetDenominator();
+        numerator_ = numerator_ * other.GetDenominator() + other.GetNumerator() * denominator_;
         denominator_ *= other.GetDenominator();
-        MakeIrreducible();
+        Normalize();
         return *this;
     }
 
@@ -65,9 +63,7 @@ namespace NUtils {
     }
 
     Rational& Rational::operator-=(const Rational& other) noexcept {
-        numerator_ = GetNumerator() * other.GetDenominator() - other.GetNumerator() * GetDenominator();
-        denominator_ *= other.GetDenominator();
-        MakeIrreducible();
+        *this += -other;
         return *this;
     }
 
@@ -79,7 +75,7 @@ namespace NUtils {
     Rational& Rational::operator*=(const Rational& other) noexcept {
         numerator_ *= other.GetNumerator();
         denominator_ *= other.GetDenominator();
-        MakeIrreducible();
+        Normalize();
         return *this;
     }
 
@@ -89,9 +85,10 @@ namespace NUtils {
     }
 
     Rational& Rational::operator/=(const Rational& other) {
+        //assert(other != 0);
         numerator_ *= other.GetDenominator();
         denominator_ *= other.GetNumerator();
-        MakeIrreducible();
+        Normalize();
         return *this;
     }
 
@@ -123,9 +120,12 @@ namespace NUtils {
         return out << " / " << rational.denominator_ << ')';
     }
 
-    // private
-    void Rational::MakeIrreducible() noexcept {
-        int64_t gcd = NMath::gcd(numerator_, denominator_);
+    void Rational::Normalize() noexcept {
+        if (denominator_ < 0) {
+            numerator_ = -numerator_;
+            denominator_ = -denominator_;
+        }
+        int64_t gcd = std::gcd(numerator_, denominator_);
         numerator_ /= gcd;
         denominator_ /= gcd;
     }

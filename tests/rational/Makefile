@@ -1,5 +1,5 @@
 CC=g++
 FLAGS=-std=c++20 -g -rdynamic -march=native
 
-ational: main.cpp ../../lib/util/rational.h ../../lib/util/rational.cpp ../../lib/util/math.h ../../lib/util/math.cpp ../testing.h
-	$(CC) $(FLAGS) main.cpp ../../lib/util/rational.h ../../lib/util/rational.cpp ../../lib/util/math.h ../../lib/util/math.cpp ../testing.h -o ../bin/test_rational
+ational: main.cpp ../../lib/util/rational.h ../../lib/util/rational.cpp ../testing.h
+	$(CC) $(FLAGS) main.cpp ../../lib/util/rational.h ../../lib/util/rational.cpp ../testing.h -o ../bin/test_rational

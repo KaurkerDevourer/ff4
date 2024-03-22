@@ -1,7 +1,6 @@
 #pragma once
 #include <cstdint>
 #include <ostream>
-#include "math.h"
 
 namespace NUtils {
     class Rational {
@@ -39,9 +38,8 @@ namespace NUtils {
         friend std::ostream& operator<<(std::ostream&, const Rational&) noexcept;
 
     private:
-        void MakeIrreducible() noexcept;
+        void Normalize() noexcept;
 
-    private:
         int64_t numerator_;
         int64_t denominator_;
     };

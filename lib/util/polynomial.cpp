@@ -4,9 +4,8 @@
 
 namespace NUtils {
     Polynomial::Polynomial(TMonomials&& monomials)
-    : monomials_(monomials)
+    : monomials_(Normalize(std::move(monomials)))
     {
-        Normalize(monomials_);
     }
 
     const TMonomials& Polynomial::GetMonomials() const noexcept {
@@ -17,17 +16,17 @@ namespace NUtils {
         return monomials_[0];
     }
 
-    Polynomial Polynomial::operator+() const noexcept {
-        return *this;
-    }
-
     bool Polynomial::IsZero() const noexcept {
         return monomials_.empty();
     }
 
+    Polynomial Polynomial::operator+() const noexcept {
+        return *this;
+    }
+
     Polynomial Polynomial::operator-() const noexcept {
         TMonomials monomials(monomials_.size());
-        for (size_t i = 0; i < monomials.size(); i++) {
+        for (size_t i = 0; i < monomials_.size(); i++) {
             monomials[i] = -monomials_[i];
         }
         return Polynomial(std::move(monomials));
@@ -62,42 +61,12 @@ namespace NUtils {
             monomials.push_back(other.monomials_[j]);
             j++;
         }
-        monomials.shrink_to_fit();
         monomials_ = std::move(monomials);
         return *this;
     }
 
     Polynomial& Polynomial::operator-=(const Polynomial& other) noexcept {
-        TMonomials monomials;
-        monomials.reserve(monomials_.size() + other.monomials_.size());
-        size_t i = 0;
-        size_t j = 0;
-        while(i != monomials_.size() && j != other.monomials_.size()) {
-            if (monomials_[i] > other.monomials_[j]) {
-                monomials.push_back(monomials_[i]);
-                i++;
-            } else if (monomials_[i] < other.monomials_[j]) {
-                monomials.push_back(-other.monomials_[j]);
-                j++;
-            } else {
-                monomials_[i].SubCoef(other.monomials_[j]);
-                if (monomials_[i].GetCoef() != 0) {
-                    monomials.push_back(monomials_[i]);
-                }
-                i++;
-                j++;
-            }
-        }
-        while(i != monomials_.size()) {
-            monomials.push_back(monomials_[i]);
-            i++;
-        }
-        while(j != other.monomials_.size()) {
-            monomials.push_back(-other.monomials_[j]);
-            j++;
-        }
-        monomials.shrink_to_fit();
-        monomials_ = std::move(monomials);
+        *this += -other;
         return *this;
     }
 
@@ -123,15 +92,12 @@ namespace NUtils {
             return true;
         }
         bool changed = true;
-        while(changed) {
+        while(changed && !IsZero()) {
             changed = false;
-            for (size_t i = 0; i < F.size(); i++) {
-                while (GetHeadMonomial().IsDivisibleBy(F[i].GetHeadMonomial())) {
-                    (*this) -= F[i] * (GetHeadMonomial() / F[i].GetHeadMonomial());
+            for (const auto& f : F) {
+                while (!IsZero() && GetHeadMonomial().IsDivisibleBy(f.GetHeadMonomial())) {
+                    (*this) -= f * (GetHeadMonomial() / f.GetHeadMonomial());
                     changed = true;
-                    if (IsZero()) {
-                        return true;
-                    }
                 }
             }
         }
@@ -139,7 +105,7 @@ namespace NUtils {
     }
 
     //private
-    void Polynomial::Normalize(TMonomials& monomials) {
+    TMonomials&& Polynomial::Normalize(TMonomials&& monomials) {
         bool isSorted = true;
         size_t cnt = 0;
         for (size_t i = 0; i < monomials.size();) {
@@ -160,5 +126,6 @@ namespace NUtils {
         if (!isSorted) {
             std::sort(monomials.rbegin(), monomials.rend());
         }
+        return std::move(monomials);
     }
 }

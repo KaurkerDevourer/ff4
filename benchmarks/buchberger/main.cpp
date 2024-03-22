@@ -44,10 +44,10 @@ int main() {
         {{{1}}, 1},
         {{{0, 2}}, -2},
     });
-    gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2});
-    Benchmark(GroebnerBasisLibF4::DoProcess, 10, "GroebnerBasisLibF4_small", ideal);
+    //gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2});
+    //Benchmark(GroebnerBasisLibF4::DoProcess, 10, "GroebnerBasisLibF4_small", ideal);
 
 
     gb::PolynomialSet<gb::fields::Rational> ideal2({i1, i2});
-    Benchmark(GroebnerBasisLibBuchberger::DoProcess, 10, "GroebnerBasisLibBuchberger_small", ideal);
+    Benchmark(GroebnerBasisLibBuchberger::DoProcess, 10, "GroebnerBasisLibBuchberger_small", ideal2);
 }

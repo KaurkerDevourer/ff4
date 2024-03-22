@@ -8,9 +8,10 @@ namespace NUtils {
 
         const TMonomials& GetMonomials() const noexcept;
         const Monomial& GetHeadMonomial() const noexcept;
+        bool IsZero() const noexcept;
 
-        Polynomial operator-() const noexcept;
         Polynomial operator+() const noexcept;
+        Polynomial operator-() const noexcept;
 
         Polynomial& operator+=(const Polynomial&) noexcept;
         Polynomial& operator-=(const Polynomial&) noexcept;
@@ -20,10 +21,9 @@ namespace NUtils {
         friend Polynomial operator-(Polynomial, const Polynomial&) noexcept;
 
         bool ReduceBy(const std::vector<Polynomial>& F) noexcept;
-        bool IsZero() const noexcept;
 
     private:
-        void Normalize(TMonomials& monomials);
+        TMonomials&& Normalize(TMonomials&& monomials);
 
     private:
         TMonomials monomials_;

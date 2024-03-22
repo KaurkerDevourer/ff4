@@ -12,11 +12,13 @@ namespace NUtils {
 
         const TTerm& GetTerm() const noexcept;
         const Rational& GetCoef() const noexcept;
+        int64_t GetNumerator() const noexcept;
+        int64_t GetDenominator() const noexcept;
 
         void AddCoef(const Monomial& other) noexcept;
         void SubCoef(const Monomial& other) noexcept;
 
-        bool IsDivisibleBy(const Monomial&) const noexcept __attribute__((pure));
+        bool IsDivisibleBy(const Monomial&) const noexcept;
 
         friend bool operator<(const Monomial&, const Monomial&) noexcept;
         friend bool operator>(const Monomial&, const Monomial&) noexcept;
@@ -42,6 +44,7 @@ namespace NUtils {
 
         friend Monomial lcm(const Monomial&, const Monomial&) noexcept;
 
+    private:
         static void Normalize(TTerm&);
 
     private:

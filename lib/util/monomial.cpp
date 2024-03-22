@@ -16,6 +16,14 @@ namespace NUtils {
         return coef_;
     }
 
+    int64_t Monomial::GetNumerator() const noexcept {
+        return coef_.GetNumerator();
+    }
+
+    int64_t Monomial::GetDenominator() const noexcept {
+        return coef_.GetDenominator();
+    }
+
     void Monomial::AddCoef(const Monomial& other) noexcept {
         coef_ += other.GetCoef();
     }
@@ -41,69 +49,30 @@ namespace NUtils {
     };
 
     bool operator<(const Monomial& left, const Monomial& right) noexcept {
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return left.term_[i] < right.term_[i];
-            }
-        }
-        return left.term_.size() < right.term_.size();
+        std::lexicographical_compare(left.term_.begin(), left.term_.end(), right.term_.begin(), right.term_.end());
     }
 
     bool operator>(const Monomial& left, const Monomial& right) noexcept {
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return left.term_[i] > right.term_[i];
-            }
-        }
-        return left.term_.size() > right.term_.size();
+        return right < left;
     }
 
     bool operator<=(const Monomial& left, const Monomial& right) noexcept {
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return left.term_[i] < right.term_[i];
-            }
-        }
-        return left.term_.size() <= right.term_.size();
+        return !(left > right);
     }
 
     bool operator>=(const Monomial& left, const Monomial& right) noexcept {
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return left.term_[i] > right.term_[i];
-            }
-        }
-        return left.term_.size() >= right.term_.size();
+        return !(left < right);
     }
 
     bool operator==(const Monomial& left, const Monomial& right) noexcept {
         if (left.coef_ != right.coef_) {
             return false;
         }
-        if (left.term_.size() != right.term_.size()) {
-            return false;
-        }
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return false;
-            }
-        }
-        return true;
+        return left.term_ == right.term_;
     }
 
     bool operator!=(const Monomial& left, const Monomial& right) noexcept {
-        if (left.coef_ != right.coef_) {
-            return true;
-        }
-        if (left.term_.size() != right.term_.size()) {
-            return true;
-        }
-        for (size_t i = 0; i < std::min(left.term_.size(), right.term_.size()); i++) {
-            if (left.term_[i] != right.term_[i]) {
-                return true;
-            }
-        }
-        return false;
+        return !(left == right);
     }
 
     Monomial Monomial::operator+() const noexcept {
@@ -142,6 +111,7 @@ namespace NUtils {
     }
 
     Monomial& Monomial::operator/=(const Monomial& other) {
+        //assert(other != 0);
         coef_ /= other.GetCoef();
         if (other.term_.size() > term_.size()) {
             term_.resize(other.term_.size());
@@ -167,7 +137,6 @@ namespace NUtils {
         for (size_t i = 0; i < sz; i++) {
             term[i] = std::min(leftTerm[i], rightTerm[i]);
         }
-        Monomial::Normalize(term);
         return Monomial(std::move(term), 1);
     }
 
