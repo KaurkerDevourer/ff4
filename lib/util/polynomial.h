@@ -2,9 +2,11 @@
 #include "monomial.h"
 
 namespace NUtils {
+    using TMonomials = std::vector<Monomial>;
     class Polynomial {
     public:
-        explicit Polynomial(TMonomials&& monomials);
+        Polynomial() = default;
+        Polynomial(TMonomials&& monomials);
 
         const TMonomials& GetMonomials() const noexcept;
         const Monomial& GetHeadMonomial() const noexcept;
@@ -13,14 +15,30 @@ namespace NUtils {
         Polynomial operator+() const noexcept;
         Polynomial operator-() const noexcept;
 
-        Polynomial& operator+=(const Polynomial&) noexcept;
-        Polynomial& operator-=(const Polynomial&) noexcept;
-        Polynomial& operator*=(const Monomial&) noexcept;
+        friend bool operator==(const Polynomial&, const Polynomial&) noexcept;
+        friend bool operator!=(const Polynomial&, const Polynomial&) noexcept;
 
-        friend Polynomial operator*(Polynomial, const Monomial&) noexcept;
+        Polynomial& operator+=(const Polynomial&) noexcept;
+        friend Polynomial operator+(Polynomial, const Polynomial&) noexcept;
+
+        Polynomial& operator-=(const Polynomial&) noexcept;
         friend Polynomial operator-(Polynomial, const Polynomial&) noexcept;
 
-        bool ReduceBy(const std::vector<Polynomial>& F) noexcept;
+        Polynomial& operator*=(const Rational&) noexcept;
+        friend Polynomial operator*(Polynomial, const Rational&) noexcept;
+        friend Polynomial operator*(const Rational&, Polynomial) noexcept;
+
+        Polynomial& operator/=(const Rational&) noexcept;
+        friend Polynomial operator/(Polynomial, const Rational&) noexcept;
+
+        Polynomial& operator*=(const Monomial&) noexcept;
+        friend Polynomial operator*(Polynomial, const Monomial&) noexcept;
+        friend Polynomial operator*(const Monomial&, Polynomial) noexcept;
+
+        Polynomial& operator*=(const Polynomial&) noexcept;
+        friend Polynomial operator*(Polynomial, const Polynomial&) noexcept;
+
+        friend std::ostream& operator<<(std::ostream&, const Polynomial&) noexcept;
 
     private:
         TMonomials&& Normalize(TMonomials&& monomials);

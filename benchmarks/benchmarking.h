@@ -8,7 +8,7 @@ using namespace std::chrono;
 // second argument - timeout in second
 // third argument - args to function
 template <typename TFunction, typename ...Args>
-void Benchmark(TFunction func, double timeout, std::string name, Args... args) noexcept {
+void FakeBenchmark(TFunction func, double timeout, std::string name, Args... args) noexcept {
     const auto start = high_resolution_clock::now();
     std::chrono::duration<double> diff;
     bool check = true;

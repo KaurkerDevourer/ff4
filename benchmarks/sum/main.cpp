@@ -44,8 +44,8 @@ int main() {
     for (int i = 0; i < 65536; i++) {
         a[i] = i;
     }
-    Benchmark(sum_simple, 10, "sum_simple", a);
-    Benchmark(sum_parallel, 10, "sum_parallel", a);
-    Benchmark(sum_simd, 10, "sum_simd", a);
-    Benchmark(sum_simd2, 10, "sum_simd2", a);
+    FakeBenchmark(sum_simple, 10, "sum_simple", a);
+    FakeBenchmark(sum_parallel, 10, "sum_parallel", a);
+    FakeBenchmark(sum_simd, 10, "sum_simd", a);
+    FakeBenchmark(sum_simd2, 10, "sum_simd2", a);
 }

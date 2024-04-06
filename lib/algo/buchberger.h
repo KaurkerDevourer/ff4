@@ -3,6 +3,8 @@
 
 namespace NAlgo {
     namespace Buchberger {
-        void DoProcess(NUtils::TPolynomials& F);
+        void FindGroebnerBasis(NUtils::TPolynomials& F);
+
+        bool ReduceToZero(NUtils::Polynomial& F, NUtils::TPolynomials& polynomialsSet);
     }
 }

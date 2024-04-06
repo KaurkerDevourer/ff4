@@ -32,6 +32,24 @@ namespace NUtils {
         return Polynomial(std::move(monomials));
     }
 
+    bool operator==(const Polynomial& left, const Polynomial& right) noexcept {
+        const TMonomials& leftMonomials = left.GetMonomials();
+        const TMonomials& rightMonomials = right.GetMonomials();
+        if (leftMonomials.size() != rightMonomials.size()) {
+            return false;
+        }
+        for (size_t i = 0; i < leftMonomials.size(); i++) {
+            if (leftMonomials[i] != rightMonomials[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool operator!=(const Polynomial& left, const Polynomial& right) noexcept {
+        return !(left == right);
+    }
+
     Polynomial& Polynomial::operator+=(const Polynomial& other) noexcept {
         TMonomials monomials;
         monomials.reserve(monomials_.size() + other.monomials_.size());
@@ -82,26 +100,76 @@ namespace NUtils {
         return left;
     }
 
+    Polynomial operator*(const Monomial& left, Polynomial right) noexcept {
+        right *= left;
+        return right;
+    }
+
     Polynomial operator-(Polynomial left, const Polynomial& right) noexcept {
         left -= right;
         return left;
     }
 
-    bool Polynomial::ReduceBy(const std::vector<Polynomial>& F) noexcept {
-        if (IsZero()) {
-            return true;
+    Polynomial operator+(Polynomial left, const Polynomial& right) noexcept {
+        left += right;
+        return left;
+    }
+
+    Polynomial& Polynomial::operator*=(const Rational& coef) noexcept {
+        for (size_t i = 0; i < monomials_.size(); i++) {
+            monomials_[i] *= coef;
         }
-        bool changed = true;
-        while(changed && !IsZero()) {
-            changed = false;
-            for (const auto& f : F) {
-                while (!IsZero() && GetHeadMonomial().IsDivisibleBy(f.GetHeadMonomial())) {
-                    (*this) -= f * (GetHeadMonomial() / f.GetHeadMonomial());
-                    changed = true;
-                }
+        return *this;
+    }
+
+    Polynomial operator*(Polynomial left, const Rational& right) noexcept {
+        left *= right;
+        return left;
+    }
+
+    Polynomial operator*(const Rational& left, Polynomial right) noexcept {
+        right *= left;
+        return right;
+    }
+
+    Polynomial& Polynomial::operator/=(const Rational& coef) noexcept {
+        for (size_t i = 0; i < monomials_.size(); i++) {
+            monomials_[i] /= coef;
+        }
+        return *this;
+    }
+
+    Polynomial operator/(Polynomial left, const Rational& right) noexcept {
+        left *= right;
+        return left;
+    }
+
+    Polynomial& Polynomial::operator*=(const Polynomial& polynomial) noexcept {
+        const TMonomials& monomials = polynomial.GetMonomials();
+        Polynomial newPolynomial;
+        for (size_t i = 0; i < monomials.size(); i++) {
+            Polynomial tmpMonomials = (*this);
+            tmpMonomials *= monomials[i];
+            newPolynomial += tmpMonomials;
+        }
+        *this = std::move(newPolynomial);
+        return *this;
+    }
+
+    Polynomial operator*(Polynomial left, const Polynomial& right) noexcept {
+        left *= right;
+        return left;
+    }
+
+    std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
+        const TMonomials& monomials = polynomial.GetMonomials();
+        for (size_t i = 0; i < monomials.size(); i++) {
+            if (i > 0 || monomials[i].GetCoef() > 0) {
+                out << " + ";
             }
+            out << monomials[i];
         }
-        return IsZero();
+        return out;
     }
 
     //private

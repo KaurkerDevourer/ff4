@@ -5,13 +5,13 @@
 #include "../../lib/algo/buchberger.h"
 
 namespace GroebnerBasisLibF4 {
-    void DoProcess(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+    void FindGroebnerBasis(gb::PolynomialSet<gb::fields::Rational>& ideal) {
         gb::inplace_calculate_f4_gb(ideal);
     }
 }
 
 namespace GroebnerBasisLibBuchberger {
-    void DoProcess(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+    void FindGroebnerBasis(gb::PolynomialSet<gb::fields::Rational>& ideal) {
         ideal.MakeGroebnerBasis();
     }
 }
@@ -31,9 +31,7 @@ int main() {
     NUtils::Polynomial b(std::move(bmon));
 
     NUtils::TPolynomials test = {a, b};
-    Benchmark(NAlgo::Buchberger::DoProcess, 10, "buchberger_small", test);
-
-
+    FakeBenchmark(NAlgo::Buchberger::FindGroebnerBasis, 10, "buchberger_small", test);
 
     gb::Polynomial<gb::fields::Rational> i1({  // HW 07, ex 01
         {{{3}}, 1},
@@ -45,9 +43,9 @@ int main() {
         {{{0, 2}}, -2},
     });
     //gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2});
-    //Benchmark(GroebnerBasisLibF4::DoProcess, 10, "GroebnerBasisLibF4_small", ideal);
+    //FakeBenchmark(GroebnerBasisLibF4::FindGroebnerBasis, 10, "GroebnerBasisLibF4_small", ideal);
 
 
     gb::PolynomialSet<gb::fields::Rational> ideal2({i1, i2});
-    Benchmark(GroebnerBasisLibBuchberger::DoProcess, 10, "GroebnerBasisLibBuchberger_small", ideal2);
+    FakeBenchmark(GroebnerBasisLibBuchberger::FindGroebnerBasis, 10, "GroebnerBasisLibBuchberger_small", ideal2);
 }

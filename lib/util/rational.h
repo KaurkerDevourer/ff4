@@ -1,6 +1,6 @@
 #pragma once
 #include <cstdint>
-#include <ostream>
+#include <iostream>
 
 namespace NUtils {
     class Rational {
