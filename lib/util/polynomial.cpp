@@ -196,4 +196,13 @@ namespace NUtils {
         }
         return std::move(monomials);
     }
+
+
+    std::queue<std::pair<size_t, size_t> GetPairsToCheck(size_t sz) const noexcept {
+        for (size_t i = 0; i < sz; i++) {
+            for (size_t j = i + 1; j < sz; j++) {
+                pairs_to_check.push({i, j});
+            }
+        }
+    }
 }

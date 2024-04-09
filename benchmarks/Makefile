@@ -1,5 +1,4 @@
-SUBDIRS = 	buchberger \
-			sum
+SUBDIRS = 	buchberger
 
 all: $(SUBDIRS)
 
@@ -7,7 +6,6 @@ $(SUBDIRS):
 		$(MAKE) -C $@
 
 run: 
-	./bin/benchmark_buchberger && \
-	./bin/benchmark_sum
+	./bin/benchmark_buchberger
 
 .PHONY: all $(SUBDIRS) run

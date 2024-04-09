@@ -4,15 +4,23 @@
 #include "../benchmarking.h"
 #include "../../lib/algo/buchberger.h"
 
-namespace GroebnerBasisLibF4 {
-    void FindGroebnerBasis(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        gb::inplace_calculate_f4_gb(ideal);
+namespace  {
+    void FindGroebnerBasisF4(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+        for (int i = 0; i < 1000; i++) {
+            gb::inplace_calculate_f4_gb(ideal);
+        }
     }
-}
 
-namespace GroebnerBasisLibBuchberger {
-    void FindGroebnerBasis(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        ideal.MakeGroebnerBasis();
+    void FindGroebnerBasisLib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+        for (int i = 0; i < 1000; i++) {
+            ideal.MakeGroebnerBasis();
+        }
+    }
+
+    void FindGroebnerBasisFlex(NUtils::TPolynomials& F) {
+        for (int i = 0; i < 1000; i++) {
+            NAlgo::Buchberger::FindGroebnerBasis(F);
+        }
     }
 }
 
@@ -31,7 +39,8 @@ int main() {
     NUtils::Polynomial b(std::move(bmon));
 
     NUtils::TPolynomials test = {a, b};
-    FakeBenchmark(NAlgo::Buchberger::FindGroebnerBasis, 10, "buchberger_small", test);
+    test_time(FindGroebnerBasisFlex, "buchberger_small ").call(test);
+    //FakeBenchmark(NAlgo::Buchberger::FindGroebnerBasis, 10, "buchberger_small", test);
 
     gb::Polynomial<gb::fields::Rational> i1({  // HW 07, ex 01
         {{{3}}, 1},
@@ -43,9 +52,10 @@ int main() {
         {{{0, 2}}, -2},
     });
     //gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2});
-    //FakeBenchmark(GroebnerBasisLibF4::FindGroebnerBasis, 10, "GroebnerBasisLibF4_small", ideal);
+    //FakeBenchmark(GroebnerBasisLibF4::FindGroebnerBasisF4, 10, "GroebnerBasisLibF4_small", ideal);
 
 
     gb::PolynomialSet<gb::fields::Rational> ideal2({i1, i2});
-    FakeBenchmark(GroebnerBasisLibBuchberger::FindGroebnerBasis, 10, "GroebnerBasisLibBuchberger_small", ideal2);
+    test_time(GroebnerBasisLibBuchberger::FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_small ").call(ideal2);
+    //FakeBenchmark(GroebnerBasisLibBuchberger::FindGroebnerBasis, 10, "GroebnerBasisLibBuchberger_small", ideal2);
 }

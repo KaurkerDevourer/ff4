@@ -1,8 +1,40 @@
 #include <chrono>
 #include <iostream>
 #include <iomanip>
+#include <string>
 
 using namespace std::chrono;
+
+using u32 = int32_t;
+
+template <typename TFunction>
+class TimerWrapper {
+public:
+    TimerWrapper(TFunction function, const std::string& text):
+        call(function), text_(text), start_time_(high_resolution_clock::now()) {}
+
+    operator TFunction() {
+        return call;
+    }
+
+    ~TimerWrapper() {
+        const time_point<system_clock> end_time_ = high_resolution_clock::now();
+        const double diff = (end_time_ - start_time_).count() / 1'000'000;
+        std::cout << text_;
+        std::cout << diff << " milliseconds." << std::endl;
+    }
+
+    TFunction call;
+
+private:
+    const std::string text_;
+    const time_point<system_clock> start_time_;
+};
+
+template <typename TFunction>
+TimerWrapper<TFunction> test_time(TFunction function, const std::string& text) {
+    return TimerWrapper<TFunction>(function, text);
+}
 
 // first argument - function to bench
 // second argument - timeout in second

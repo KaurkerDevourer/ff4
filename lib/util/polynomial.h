@@ -47,4 +47,6 @@ namespace NUtils {
         TMonomials monomials_;
     };
     using TPolynomials = std::vector<Polynomial>;
+
+    std::queue<std::pair<size_t, size_t> GetPairsToCheck(size_t);
 }

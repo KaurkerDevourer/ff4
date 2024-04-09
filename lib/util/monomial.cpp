@@ -52,6 +52,9 @@ namespace NUtils {
         if (left.coef_ != right.coef_) {
             return false;
         }
+        if (left.coef_ == 0) {
+            return true;
+        }
         return left.term_ == right.term_;
     }
 

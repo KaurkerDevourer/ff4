@@ -5,12 +5,8 @@ namespace NAlgo {
     namespace Buchberger {
 
         void FindGroebnerBasis(NUtils::TPolynomials& F) {
-            std::queue<std::pair<size_t, size_t> > pairs_to_check;
-            for (size_t i = 0; i < F.size(); i++) {
-                for (size_t j = i + 1; j < F.size(); j++) {
-                    pairs_to_check.push({i, j});
-                }
-            }
+            std::queue<std::pair<size_t, size_t> > pairs_to_check = NUtils::GetPairsToCheck(F.size());
+
             while(!pairs_to_check.empty()) {
                 const NUtils::Polynomial& fi = F[pairs_to_check.front().first];
                 const NUtils::Polynomial& fj = F[pairs_to_check.front().second];
