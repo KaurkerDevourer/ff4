@@ -1,9 +1,9 @@
-#include "../../lib/util/monomial.h"
-#include "../testing.h"
+#include "../lib/util/monomial.h"
+#include "testing.h"
 #include <iostream>
 #include <cassert>
 
-int main() {
+void test_monomial() {
     using namespace NUtils;
     Monomial a(TTerm({0, 2}), 2);
     Monomial b(TTerm({1, 0}), 3);

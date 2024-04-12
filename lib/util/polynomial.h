@@ -1,5 +1,7 @@
 #pragma once
 #include "monomial.h"
+#include <vector>
+#include <queue>
 
 namespace NUtils {
     using TMonomials = std::vector<Monomial>;
@@ -48,5 +50,5 @@ namespace NUtils {
     };
     using TPolynomials = std::vector<Polynomial>;
 
-    std::queue<std::pair<size_t, size_t> GetPairsToCheck(size_t);
+    std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t);
 }

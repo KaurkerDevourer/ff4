@@ -1,9 +1,9 @@
-#include "../../lib/util/term.h"
-#include "../testing.h"
+#include "../lib/util/term.h"
+#include "testing.h"
 #include <iostream>
 #include <cassert>
 
-int main() {
+void test_term() {
     using namespace NUtils;
     TTerm a({1, 2, 3});
     TTerm b({3, 2, 1});

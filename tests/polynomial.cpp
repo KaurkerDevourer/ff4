@@ -1,9 +1,9 @@
-#include "../../lib/util/polynomial.h"
-#include "../testing.h"
+#include "../lib/util/polynomial.h"
+#include "testing.h"
 #include <iostream>
 #include <cassert>
 
-int main() {
+void test_polynomial() {
     using namespace NUtils;
     TMonomials amon;
     amon.push_back(Monomial(TTerm({3}), Rational(1)));

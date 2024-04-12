@@ -1,6 +1,5 @@
 #include "polynomial.h"
 #include <algorithm>
-#include <vector>
 
 namespace NUtils {
     Polynomial::Polynomial(TMonomials&& monomials)
@@ -197,12 +196,13 @@ namespace NUtils {
         return std::move(monomials);
     }
 
-
-    std::queue<std::pair<size_t, size_t> GetPairsToCheck(size_t sz) const noexcept {
+    std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
+        std::queue<std::pair<size_t, size_t>> pairs_to_check;
         for (size_t i = 0; i < sz; i++) {
             for (size_t j = i + 1; j < sz; j++) {
                 pairs_to_check.push({i, j});
             }
         }
+        return pairs_to_check;
     }
 }

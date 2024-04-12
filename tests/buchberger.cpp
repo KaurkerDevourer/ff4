@@ -1,8 +1,8 @@
 #include <iostream>
 
-#include "../../lib/algo/buchberger.h"
+#include "../lib/algo/buchberger.h"
 
-int main() {
+void test_buchberger() {
     NUtils::TMonomials amon;
     amon.push_back(NUtils::Monomial(NUtils::TTerm({3}), NUtils::Rational(1)));
     amon.push_back(NUtils::Monomial(NUtils::TTerm({1, 1}), NUtils::Rational(-2)));

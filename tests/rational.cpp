@@ -1,9 +1,9 @@
-#include "../../lib/util/rational.h"
-#include "../testing.h"
+#include "../lib/util/rational.h"
+#include "testing.h"
 #include <iostream>
 #include <cassert>
 
-int main() {
+void test_rational() {
     NUtils::Rational r(3, 6);
     ASSERT_EQUAL(r.GetNumerator(), (int64_t)1);
     ASSERT_EQUAL(r.GetDenominator(), (int64_t)2);
