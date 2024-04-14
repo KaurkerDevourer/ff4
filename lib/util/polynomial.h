@@ -4,51 +4,231 @@
 #include <queue>
 
 namespace NUtils {
-    using TMonomials = std::vector<Monomial>;
+
+    template <typename TCoef>
+    using TMonomials = std::vector<Monomial<TCoef>>;
+
+    template <typename TCoef>
     class Polynomial {
     public:
         Polynomial() = default;
-        Polynomial(TMonomials&& monomials);
 
-        const TMonomials& GetMonomials() const noexcept;
-        const Monomial& GetHeadMonomial() const noexcept;
-        bool IsZero() const noexcept;
+        Polynomial(TMonomials<TCoef>&& monomials)
+        : monomials_(Normalize(std::move(monomials)))
+        {
+        }
 
-        Polynomial operator+() const noexcept;
-        Polynomial operator-() const noexcept;
+        const TMonomials<TCoef>& GetMonomials() const noexcept {
+            return monomials_;
+        }
 
-        friend bool operator==(const Polynomial&, const Polynomial&) noexcept;
-        friend bool operator!=(const Polynomial&, const Polynomial&) noexcept;
+        const Monomial<TCoef>& GetHeadMonomial() const noexcept {
+            return monomials_[0];
+        }
 
-        Polynomial& operator+=(const Polynomial&) noexcept;
-        friend Polynomial operator+(Polynomial, const Polynomial&) noexcept;
+        bool IsZero() const noexcept {
+            return monomials_.empty();
+        }
 
-        Polynomial& operator-=(const Polynomial&) noexcept;
-        friend Polynomial operator-(Polynomial, const Polynomial&) noexcept;
+        Polynomial operator+() const noexcept {
+            return *this;
+        }
 
-        Polynomial& operator*=(const Rational&) noexcept;
-        friend Polynomial operator*(Polynomial, const Rational&) noexcept;
-        friend Polynomial operator*(const Rational&, Polynomial) noexcept;
+        Polynomial operator-() const noexcept {
+            TMonomials<TCoef> monomials(monomials_.size());
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials[i] = -monomials_[i];
+            }
+            return Polynomial(std::move(monomials));
+        }
 
-        Polynomial& operator/=(const Rational&) noexcept;
-        friend Polynomial operator/(Polynomial, const Rational&) noexcept;
+        friend bool operator==(const Polynomial& left, const Polynomial& right) noexcept {
+            const TMonomials<TCoef>& lefTMonomials = left.GetMonomials();
+            const TMonomials<TCoef>& righTMonomials = right.GetMonomials();
+            if (lefTMonomials.size() != righTMonomials.size()) {
+                return false;
+            }
+            for (size_t i = 0; i < lefTMonomials.size(); i++) {
+                if (lefTMonomials[i] != righTMonomials[i]) {
+                    return false;
+                }
+            }
+            return true;
+        }
 
-        Polynomial& operator*=(const Monomial&) noexcept;
-        friend Polynomial operator*(Polynomial, const Monomial&) noexcept;
-        friend Polynomial operator*(const Monomial&, Polynomial) noexcept;
+        friend bool operator!=(const Polynomial& left, const Polynomial& right) noexcept {
+            return !(left == right);
+        }
 
-        Polynomial& operator*=(const Polynomial&) noexcept;
-        friend Polynomial operator*(Polynomial, const Polynomial&) noexcept;
+        Polynomial& operator+=(const Polynomial& other) noexcept {
+            TMonomials<TCoef> monomials;
+            monomials.reserve(monomials_.size() + other.monomials_.size());
+            size_t i = 0;
+            size_t j = 0;
+            while(i != monomials_.size() && j != other.monomials_.size()) {
+                if (monomials_[i] > other.monomials_[j]) {
+                    monomials.push_back(monomials_[i]);
+                    i++;
+                } else if (monomials_[i] < other.monomials_[j]) {
+                    monomials.push_back(other.monomials_[j]);
+                    j++;
+                } else {
+                    monomials_[i].AddCoef(other.monomials_[j]);
+                    if (monomials_[i].GetCoef() != 0) {
+                        monomials.push_back(monomials_[i]);
+                    }
+                    i++;
+                    j++;
+                }
+            }
+            while(i != monomials_.size()) {
+                monomials.push_back(monomials_[i]);
+                i++;
+            }
+            while(j != other.monomials_.size()) {
+                monomials.push_back(other.monomials_[j]);
+                j++;
+            }
+            monomials_ = std::move(monomials);
+            return *this;
+        }
 
-        friend std::ostream& operator<<(std::ostream&, const Polynomial&) noexcept;
+        friend Polynomial operator+(Polynomial left, const Polynomial& right) noexcept {
+            left += right;
+            return left;
+        }
+
+        Polynomial& operator-=(const Polynomial& other) noexcept {
+            *this += -other;
+            return *this;
+        }
+
+        friend Polynomial operator-(Polynomial left, const Polynomial& right) noexcept {
+            left -= right;
+            return left;
+        }
+
+        Polynomial& operator*=(const Monomial<TCoef>& monomial) noexcept {
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials_[i] *= monomial;
+            }
+            return *this;
+        }
+
+        friend Polynomial operator*(Polynomial left, const Monomial<TCoef>& right) noexcept {
+            left *= right;
+            return left;
+        }
+
+        friend Polynomial operator*(const Monomial<TCoef>& left, Polynomial right) noexcept {
+            right *= left;
+            return right;
+        }
+
+        Polynomial& operator*=(const TCoef& coef) noexcept {
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials_[i] *= coef;
+            }
+            return *this;
+        }
+
+        friend Polynomial operator*(Polynomial left, const TCoef& right) noexcept {
+            left *= right;
+            return left;
+        }
+
+        friend Polynomial operator*(const TCoef& left, Polynomial right) noexcept {
+            right *= left;
+            return right;
+        }
+
+        Polynomial& operator*=(const Polynomial& polynomial) noexcept {
+            const TMonomials<TCoef>& monomials = polynomial.GetMonomials();
+            Polynomial newPolynomial;
+            for (size_t i = 0; i < monomials.size(); i++) {
+                Polynomial tmpMonomials = (*this);
+                tmpMonomials *= monomials[i];
+                newPolynomial += tmpMonomials;
+            }
+            *this = std::move(newPolynomial);
+            return *this;
+        }
+
+        friend Polynomial operator*(Polynomial left, const Polynomial& right) noexcept {
+            left *= right;
+            return left;
+        }
+
+        Polynomial& operator/=(const TCoef& coef) noexcept {
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials_[i] /= coef;
+            }
+            return *this;
+        }
+
+        friend Polynomial operator/(Polynomial left, const TCoef& right) noexcept {
+            left /= right;
+            return left;
+        }
+
+        friend std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
+            const TMonomials<TCoef>& monomials = polynomial.GetMonomials();
+            for (size_t i = 0; i < monomials.size(); i++) {
+                if (i > 0 && monomials[i].GetCoef() > 0) {
+                    out << " + ";
+                }
+                out << monomials[i];
+            }
+            return out;
+        }
 
     private:
-        TMonomials&& Normalize(TMonomials&& monomials);
+        TMonomials<TCoef>&& Normalize(TMonomials<TCoef>&& monomials) {
+            bool isSorted = true;
+            size_t cnt = 0;
+            for (size_t i = 0; i < monomials.size();) {
+                if (monomials[i].GetCoef().GetNumerator() == 0) {
+                    cnt++;
+                    continue;
+                }
+                monomials[i] = monomials[i + cnt];
+                if (i != 0 && monomials[i] < monomials[i - 1]) {
+                    isSorted = false;
+                }
+                i++;
+            }
+            if (cnt) {
+                monomials.erase(monomials.end() - cnt, monomials.end());
+            }
 
-    private:
-        TMonomials monomials_;
+            if (!isSorted) {
+                std::sort(monomials.rbegin(), monomials.rend());
+            }
+            return std::move(monomials);
+        }
+
+        TMonomials<TCoef> monomials_;
     };
-    using TPolynomials = std::vector<Polynomial>;
 
-    std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t);
+    template <typename TCoef>
+    using TPolynomials = std::vector<Polynomial<TCoef>>;
+
+    std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
+        std::queue<std::pair<size_t, size_t>> pairs_to_check;
+        for (size_t i = 0; i < sz; i++) {
+            for (size_t j = i + 1; j < sz; j++) {
+                pairs_to_check.push({i, j});
+            }
+        }
+        return pairs_to_check;
+    }
+
+    template <typename TCoef>
+    std::ostream& operator<<(std::ostream& out, const TPolynomials<TCoef>& polynomials) noexcept {
+        out << "{\n";
+        for (const Polynomial<TCoef>& polynomial : polynomials) {
+            out << polynomial << '\n';
+        }
+        return out << "}\n";
+    }
 }

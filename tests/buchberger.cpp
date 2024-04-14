@@ -1,22 +1,26 @@
 #include <iostream>
 
 #include "../lib/algo/buchberger.h"
+#include "../lib/util/rational.h"
 
 void test_buchberger() {
-    NUtils::TMonomials amon;
-    amon.push_back(NUtils::Monomial(NUtils::TTerm({3}), NUtils::Rational(1)));
-    amon.push_back(NUtils::Monomial(NUtils::TTerm({1, 1}), NUtils::Rational(-2)));
+    using namespace NUtils;
+    TMonomials<Rational> amon;
+    amon.push_back(Monomial(TTerm({3}), Rational(1)));
+    amon.push_back(Monomial(TTerm({1, 1}), Rational(-2)));
 
-    NUtils::Polynomial a(std::move(amon));
+    Polynomial<Rational> a(std::move(amon));
 
-    NUtils::TMonomials bmon;
-    bmon.push_back(NUtils::Monomial(NUtils::TTerm({2, 1}), NUtils::Rational(1)));
-    bmon.push_back(NUtils::Monomial(NUtils::TTerm({1}), NUtils::Rational(1)));
-    bmon.push_back(NUtils::Monomial(NUtils::TTerm({0, 2}), NUtils::Rational(-2)));
+    TMonomials<Rational> bmon;
+    bmon.push_back(Monomial(TTerm({2, 1}), Rational(1)));
+    bmon.push_back(Monomial(TTerm({1}), Rational(1)));
+    bmon.push_back(Monomial(TTerm({0, 2}), Rational(-2)));
 
-    NUtils::Polynomial b(std::move(bmon));
+    Polynomial<Rational> b(std::move(bmon));
 
-    NUtils::TPolynomials test = {a, b};
+    TPolynomials<Rational> test = {a, b};
+    std::cout << test << std::endl;
     NAlgo::Buchberger::FindGroebnerBasis(test);
-    std::cout << "Size of Graebner basis by Buchberger: " << test.size() << std::endl;
+    std::cout << "Size of Groebner basis by Buchberger: " << test.size() << std::endl;
+    std::cout << test << std::endl;
 }

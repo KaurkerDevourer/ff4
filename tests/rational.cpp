@@ -29,5 +29,7 @@ void test_rational() {
     ASSERT_EQUAL(k * t, p);
     ASSERT_EQUAL(k / t, NUtils::Rational(3, 2));
 
+    ASSERT_EQUAL(-k - t, -p2);
+
     std::cout << "Successfully tested Rational" << std::endl;
 }

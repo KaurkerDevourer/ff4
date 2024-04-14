@@ -3,43 +3,19 @@
 #include <numeric>
 
 namespace NUtils {
-    Rational::Rational(int64_t numerator, int64_t denominator)
+    Rational::Rational(numerator numerator, denominator denominator)
     : numerator_(numerator)
     , denominator_(denominator)
     {
         Normalize();
     }
 
-    int64_t Rational::GetNumerator() const noexcept {
+    numerator Rational::GetNumerator() const noexcept {
         return numerator_;
     }
 
-    int64_t Rational::GetDenominator() const noexcept {
+    denominator Rational::GetDenominator() const noexcept {
         return denominator_;
-    }
-
-    bool operator<(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ * right.denominator_ < right.numerator_ * left.denominator_;
-    }
-
-    bool operator>(const Rational& left, const Rational& right) noexcept {
-        return right < left;
-    }
-
-    bool operator<=(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ * right.denominator_ <= right.numerator_ * left.denominator_;
-    }
-
-    bool operator>=(const Rational& left, const Rational& right) noexcept {
-        return right <= left;
-    }
-
-    bool operator==(const Rational& left, const Rational& right) noexcept {
-        return left.numerator_ == right.numerator_ && (left.numerator_ == 0 || left.denominator_ == right.denominator_);
-    }
-
-    bool operator!=(const Rational& left, const Rational& right) noexcept {
-        return !(left == right);
     }
 
     Rational Rational::operator+() const noexcept {
@@ -48,6 +24,14 @@ namespace NUtils {
 
     Rational Rational::operator-() const noexcept {
         return Rational(-numerator_, denominator_);
+    }
+
+    bool operator==(const Rational& left, const Rational& right) noexcept {
+        return left.numerator_ == right.numerator_ && (left.numerator_ == 0 || left.denominator_ == right.denominator_);
+    }
+
+    bool operator!=(const Rational& left, const Rational& right) noexcept {
+        return !(left == right);
     }
 
     Rational& Rational::operator+=(const Rational& other) noexcept {
@@ -97,6 +81,22 @@ namespace NUtils {
         return left;
     }
 
+    bool operator<(const Rational& left, const Rational& right) noexcept {
+        return left.numerator_ * right.denominator_ < right.numerator_ * left.denominator_;
+    }
+
+    bool operator>(const Rational& left, const Rational& right) noexcept {
+        return right < left;
+    }
+
+    bool operator<=(const Rational& left, const Rational& right) noexcept {
+        return left.numerator_ * right.denominator_ <= right.numerator_ * left.denominator_;
+    }
+
+    bool operator>=(const Rational& left, const Rational& right) noexcept {
+        return right <= left;
+    }
+
     Rational pow(const Rational& number, int64_t power) noexcept {
         if (power < 0) {
             return pow(1 / number, -power);
@@ -112,8 +112,15 @@ namespace NUtils {
     }
 
     std::ostream& operator<<(std::ostream& out, const Rational& rational) noexcept {
+        if (rational.denominator_ == 1) {
+            if (rational.numerator_ < 0) {
+                return  out << " - " << -rational.numerator_;
+            } else {
+                return out << rational.numerator_;
+            }
+        }
         if (rational.numerator_ < 0) {
-            out << "-(" << -rational.numerator_;
+            out << " -(" << -rational.numerator_;
         } else {
             out << '(' << rational.numerator_;
         }
@@ -125,7 +132,7 @@ namespace NUtils {
             numerator_ = -numerator_;
             denominator_ = -denominator_;
         }
-        int64_t gcd = std::gcd(numerator_, denominator_);
+        int64_t gcd = std::gcd(abs(numerator_), abs(denominator_));
         numerator_ /= gcd;
         denominator_ /= gcd;
     }

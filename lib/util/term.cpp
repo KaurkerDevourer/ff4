@@ -27,7 +27,7 @@ namespace NUtils {
     }
 
     bool TTerm::IsDivisibleBy(const TTerm& other) const noexcept {
-        if (other.size() > (*this).size()) {
+        if (other.size() > size()) {
             return false;
         }
         for (size_t i = 0; i < other.size(); i++) {
@@ -39,8 +39,8 @@ namespace NUtils {
     };
 
     TTerm& TTerm::operator/=(const TTerm& other) noexcept {
-        if (other.size() > (*this).size()) {
-            (*this).resize(other.size());
+        if (other.size() > size()) {
+            resize(other.size());
         }
         for (size_t i = 0; i < other.size(); i++) {
             (*this)[i] -= other[i];
@@ -50,8 +50,8 @@ namespace NUtils {
     }
 
     TTerm& TTerm::operator*=(const TTerm& other) noexcept {
-        if (other.size() > (*this).size()) {
-            (*this).resize(other.size());
+        if (other.size() > size()) {
+            resize(other.size());
         }
         for (size_t i = 0; i < other.size(); i++) {
             (*this)[i] += other[i];
@@ -71,14 +71,18 @@ namespace NUtils {
 
     std::ostream& operator<<(std::ostream& out, const TTerm& term) noexcept {
         for (size_t i = 0; i < term.size(); i++) {
-            out << "x_" << i << "^" << term[i];
+            if (term[i] == 1) {
+                out << "x_" << i;
+            } else if (term[i] != 0) {
+                out << "x_" << i << "^{" << term[i] << "}";
+            }
         }
         return out;
     }
 
     void TTerm::Normalize() {
-        while(!(*this).empty() && (*this).back() == 0) {
-            (*this).pop_back();
+        while(!empty() && back() == 0) {
+            pop_back();
         }
     }
 }
