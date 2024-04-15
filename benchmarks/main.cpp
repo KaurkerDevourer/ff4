@@ -2,5 +2,5 @@
 #include "buchberger.cpp"
 
 int main() {
-    benchmark_buchberger();
+    benchmark_cyclic4();
 }

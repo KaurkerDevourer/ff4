@@ -3,60 +3,188 @@
 #include "../external/GroebnerBasisFork/GroebnerLib/includes/F4GB.hpp"
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
+#include "../lib/algo/buchberger_with_criterias.h"
 #include "../lib/util/rational.h"
 
 using namespace NUtils;
 
 namespace  {
-    void FindGroebnerBasisF4(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        for (int i = 0; i < 1000; i++) {
-            gb::inplace_calculate_f4_gb(ideal);
-        }
-    }
-
-    void FindGroebnerBasisLib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        for (int i = 0; i < 1000; i++) {
+    void FakeTestForRazogrev(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+        for (int i = 0; i < 400; i++) {
             ideal.MakeGroebnerBasis();
         }
     }
 
+    void FindGroebnerBasisF4(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+        gb::inplace_calculate_f4_gb(ideal);
+    }
+
+    void FindGroebnerBasisLib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+        ideal.MakeGroebnerBasis();
+    }
+
     void FindGroebnerBasisFlex(TPolynomials<Rational>& F) {
-        for (int i = 0; i < 1000; i++) {
-            NAlgo::Buchberger::FindGroebnerBasis(F);
-        }
+        NAlgo::Buchberger::FindGroebnerBasis(F);
+    }
+
+    void FindGroebnerBasisFlex2(TPolynomials<Rational>& F) {
+        NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
     }
 }
 
-void benchmark_buchberger() {
-    TMonomials<Rational> amon;
-    amon.push_back(Monomial({3}, Rational(1)));
-    amon.push_back(Monomial({1, 1}, Rational(-2)));
+void benchmark_cyclic4() {
+    {
+        gb::Polynomial<gb::fields::Rational> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+        gb::Polynomial<gb::fields::Rational> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
 
-    Polynomial a(std::move(amon));
+        gb::Polynomial<gb::fields::Rational> i3({
+            {{{1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 1, 1, 0}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
 
-    TMonomials<Rational> bmon;
-    bmon.push_back(Monomial({2, 1}, Rational(1)));
-    bmon.push_back(Monomial({1}, Rational(1)));
-    bmon.push_back(Monomial({0, 2}, Rational(-2)));
+        gb::Polynomial<gb::fields::Rational> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+        gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
+        test_time(FakeTestForRazogrev, "FakeTestForRazogrev ").call(ideal);
+    }
+    {
+        gb::Polynomial<gb::fields::Rational> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+        gb::Polynomial<gb::fields::Rational> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
 
-    Polynomial b(std::move(bmon));
+        gb::Polynomial<gb::fields::Rational> i3({
+            {{{1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 1, 1, 0}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
 
-    TPolynomials<Rational> test = {a, b};
-    test_time(FindGroebnerBasisFlex, "buchberger_small ").call(test);
+        gb::Polynomial<gb::fields::Rational> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+        gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_cyclic4 ").call(ideal);
+    }
 
-    gb::Polynomial<gb::fields::Rational> i1({  // HW 07, ex 01
-        {{{3}}, 1},
-        {{{1, 1}}, -2},
-    });
-    gb::Polynomial<gb::fields::Rational> i2({
-        {{{2, 1}}, 1},
-        {{{1}}, 1},
-        {{{0, 2}}, -2},
-    });
+    {
+        TMonomials<Rational> amon;
+        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
+        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
 
-    gb::PolynomialSet<gb::fields::Rational> ideal2({i1, i2});
-    test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_small ").call(ideal2);
+        Polynomial<Rational> a(std::move(amon));
 
-    gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2});
-    test_time(FindGroebnerBasisF4, "GroebnerBasisLibF4_small ").call(ideal);
+        TMonomials<Rational> bmon;
+        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> b(std::move(bmon));
+
+        TMonomials<Rational> cmon;
+        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> c(std::move(cmon));
+
+        TMonomials<Rational> dmon;
+        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+
+        Polynomial<Rational> d(std::move(dmon));
+
+        TPolynomials<Rational> test = {a, b, c, d};
+        test_time(FindGroebnerBasisFlex, "buchberger_cyclic4 ").call(test);
+    }
+    {
+        TMonomials<Rational> amon;
+        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
+        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+
+        Polynomial<Rational> a(std::move(amon));
+
+        TMonomials<Rational> bmon;
+        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> b(std::move(bmon));
+
+        TMonomials<Rational> cmon;
+        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> c(std::move(cmon));
+
+        TMonomials<Rational> dmon;
+        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+
+        Polynomial<Rational> d(std::move(dmon));
+
+        TPolynomials<Rational> test = {a, b, c, d};
+        test_time(FindGroebnerBasisFlex2, "buchberger_with_criterion_cyclic4 ").call(test);
+    }
+
+    {
+        gb::Polynomial<gb::fields::Rational> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+        gb::Polynomial<gb::fields::Rational> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Rational> i3({
+            {{{1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 1, 1, 0}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Rational> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+        gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisF4, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
+    }
 }

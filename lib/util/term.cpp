@@ -70,6 +70,9 @@ namespace NUtils {
     }
 
     std::ostream& operator<<(std::ostream& out, const TTerm& term) noexcept {
+        if (term.size() == 1 && term[0] == 0) {
+            return out << "1";
+        }
         for (size_t i = 0; i < term.size(); i++) {
             if (term[i] == 1) {
                 out << "x_" << i;
@@ -81,7 +84,7 @@ namespace NUtils {
     }
 
     void TTerm::Normalize() {
-        while(!empty() && back() == 0) {
+        while(size() > 1 && back() == 0) {
             pop_back();
         }
     }
