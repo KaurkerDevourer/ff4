@@ -18,6 +18,10 @@ namespace NUtils {
         return denominator_;
     }
 
+    bool Rational::MoreThanZero() const noexcept {
+        return numerator_ > 0;
+    }
+
     Rational Rational::operator+() const noexcept {
         return *this;
     }

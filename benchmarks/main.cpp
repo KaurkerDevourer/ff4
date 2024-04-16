@@ -3,4 +3,5 @@
 
 int main() {
     benchmark_cyclic4();
+    benchmark_katsura4();
 }

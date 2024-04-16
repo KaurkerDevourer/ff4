@@ -1,5 +1,6 @@
 #pragma once
 #include "term.h"
+#include <cassert>
 
 namespace NUtils {
     template <typename TCoef>

@@ -24,6 +24,7 @@ add_library(algo
 add_library(external
     external/GroebnerBasisFork/GroebnerLib/includes/PolynomialSet.hpp
     external/GroebnerBasisFork/GroebnerLib/includes/Rational.hpp
+    external/GroebnerBasisFork/GroebnerLib/includes/Modular.hpp
     external/GroebnerBasisFork/GroebnerLib/includes/F4GB.hpp
     external/GroebnerBasisFork/GroebnerLib/srcs/Lib.cpp
     external/GroebnerBasisFork/GroebnerLib/srcs/Rational.cpp

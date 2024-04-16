@@ -28,6 +28,10 @@ void test_prime_field() {
     ASSERT_EQUAL(-c, p);
     ASSERT_EQUAL(p - q, o);
 
+    NUtils::PrimeField<7> m(-1);
+
+    ASSERT_EQUAL(m, s);
+
     //NUtils::PrimeField<6> check_not_prime_module(1);
 
     std::cout << "Successfully tested Prime field" << std::endl;

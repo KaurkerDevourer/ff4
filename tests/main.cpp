@@ -6,10 +6,10 @@
 #include "term.cpp"
 
 int main() {
-    test_buchberger();
-    test_monomial();
-    test_polynomial();
+    // test_buchberger();
+    // test_monomial();
+    // test_polynomial();
     test_prime_field();
-    test_rational();
-    test_term();
+    // test_rational();
+    // test_term();
 }

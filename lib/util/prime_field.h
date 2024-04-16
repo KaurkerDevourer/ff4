@@ -30,9 +30,12 @@ namespace NUtils {
     template <uint32_t Mod>
     class PrimeField {
     public:
-        PrimeField(uint64_t number)
-        : number_(number % Mod)
+        PrimeField(int64_t number = 0)
         {
+            if (number < 0) {
+                number += Mod;
+            }
+            number_ = number%Mod;
             static_assert(IsPrime(Mod));
         }
 
@@ -42,6 +45,10 @@ namespace NUtils {
 
         friend bool operator!=(const PrimeField& left, const PrimeField& right) noexcept {
             return !(left == right);
+        }
+
+        bool MoreThanZero() const noexcept {
+            return number_ != 0;
         }
 
         PrimeField operator+() const noexcept {
@@ -54,7 +61,7 @@ namespace NUtils {
 
         PrimeField& operator+=(const PrimeField& other) noexcept {
             number_ += other.number_;
-            if (number_ > Mod) {
+            if (number_ >= Mod) {
                 number_ -= Mod;
             }
             return *this;
@@ -100,7 +107,7 @@ namespace NUtils {
         }
 
         friend std::ostream& operator<<(std::ostream& out, const PrimeField& primeField) noexcept {
-            return out << "(" << primeField.number_ << ")%" << primeField.mod;
+            return out << primeField.number_;
         }
 
     private:

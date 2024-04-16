@@ -174,7 +174,7 @@ namespace NUtils {
         friend std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
             const TMonomials<TCoef>& monomials = polynomial.GetMonomials();
             for (size_t i = 0; i < monomials.size(); i++) {
-                if (i > 0 && monomials[i].GetCoef() > 0) {
+                if (i > 0 && monomials[i].GetCoef().MoreThanZero()) {
                     out << " + ";
                 }
                 out << monomials[i];
@@ -186,8 +186,8 @@ namespace NUtils {
         TMonomials<TCoef>&& Normalize(TMonomials<TCoef>&& monomials) {
             bool isSorted = true;
             size_t cnt = 0;
-            for (size_t i = 0; i < monomials.size();) {
-                if (monomials[i].GetCoef().GetNumerator() == 0) {
+            for (size_t i = 0; i < monomials.size(); i++) {
+                if (monomials[i].GetCoef() == 0) {
                     cnt++;
                     continue;
                 }

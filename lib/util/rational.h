@@ -11,6 +11,7 @@ namespace NUtils {
 
         numerator GetNumerator() const noexcept;
         denominator GetDenominator() const noexcept;
+        bool MoreThanZero() const noexcept ;
 
         Rational operator+() const noexcept;
         Rational operator-() const noexcept;
