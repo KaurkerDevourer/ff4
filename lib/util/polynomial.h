@@ -9,13 +9,45 @@ namespace NUtils {
     using TMonomials = std::vector<Monomial<TCoef>>;
 
     template <typename TCoef>
+    void DebugCheckPolynomialIsCorrect(TMonomials<TCoef>& monomials) {
+        std::cout << "Debug mode" << std::endl;
+        bool isSorted = true;
+        size_t cnt = 0;
+        for (size_t i = 0; i < monomials.size(); i++) {
+            if (monomials[i].GetCoef() == 0) {
+                cnt++;
+                continue;
+            }
+            monomials[i] = monomials[i + cnt];
+            if (i != 0 && monomials[i] > monomials[i - 1]) {
+                isSorted = false;
+            }
+            i++;
+        }
+        if (cnt) {
+            std::cout << "Zero coef" << std::endl;
+            monomials.erase(monomials.end() - cnt, monomials.end());
+        }
+
+        if (!isSorted) {
+            std::cout << "!IsSorted" << std::endl;
+            std::sort(monomials.rbegin(), monomials.rend());
+        }
+    }
+
+    template <typename TCoef>
     class Polynomial {
     public:
         Polynomial() = default;
 
         Polynomial(TMonomials<TCoef>&& monomials)
-        : monomials_(Normalize(std::move(monomials)))
+        : monomials_(std::move(monomials))
         {
+            #ifdef NDEBUG
+            // nondebug
+            #else
+                DebugCheckPolynomialIsCorrect(monomials_);
+            #endif
         }
 
         const TMonomials<TCoef>& GetMonomials() const noexcept {
@@ -183,30 +215,6 @@ namespace NUtils {
         }
 
     private:
-        TMonomials<TCoef>&& Normalize(TMonomials<TCoef>&& monomials) {
-            bool isSorted = true;
-            size_t cnt = 0;
-            for (size_t i = 0; i < monomials.size(); i++) {
-                if (monomials[i].GetCoef() == 0) {
-                    cnt++;
-                    continue;
-                }
-                monomials[i] = monomials[i + cnt];
-                if (i != 0 && monomials[i] < monomials[i - 1]) {
-                    isSorted = false;
-                }
-                i++;
-            }
-            if (cnt) {
-                monomials.erase(monomials.end() - cnt, monomials.end());
-            }
-
-            if (!isSorted) {
-                std::sort(monomials.rbegin(), monomials.rend());
-            }
-            return std::move(monomials);
-        }
-
         TMonomials<TCoef> monomials_;
     };
 
