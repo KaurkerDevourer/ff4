@@ -7,6 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED On)
 
 
 add_library(util
+    lib/util/comp.h
     lib/util/monomial.h
     lib/util/polynomial.h
     lib/util/prime_field.h

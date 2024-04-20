@@ -12,44 +12,68 @@ using namespace NUtils;
 
 namespace  {
     void FindGroebnerBasisF4(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        for (int i = 0; i < 1000; i++) {
-            gb::PolynomialSet<gb::fields::Rational> ideal2 = ideal;
-            gb::inplace_calculate_f4_gb(ideal2);
-        }
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                gb::PolynomialSet<gb::fields::Rational> ideal2 = ideal;
+                gb::inplace_calculate_f4_gb(ideal2);
+            }
+        #else
+            gb::inplace_calculate_f4_gb(ideal);
+        #endif
     }
 
     void FindGroebnerBasisF4Modular(gb::PolynomialSet<gb::fields::Modular<31>>& ideal) {
-        for (int i = 0; i < 1000; i++) {
-            gb::PolynomialSet<gb::fields::Modular<31>> ideal2 = ideal;
-            gb::inplace_calculate_f4_gb(ideal2);
-        }
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                gb::PolynomialSet<gb::fields::Modular<31>> ideal2 = ideal;
+                gb::inplace_calculate_f4_gb(ideal2);
+            }
+        #else
+            gb::inplace_calculate_f4_gb(ideal);
+        #endif
     }
 
     void FindGroebnerBasisLib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
-        for (int i = 0; i < 1000; i++) {
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                ideal.MakeGroebnerBasis();
+            }
+        #else
             ideal.MakeGroebnerBasis();
-        }
+        #endif
     }
 
     void FindGroebnerBasisFlex(TPolynomials<Rational>& F) {
-        for (int i = 0; i < 1000; i++) {
-            TPolynomials<Rational> F2 = F;
-            NAlgo::Buchberger::FindGroebnerBasis(F2);
-        }
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                TPolynomials<Rational> F2 = F;
+                NAlgo::Buchberger::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::Buchberger::FindGroebnerBasis(F);
+        #endif
     }
 
     void FindGroebnerBasisFlex2(TPolynomials<Rational>& F) {
-        for (int i = 0; i < 1000; i++) {
-            TPolynomials<Rational> F2 = F;
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
-        }
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                TPolynomials<Rational> F2 = F;
+                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+        #endif
     }
 
     void FindGroebnerBasisFlex2PrimeField(TPolynomials<PrimeField<31>>& F) {
-        for (int i = 0; i < 1000; i++) {
-            TPolynomials<PrimeField<31>> F2 = F;
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
-        }
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                TPolynomials<PrimeField<31>> F2 = F;
+                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+        #endif
     }
 }
 

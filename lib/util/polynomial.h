@@ -1,5 +1,6 @@
 #pragma once
 #include "monomial.h"
+#include "comp.h"
 #include <vector>
 #include <queue>
 
@@ -8,9 +9,8 @@ namespace NUtils {
     template <typename TCoef>
     using TMonomials = std::vector<Monomial<TCoef>>;
 
-    template <typename TCoef>
+    template <typename TCoef, typename TComp>
     void DebugCheckPolynomialIsCorrect(TMonomials<TCoef>& monomials) {
-        std::cout << "Debug mode" << std::endl;
         bool isSorted = true;
         size_t cnt = 0;
         for (size_t i = 0; i < monomials.size(); i++) {
@@ -19,7 +19,7 @@ namespace NUtils {
                 continue;
             }
             monomials[i] = monomials[i + cnt];
-            if (i != 0 && monomials[i] > monomials[i - 1]) {
+            if (i != 0 && TComp()(monomials[i - 1], monomials[i])) {
                 isSorted = false;
             }
             i++;
@@ -31,11 +31,11 @@ namespace NUtils {
 
         if (!isSorted) {
             std::cout << "!IsSorted" << std::endl;
-            std::sort(monomials.rbegin(), monomials.rend());
+            std::sort(monomials.rbegin(), monomials.rend(), TComp());
         }
     }
 
-    template <typename TCoef>
+    template <typename TCoef, typename TComp = LexComp>
     class Polynomial {
     public:
         Polynomial() = default;
@@ -44,9 +44,9 @@ namespace NUtils {
         : monomials_(std::move(monomials))
         {
             #ifdef NDEBUG
-            // nondebug
+                // nondebug
             #else
-                DebugCheckPolynomialIsCorrect(monomials_);
+                DebugCheckPolynomialIsCorrect<TCoef, TComp>(monomials_);
             #endif
         }
 
@@ -98,10 +98,10 @@ namespace NUtils {
             size_t i = 0;
             size_t j = 0;
             while(i != monomials_.size() && j != other.monomials_.size()) {
-                if (monomials_[i] > other.monomials_[j]) {
+                if (TComp()(other.monomials_[j], monomials_[i])) {
                     monomials.push_back(monomials_[i]);
                     i++;
-                } else if (monomials_[i] < other.monomials_[j]) {
+                } else if (TComp()(monomials_[i], other.monomials_[j])) {
                     monomials.push_back(other.monomials_[j]);
                     j++;
                 } else {

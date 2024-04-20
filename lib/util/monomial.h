@@ -105,22 +105,6 @@ namespace NUtils {
             return left;
         }
 
-        friend bool operator<(const Monomial& left, const Monomial& right) noexcept {
-            return std::lexicographical_compare(left.term_.begin(), left.term_.end(), right.term_.begin(), right.term_.end());
-        }
-
-        friend bool operator>(const Monomial& left, const Monomial& right) noexcept {
-            return right < left;
-        }
-
-        friend bool operator<=(const Monomial& left, const Monomial& right) noexcept {
-            return !(left > right);
-        }
-
-        friend bool operator>=(const Monomial& left, const Monomial& right) noexcept {
-            return !(left < right);
-        }
-
         friend std::ostream& operator<<(std::ostream& out, const Monomial& monomial) noexcept {
             if (monomial.GetCoef() == 1) {
                 out << monomial.GetTerm();
