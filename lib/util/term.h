@@ -17,9 +17,13 @@ namespace NUtils {
 
             inline TTerm(std::initializer_list<uint64_t> il) : TBase(il) {
                 Normalize();
+                for (size_t i = 0; i < (*this).size(); i++) {
+                    sum_ += (*this)[i];
+                }
             }
 
             bool IsDivisibleBy(const TTerm&) const noexcept;
+            uint64_t GetDegree() const noexcept;
             TTerm& operator*=(const TTerm&) noexcept;
             friend TTerm operator*(TTerm, const TTerm&) noexcept;
             TTerm& operator/=(const TTerm&) noexcept;
@@ -29,5 +33,7 @@ namespace NUtils {
             friend TTerm lcm(const TTerm&, const TTerm&) noexcept;
 
             friend std::ostream& operator<<(std::ostream&, const TTerm&) noexcept;
+        private:
+            uint64_t sum_;
     };
 }

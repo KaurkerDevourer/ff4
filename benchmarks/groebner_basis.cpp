@@ -5,13 +5,15 @@
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
 #include "../lib/algo/buchberger_with_criterias.h"
+#include "../lib/algo/buchberger_with_criterias_version2.h"
+#include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
-#include "../lib/util/prime_field.h"
+#include "../lib/util/prime_field.hpp"
 
 using namespace NUtils;
 
 namespace  {
-    void FindGroebnerBasisF4(gb::PolynomialSet<gb::fields::Rational>& ideal) {
+    void FindGroebnerBasisF4Lib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
         #ifdef NDEBUG
             for (int i = 0; i < 1000; i++) {
                 gb::PolynomialSet<gb::fields::Rational> ideal2 = ideal;
@@ -22,7 +24,7 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisF4Modular(gb::PolynomialSet<gb::fields::Modular<31>>& ideal) {
+    void FindGroebnerBasisF4LibModular(gb::PolynomialSet<gb::fields::Modular<31>>& ideal) {
         #ifdef NDEBUG
             for (int i = 0; i < 1000; i++) {
                 gb::PolynomialSet<gb::fields::Modular<31>> ideal2 = ideal;
@@ -43,7 +45,7 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisFlex(TPolynomials<Rational>& F) {
+    void FindGroebnerBasis(TPolynomials<Rational>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < 1000; i++) {
                 TPolynomials<Rational> F2 = F;
@@ -54,7 +56,7 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisFlex2(TPolynomials<Rational>& F) {
+    void FindGroebnerBasisWithCriterias(TPolynomials<Rational>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < 1000; i++) {
                 TPolynomials<Rational> F2 = F;
@@ -65,7 +67,7 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisFlex2PrimeField(TPolynomials<PrimeField<31>>& F) {
+    void FindGroebnerBasisWithCriteriasPrimeField(TPolynomials<PrimeField<31>>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < 1000; i++) {
                 TPolynomials<PrimeField<31>> F2 = F;
@@ -73,6 +75,28 @@ namespace  {
             }
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+        #endif
+    }
+
+    void FindGroebnerBasisWithCriteriasVersion2PrimeField(TPolynomials<PrimeField<31>>& F) {
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                TPolynomials<PrimeField<31>> F2 = F;
+                NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F);
+        #endif
+    }
+
+    void FindGroebnerBasisF4(TPolynomials<Rational>& F) {
+        #ifdef NDEBUG
+            for (int i = 0; i < 1000; i++) {
+                TPolynomials<Rational> F2 = F;
+                NAlgo::F4::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::F4::FindGroebnerBasis(F);
         #endif
     }
 }
@@ -139,7 +163,7 @@ void benchmark_cyclic4() {
         Polynomial<Rational> d(std::move(dmon));
 
         TPolynomials<Rational> test = {a, b, c, d};
-        test_time(FindGroebnerBasisFlex, "buchberger_cyclic4 ").call(test);
+        test_time(FindGroebnerBasis, "buchberger_cyclic4 ").call(test);
     }
     {
         TMonomials<Rational> amon;
@@ -173,7 +197,7 @@ void benchmark_cyclic4() {
         Polynomial<Rational> d(std::move(dmon));
 
         TPolynomials<Rational> test = {a, b, c, d};
-        test_time(FindGroebnerBasisFlex2, "buchberger_with_criterion_cyclic4 ").call(test);
+        test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4 ").call(test);
     }
 
     {
@@ -202,7 +226,42 @@ void benchmark_cyclic4() {
             {{{0, 0, 0, 1}}, 1},
         });
         gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-        test_time(FindGroebnerBasisF4, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
+        test_time(FindGroebnerBasisF4Lib, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
+    }
+
+    {
+        TMonomials<Rational> amon;
+        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
+        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+
+        Polynomial<Rational> a(std::move(amon));
+
+        TMonomials<Rational> bmon;
+        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> b(std::move(bmon));
+
+        TMonomials<Rational> cmon;
+        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+
+        Polynomial<Rational> c(std::move(cmon));
+
+        TMonomials<Rational> dmon;
+        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+
+        Polynomial<Rational> d(std::move(dmon));
+
+        TPolynomials<Rational> test = {a, b, c, d};
+        test_time(FindGroebnerBasisF4, "f4_cyclic4 ").call(test);
     }
 }
 
@@ -244,7 +303,7 @@ void benchmark_katsura4() {
         Polynomial<PrimeField<31>> d(std::move(dmon));
 
         TPolynomials<PrimeField<31>> test = {a, b, c, d};
-        test_time(FindGroebnerBasisFlex2PrimeField, "buchberger_with_criterion_katsura4 ").call(test);
+        test_time(FindGroebnerBasisWithCriteriasPrimeField, "buchberger_with_criterion_katsura4 ").call(test);
     }
     {
         gb::Polynomial<gb::fields::Modular<31>> i1({
@@ -278,7 +337,7 @@ void benchmark_katsura4() {
         });
 
         gb::PolynomialSet<gb::fields::Modular<31>> ideal({i1, i2, i3, i4});
-        test_time(FindGroebnerBasisF4Modular, "GroebnerBasisLibF4_katsura4 ").call(ideal);
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_katsura4 ").call(ideal);
     }
 }
 
@@ -306,7 +365,7 @@ void benchmark_sym3_3() {
         Polynomial<PrimeField<31>> c(std::move(cmon));
 
         TPolynomials<PrimeField<31>> test = {a, b, c};
-        test_time(FindGroebnerBasisFlex2PrimeField, "buchberger_with_criterion_sym3-3 ").call(test);
+        test_time(FindGroebnerBasisWithCriteriasPrimeField, "buchberger_with_criterion_sym3-3 ").call(test);
     }
     {
         gb::Polynomial<gb::fields::Modular<31>> i1({
@@ -328,7 +387,7 @@ void benchmark_sym3_3() {
         });
 
         gb::PolynomialSet<gb::fields::Modular<31>> ideal({i1, i2, i3});
-        test_time(FindGroebnerBasisF4Modular, "GroebnerBasisLibF4_sym3-3 ").call(ideal);
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_sym3-3 ").call(ideal);
     }
     
 }

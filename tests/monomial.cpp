@@ -1,5 +1,5 @@
-#include "../lib/util/monomial.h"
-#include "../lib/util/comp.h"
+#include "../lib/util/monomial.hpp"
+#include "../lib/util/comp.hpp"
 #include "testing.h"
 #include <iostream>
 #include <cassert>

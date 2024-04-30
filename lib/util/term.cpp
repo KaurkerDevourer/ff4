@@ -6,6 +6,7 @@ namespace NUtils {
         TTerm term(sz);
         for (size_t i = 0; i < sz; i++) {
             term[i] = std::min(left[i], right[i]);
+            term.sum_ += term[i];
         }
         return std::move(term);
     }
@@ -16,12 +17,15 @@ namespace NUtils {
         TTerm term(lcm_sz);
         for (size_t i = 0; i < sz; i++) {
             term[i] = std::max(left[i], right[i]);
+            term.sum_ += term[i];
         }
         for (size_t i = left.size(); i < lcm_sz; i++) {
             term[i] = right[i];
+            term.sum_ += term[i];
         }
         for (size_t i = right.size(); i < lcm_sz; i++) {
             term[i] = left[i];
+            term.sum_ += term[i];
         }
         return std::move(term);
     }
@@ -38,11 +42,16 @@ namespace NUtils {
         return true;
     };
 
+    uint64_t TTerm::GetDegree() const noexcept {
+        return sum_;
+    }
+
     TTerm& TTerm::operator/=(const TTerm& other) noexcept {
         if (other.size() > size()) {
             resize(other.size());
         }
         for (size_t i = 0; i < other.size(); i++) {
+            sum_ -= other[i];
             (*this)[i] -= other[i];
         }
         Normalize();
@@ -54,6 +63,7 @@ namespace NUtils {
             resize(other.size());
         }
         for (size_t i = 0; i < other.size(); i++) {
+            sum_ += other[i];
             (*this)[i] += other[i];
         }
         return *this;

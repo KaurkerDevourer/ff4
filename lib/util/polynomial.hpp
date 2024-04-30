@@ -1,11 +1,11 @@
 #pragma once
-#include "monomial.h"
-#include "comp.h"
+#include "monomial.hpp"
 #include <vector>
 #include <queue>
 
 namespace NUtils {
 
+    class LexComp;
     template <typename TCoef>
     using TMonomials = std::vector<Monomial<TCoef>>;
 
@@ -42,6 +42,7 @@ namespace NUtils {
 
         Polynomial(TMonomials<TCoef>&& monomials)
         : monomials_(std::move(monomials))
+        , isRemoved_(false)
         {
             #ifdef NDEBUG
                 // nondebug
@@ -56,6 +57,14 @@ namespace NUtils {
 
         const Monomial<TCoef>& GetHeadMonomial() const noexcept {
             return monomials_[0];
+        }
+
+        void MakeRemoved() {
+            isRemoved_ = true;
+        }
+
+        bool IsRemoved() const {
+            return isRemoved_;
         }
 
         bool IsZero() const noexcept {
@@ -216,6 +225,7 @@ namespace NUtils {
 
     private:
         TMonomials<TCoef> monomials_;
+        bool isRemoved_ = false;
     };
 
     template <typename TCoef>

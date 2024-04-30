@@ -3,24 +3,34 @@ cmake_minimum_required(VERSION 3.18)
 project(fast_f4 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED On)
+set(CMAKE_CXX_STANDARD_REQUIRED 20)
+set(CMAKE_CXX_EXTENSIONS false)
 
 
 add_library(util
-    lib/util/comp.h
-    lib/util/monomial.h
-    lib/util/polynomial.h
-    lib/util/prime_field.h
+    lib/util/critical_pair.hpp
+    lib/util/comp.hpp
+    lib/util/monomial.hpp
+    lib/util/polynomial.hpp
+    lib/util/prime_field.hpp
     lib/util/rational.cpp
     lib/util/rational.h
     lib/util/term.cpp
     lib/util/term.h)
 
 add_library(algo
+    lib/algo/util/groebner_basis_util.cpp
+    lib/algo/util/groebner_basis_util.h
+    lib/algo/util/matrix_reduction.cpp
+    lib/algo/util/matrix_reduction.h
+    lib/algo/f4.cpp
+    lib/algo/f4.h
     lib/algo/buchberger.cpp
     lib/algo/buchberger.h
     lib/algo/buchberger_with_criterias.cpp
-    lib/algo/buchberger_with_criterias.h)
+    lib/algo/buchberger_with_criterias.h
+    lib/algo/buchberger_with_criterias_version2.cpp
+    lib/algo/buchberger_with_criterias_version2.h)
 
 add_library(external
     external/GroebnerBasisFork/GroebnerLib/includes/PolynomialSet.hpp

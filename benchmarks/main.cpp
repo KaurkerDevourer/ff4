@@ -1,5 +1,5 @@
 #include "benchmarking.h"
-#include "buchberger.cpp"
+#include "groebner_basis.cpp"
 #include <iostream>
 
 int main() {

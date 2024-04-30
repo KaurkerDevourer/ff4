@@ -1,4 +1,4 @@
-#include "../lib/util/prime_field.h"
+#include "../lib/util/prime_field.hpp"
 #include "testing.h"
 #include <iostream>
 #include <cassert>

@@ -7,5 +7,3 @@
         std::cout << A << " != " << B << std::endl; \
         assert(false); \
     }
-
-    
