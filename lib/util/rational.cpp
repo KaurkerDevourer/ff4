@@ -51,7 +51,9 @@ namespace NUtils {
     }
 
     Rational& Rational::operator-=(const Rational& other) noexcept {
-        *this += -other;
+        numerator_ = numerator_ * other.GetDenominator() - other.GetNumerator() * denominator_;
+        denominator_ *= other.GetDenominator();
+        Normalize();
         return *this;
     }
 
@@ -135,6 +137,9 @@ namespace NUtils {
         if (denominator_ < 0) {
             numerator_ = -numerator_;
             denominator_ = -denominator_;
+        }
+        if (numerator_ == 0) {
+            return;
         }
         int64_t gcd = std::gcd(abs(numerator_), abs(denominator_));
         numerator_ /= gcd;

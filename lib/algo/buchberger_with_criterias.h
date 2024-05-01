@@ -8,21 +8,13 @@ namespace NAlgo {
         using namespace NUtils;
         using TPairsQueue = std::queue<std::pair<size_t, size_t>>;
 
-        template <typename TCoef>
-        bool CheckProductCreteria(const Polynomial<TCoef>& a, const Polynomial<TCoef>& b) {
-                const Monomial<TCoef>& am = a.GetHeadMonomial();
-                const Monomial<TCoef>& bm = b.GetHeadMonomial();
-                const TTerm t = lcm(am.GetTerm(), bm.GetTerm());
-                return (t == am.GetTerm() * bm.GetTerm());
-        }
-
         // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
         template <typename TCoef>
         TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef>& polynomials) {
             TPairsQueue pairs_to_check;
             for (size_t i = 0; i < polynomials.size(); i++) {
                 for (size_t j = i + 1; j < polynomials.size(); j++) {
-                    if (CheckProductCreteria(polynomials[i], polynomials[j])) {
+                    if (NUtil::CheckProductCriteria(polynomials[i], polynomials[j])) {
                         continue;
                     }
                     pairs_to_check.push({i, j});
@@ -67,7 +59,7 @@ namespace NAlgo {
                     // std::cout << pairs_to_check.size() << ' ' << F.size() << std::endl;
                     F.push_back(std::move(S));
                     for (size_t i = 0; i < idx; i++) {
-                        if (CheckProductCreteria(F[i], F[idx])) {
+                        if (NUtil::CheckProductCriteria(F[i], F[idx])) {
                             continue;
                         }
                         pairs_to_check.push({i, idx});

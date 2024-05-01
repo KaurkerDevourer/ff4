@@ -102,132 +102,132 @@ namespace  {
 }
 
 void benchmark_cyclic4() {
-    {
-        gb::Polynomial<gb::fields::Rational> i1({
-            {{{1, 1, 1, 1}}, 1},
-            {{{0}}, -1},
-        });
-        gb::Polynomial<gb::fields::Rational> i2({
-            {{{1, 1, 1}}, 1},
-            {{{1, 1, 0, 1}}, 1},
-            {{{1, 0, 1, 1}}, 1},
-            {{{0, 1, 1, 1}}, 1},
-        });
+    // {
+    //     gb::Polynomial<gb::fields::Rational> i1({
+    //         {{{1, 1, 1, 1}}, 1},
+    //         {{{0}}, -1},
+    //     });
+    //     gb::Polynomial<gb::fields::Rational> i2({
+    //         {{{1, 1, 1}}, 1},
+    //         {{{1, 1, 0, 1}}, 1},
+    //         {{{1, 0, 1, 1}}, 1},
+    //         {{{0, 1, 1, 1}}, 1},
+    //     });
 
-        gb::Polynomial<gb::fields::Rational> i3({
-            {{{1, 1}}, 1},
-            {{{1, 0, 0, 1}}, 1},
-            {{{0, 1, 1, 0}}, 1},
-            {{{0, 0, 1, 1}}, 1},
-        });
+    //     gb::Polynomial<gb::fields::Rational> i3({
+    //         {{{1, 1}}, 1},
+    //         {{{1, 0, 0, 1}}, 1},
+    //         {{{0, 1, 1, 0}}, 1},
+    //         {{{0, 0, 1, 1}}, 1},
+    //     });
 
-        gb::Polynomial<gb::fields::Rational> i4({
-            {{{1}}, 1},
-            {{{0, 1}}, 1},
-            {{{0, 0, 1}}, 1},
-            {{{0, 0, 0, 1}}, 1},
-        });
-        gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-        test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_cyclic4 ").call(ideal);
-    }
+    //     gb::Polynomial<gb::fields::Rational> i4({
+    //         {{{1}}, 1},
+    //         {{{0, 1}}, 1},
+    //         {{{0, 0, 1}}, 1},
+    //         {{{0, 0, 0, 1}}, 1},
+    //     });
+    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
+    //     test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_cyclic4 ").call(ideal);
+    // }
 
-    {
-        TMonomials<Rational> amon;
-        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
-        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+    // {
+    //     TMonomials<Rational> amon;
+    //     amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
+    //     amon.push_back(Monomial(TTerm({0}), Rational(-1)));
 
-        Polynomial<Rational> a(std::move(amon));
+    //     Polynomial<Rational> a(std::move(amon));
 
-        TMonomials<Rational> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+    //     TMonomials<Rational> bmon;
+    //     bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
 
-        Polynomial<Rational> b(std::move(bmon));
+    //     Polynomial<Rational> b(std::move(bmon));
 
-        TMonomials<Rational> cmon;
-        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+    //     TMonomials<Rational> cmon;
+    //     cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
 
-        Polynomial<Rational> c(std::move(cmon));
+    //     Polynomial<Rational> c(std::move(cmon));
 
-        TMonomials<Rational> dmon;
-        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+    //     TMonomials<Rational> dmon;
+    //     dmon.push_back(Monomial(TTerm({1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
 
-        Polynomial<Rational> d(std::move(dmon));
+    //     Polynomial<Rational> d(std::move(dmon));
 
-        TPolynomials<Rational> test = {a, b, c, d};
-        test_time(FindGroebnerBasis, "buchberger_cyclic4 ").call(test);
-    }
-    {
-        TMonomials<Rational> amon;
-        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
-        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+    //     TPolynomials<Rational> test = {a, b, c, d};
+    //     test_time(FindGroebnerBasis, "buchberger_cyclic4 ").call(test);
+    // }
+    // {
+    //     TMonomials<Rational> amon;
+    //     amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
+    //     amon.push_back(Monomial(TTerm({0}), Rational(-1)));
 
-        Polynomial<Rational> a(std::move(amon));
+    //     Polynomial<Rational> a(std::move(amon));
 
-        TMonomials<Rational> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+    //     TMonomials<Rational> bmon;
+    //     bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
+    //     bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
 
-        Polynomial<Rational> b(std::move(bmon));
+    //     Polynomial<Rational> b(std::move(bmon));
 
-        TMonomials<Rational> cmon;
-        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+    //     TMonomials<Rational> cmon;
+    //     cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
+    //     cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
 
-        Polynomial<Rational> c(std::move(cmon));
+    //     Polynomial<Rational> c(std::move(cmon));
 
-        TMonomials<Rational> dmon;
-        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+    //     TMonomials<Rational> dmon;
+    //     dmon.push_back(Monomial(TTerm({1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
+    //     dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
 
-        Polynomial<Rational> d(std::move(dmon));
+    //     Polynomial<Rational> d(std::move(dmon));
 
-        TPolynomials<Rational> test = {a, b, c, d};
-        test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4 ").call(test);
-    }
+    //     TPolynomials<Rational> test = {a, b, c, d};
+    //     test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4 ").call(test);
+    // }
 
-    {
-        gb::Polynomial<gb::fields::Rational> i1({
-            {{{1, 1, 1, 1}}, 1},
-            {{{0}}, -1},
-        });
-        gb::Polynomial<gb::fields::Rational> i2({
-            {{{1, 1, 1}}, 1},
-            {{{1, 1, 0, 1}}, 1},
-            {{{1, 0, 1, 1}}, 1},
-            {{{0, 1, 1, 1}}, 1},
-        });
+    // {
+    //     gb::Polynomial<gb::fields::Rational> i1({
+    //         {{{1, 1, 1, 1}}, 1},
+    //         {{{0}}, -1},
+    //     });
+    //     gb::Polynomial<gb::fields::Rational> i2({
+    //         {{{1, 1, 1}}, 1},
+    //         {{{1, 1, 0, 1}}, 1},
+    //         {{{1, 0, 1, 1}}, 1},
+    //         {{{0, 1, 1, 1}}, 1},
+    //     });
 
-        gb::Polynomial<gb::fields::Rational> i3({
-            {{{1, 1}}, 1},
-            {{{1, 0, 0, 1}}, 1},
-            {{{0, 1, 1, 0}}, 1},
-            {{{0, 0, 1, 1}}, 1},
-        });
+    //     gb::Polynomial<gb::fields::Rational> i3({
+    //         {{{1, 1}}, 1},
+    //         {{{1, 0, 0, 1}}, 1},
+    //         {{{0, 1, 1, 0}}, 1},
+    //         {{{0, 0, 1, 1}}, 1},
+    //     });
 
-        gb::Polynomial<gb::fields::Rational> i4({
-            {{{1}}, 1},
-            {{{0, 1}}, 1},
-            {{{0, 0, 1}}, 1},
-            {{{0, 0, 0, 1}}, 1},
-        });
-        gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-        test_time(FindGroebnerBasisF4Lib, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
-    }
+    //     gb::Polynomial<gb::fields::Rational> i4({
+    //         {{{1}}, 1},
+    //         {{{0, 1}}, 1},
+    //         {{{0, 0, 1}}, 1},
+    //         {{{0, 0, 0, 1}}, 1},
+    //     });
+    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
+    //     test_time(FindGroebnerBasisF4Lib, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
+    // }
 
     {
         TMonomials<Rational> amon;

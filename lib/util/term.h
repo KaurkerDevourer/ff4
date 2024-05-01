@@ -34,6 +34,6 @@ namespace NUtils {
 
             friend std::ostream& operator<<(std::ostream&, const TTerm&) noexcept;
         private:
-            uint64_t sum_;
+            uint64_t sum_ = 0;
     };
 }

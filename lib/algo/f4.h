@@ -1,8 +1,8 @@
 #pragma once
 #include "../util/critical_pair.hpp"
-#include "../util/comp.hpp"
+#include "util/groebner_basis_util.h"
+#include "util/matrix_reduction.h"
 #include <cassert>
-#include <set>
 
 namespace NAlgo {
     namespace F4 {
@@ -11,26 +11,13 @@ namespace NAlgo {
         template<typename TCoef>
         using TPairsSet = std::set<CriticalPair<TCoef>, DexComp>;
 
-        using TDiffSet = std::set<TTerm, TTermReverseComp>;
-
-        template<typename TCoef>
-        using TSymbolicPreprocessingResult = std::pair<Polynomials<TCoef>, TDiffSet>
-
-        template <typename TCoef>
-        bool CheckProductCreteria(const Polynomial<TCoef>& a, const Polynomial<TCoef>& b) {
-            const Monomial<TCoef>& am = a.GetHeadMonomial();
-            const Monomial<TCoef>& bm = b.GetHeadMonomial();
-            const TTerm t = lcm(am.GetTerm(), bm.GetTerm());
-            return (t == am.GetTerm() * bm.GetTerm());
-        }
-
         // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
         template <typename TCoef>
         TPairsSet<TCoef> GetPairsToCheckWithCriterias(const TPolynomials<TCoef>& polynomials) {
             TPairsSet<TCoef> pairs_to_check;
             for (size_t i = 0; i < polynomials.size(); i++) {
                 for (size_t j = i + 1; j < polynomials.size(); j++) {
-                    if (CheckProductCreteria(polynomials[i], polynomials[j])) {
+                    if (NUtil::CheckProductCriteria(polynomials[i], polynomials[j])) {
                         continue;
                     }
                     pairs_to_check.insert(CriticalPair(&polynomials, i, j));
@@ -51,7 +38,7 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        void UpdateL(TPolynomials<TCoef>& L, const TTerm& term, const TPolynomials<TCoef>& F, TDiffSet& diff, TDiffSet& done) {
+        void UpdateL(TPolynomials<TCoef>& L, const TTerm& term, const TPolynomials<TCoef>& F, NUtil::TDiffSet& diff, NUtil::TDiffSet& done) {
             for (const auto& polynomial : F) {
                 const auto& t = polynomial.GetHeadMonomial().GetTerm();
                 if (term.IsDivisibleBy(t)) {
@@ -68,14 +55,15 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        TSymbolicPreprocessingResult<TCoef> SymbolicPreprocessing(TPairsSet<TCoef>& selected, const TPolynomials<TCoef>& F) {
+        NUtil::TSymbolicPreprocessingResult<TCoef> SymbolicPreprocessing(TPairsSet<TCoef>& selected, const TPolynomials<TCoef>& F) {
             TPolynomials<TCoef> L;
             L.reserve(selected.size() * 2);
             for (const auto& pair : selected) {
                 L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft()); // add left
                 L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight()); // add right
             }
-            TDiffSet diff;
+
+            NUtil::TDiffSet diff;
             for (const auto& l : L) {
                 auto it = diff.begin();
                 for (const auto& m : l.GetMonomials()) {
@@ -83,14 +71,14 @@ namespace NAlgo {
                 }
             }
 
-            TDiffSet done;
+            NUtil::TDiffSet done;
             for (const auto& l : L) {
                 diff.erase(l.GetHeadMonomial().GetTerm());
                 done.insert(l.GetHeadMonomial().GetTerm());
             }
 
             while(!diff.empty()) {
-                const TTerm& term = *diff.begin();
+                TTerm term = *diff.begin();
                 diff.erase(diff.begin());
                 done.insert(done.begin(), term);
                 UpdateL(L, term, F, diff, done);
@@ -100,9 +88,9 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        void Reduce(TPairsSet<TCoef>& selected, TPolynomials<TCoef>& F) {
-            TSymbolicPreprocessingResult<TCoef> L = SymbolicPreprocessing(selected, F);
-
+        TPolynomials<TCoef> Reduce(TPairsSet<TCoef>& selected, TPolynomials<TCoef>& F) {
+            NUtil::TSymbolicPreprocessingResult<TCoef> L = SymbolicPreprocessing(selected, F);
+            return NUtil::MatrixReduction(L);
         }
 
         template <typename TCoef>
@@ -111,7 +99,17 @@ namespace NAlgo {
 
             while(!pairs_to_check.empty()) {
                 TPairsSet<TCoef> selection_group = Select(pairs_to_check);
-                Reduce(selection_group, F);
+                TPolynomials<TCoef> G = Reduce(selection_group, F);
+                for (size_t i = 0; i < G.size(); i++) {
+                    size_t idx = F.size();
+                    F.push_back(G[i]);
+                    for (size_t j = 0; j < F.size(); j++) {
+                        if (NUtil::CheckProductCriteria(F[j], F[idx])) {
+                            continue;
+                        }
+                        pairs_to_check.insert(CriticalPair(&F, j, idx));
+                    }
+                }
             };
         }
     }

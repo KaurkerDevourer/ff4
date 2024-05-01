@@ -22,5 +22,13 @@ namespace NAlgo {
             }
             return F.IsZero();
         }
+
+        template <typename TCoef>
+        bool CheckProductCriteria(const Polynomial<TCoef>& a, const Polynomial<TCoef>& b) {
+            const Monomial<TCoef>& am = a.GetHeadMonomial();
+            const Monomial<TCoef>& bm = b.GetHeadMonomial();
+            const TTerm t = lcm(am.GetTerm(), bm.GetTerm());
+            return (t == am.GetTerm() * bm.GetTerm());
+        }
     }
 }

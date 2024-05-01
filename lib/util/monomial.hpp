@@ -14,6 +14,12 @@ namespace NUtils {
         {
         }
 
+        Monomial(const TTerm& term, TCoef coef)
+        : term_(term)
+        , coef_(coef)
+        {
+        }
+
         const TTerm& GetTerm() const noexcept {
             return term_;
         }
