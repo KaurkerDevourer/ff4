@@ -7,11 +7,11 @@
 #include "term.cpp"
 
 int main() {
-    // test_prime_field();
-    // test_rational();
-    // test_term();
-    // test_monomial();
-    // test_polynomial();
-    // test_buchberger();
+    test_prime_field();
+    test_rational();
+    test_term();
+    test_monomial();
+    test_polynomial();
+    test_buchberger();
     test_f4();
 }
