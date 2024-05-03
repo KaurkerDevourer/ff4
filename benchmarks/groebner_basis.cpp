@@ -13,31 +13,34 @@
 using namespace NUtils;
 
 namespace  {
+    #define TimesToRun 1000
     void FindGroebnerBasisF4Lib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 gb::PolynomialSet<gb::fields::Rational> ideal2 = ideal;
                 gb::inplace_calculate_f4_gb(ideal2);
             }
         #else
             gb::inplace_calculate_f4_gb(ideal);
+            std::cout << ideal << std::endl;
         #endif
     }
 
     void FindGroebnerBasisF4LibModular(gb::PolynomialSet<gb::fields::Modular<31>>& ideal) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 gb::PolynomialSet<gb::fields::Modular<31>> ideal2 = ideal;
                 gb::inplace_calculate_f4_gb(ideal2);
             }
         #else
             gb::inplace_calculate_f4_gb(ideal);
+            std::cout << ideal << std::endl;
         #endif
     }
 
     void FindGroebnerBasisLib(gb::PolynomialSet<gb::fields::Rational>& ideal) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 ideal.MakeGroebnerBasis();
             }
         #else
@@ -47,67 +50,73 @@ namespace  {
 
     void FindGroebnerBasis(TPolynomials<Rational>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<Rational> F2 = F;
                 NAlgo::Buchberger::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::Buchberger::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 
     void FindGroebnerBasisWithCriterias(TPolynomials<Rational>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<Rational> F2 = F;
                 NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 
     void FindGroebnerBasisWithCriteriasPrimeField(TPolynomials<PrimeField<31>>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<PrimeField<31>> F2 = F;
                 NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 
     void FindGroebnerBasisWithCriteriasVersion2PrimeField(TPolynomials<PrimeField<31>>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<PrimeField<31>> F2 = F;
                 NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 
     void FindGroebnerBasisF4(TPolynomials<Rational>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<Rational> F2 = F;
                 NAlgo::F4::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::F4::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 
     void FindGroebnerBasisF4PrimeField(TPolynomials<PrimeField<31>>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<PrimeField<31>> F2 = F;
                 NAlgo::F4::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::F4::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
         #endif
     }
 }
