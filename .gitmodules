@@ -1,0 +1,3 @@
+[submodule "external/GroebnerBasisFork"]
+	path = external/GroebnerBasisFork
+	url = https://github.com/KaurkerDevourer/GroebnerBasisFork
