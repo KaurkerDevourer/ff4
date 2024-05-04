@@ -47,4 +47,6 @@ target_link_libraries(ut-tests PUBLIC util algo)
 
 add_executable(benchmark benchmarks/main.cpp)
 set_target_properties(benchmark PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+target_compile_options(benchmark PUBLIC  -I /usr/local/include/) # for openf4, install it first.
+target_link_options(benchmark PUBLIC -L/usr/local/lib/ -lopenf4 -Wl) # for openf4, install it first.
 target_link_libraries(benchmark PUBLIC util algo external)

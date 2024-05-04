@@ -23,8 +23,8 @@ public:
     ~TimerWrapper() {
         const clock_t end_time_ = ::clock();
         const clock_t diff = (end_time_ - start_time_);
-        std::cout << text_;
-        std::cout << 1000.0 * diff / CLOCKS_PER_SEC << " milliseconds." << std::endl;
+        std::cout << "| " << text_ << " | ";
+        std::cout <<  1000.0 * diff / CLOCKS_PER_SEC << " milliseconds. | " << std::endl;
     }
 
     TFunction call;

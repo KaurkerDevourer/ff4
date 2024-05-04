@@ -20,7 +20,10 @@ namespace NUtils {
         bool operator()(const CriticalPair<T>& left, const CriticalPair<T>& right) const noexcept {
             assert(left.GetGlcm().GetCoef() != 0);
             assert(right.GetGlcm().GetCoef() != 0);
-            return left.GetGlcm().GetTerm().GetDegree() < right.GetGlcm().GetTerm().GetDegree();
+            if (left.GetGlcm().GetTerm().GetDegree() != right.GetGlcm().GetTerm().GetDegree()) {
+                return left.GetGlcm().GetTerm().GetDegree() < right.GetGlcm().GetTerm().GetDegree();
+            }
+            return left.GetGlcm().GetTerm() < right.GetGlcm().GetTerm();
         }
     };
 

@@ -11,6 +11,9 @@ namespace NAlgo {
         template<typename TCoef>
         using TPairsSet = std::set<CriticalPair<TCoef>, DexComp>;
 
+        template<typename TCoef>
+        using TPairsVector = std::vector<CriticalPair<TCoef>>;
+
         // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
         template <typename TCoef>
         TPairsSet<TCoef> GetPairsToCheckWithCriterias(const TPolynomials<TCoef>& polynomials) {
@@ -27,11 +30,11 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        TPairsSet<TCoef> Select(TPairsSet<TCoef>& pairs_to_check) {
-            TPairsSet<TCoef> selectionGroup;
+        TPairsVector<TCoef> Select(TPairsSet<TCoef>& pairs_to_check) {
+            TPairsVector<TCoef> selectionGroup;
             uint64_t value = pairs_to_check.begin()->GetDegree();
             while(pairs_to_check.size() && pairs_to_check.begin()->GetDegree() == value) {
-                selectionGroup.insert(selectionGroup.begin(), *pairs_to_check.begin());
+                selectionGroup.push_back(*pairs_to_check.begin());
                 pairs_to_check.erase(pairs_to_check.begin());
             }
             return selectionGroup;
@@ -55,7 +58,7 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        NUtil::TSymbolicPreprocessingResult<TCoef> SymbolicPreprocessing(TPairsSet<TCoef>& selected, const TPolynomials<TCoef>& F) {
+        NUtil::TSymbolicPreprocessingResult<TCoef> SymbolicPreprocessing(TPairsVector<TCoef>& selected, const TPolynomials<TCoef>& F) {
             TPolynomials<TCoef> L;
             L.reserve(selected.size() * 2);
             for (const auto& pair : selected) {
@@ -88,7 +91,7 @@ namespace NAlgo {
         }
 
         template <typename TCoef>
-        TPolynomials<TCoef> Reduce(TPairsSet<TCoef>& selected, TPolynomials<TCoef>& F) {
+        TPolynomials<TCoef> Reduce(TPairsVector<TCoef>& selected, TPolynomials<TCoef>& F) {
             NUtil::TSymbolicPreprocessingResult<TCoef> L = SymbolicPreprocessing(selected, F);
             return NUtil::MatrixReduction(L);
         }
@@ -98,12 +101,12 @@ namespace NAlgo {
             TPairsSet<TCoef> pairs_to_check = GetPairsToCheckWithCriterias(F);
 
             while(!pairs_to_check.empty()) {
-                TPairsSet<TCoef> selection_group = Select(pairs_to_check);
+                TPairsVector<TCoef> selection_group = Select(pairs_to_check);
                 TPolynomials<TCoef> G = Reduce(selection_group, F);
                 for (size_t i = 0; i < G.size(); i++) {
                     size_t idx = F.size();
                     F.push_back(G[i]);
-                    for (size_t j = 0; j < F.size(); j++) {
+                    for (size_t j = 0; j < idx; j++) {
                         if (NUtil::CheckProductCriteria(F[j], F[idx])) {
                             continue;
                         }
