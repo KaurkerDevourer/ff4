@@ -12,18 +12,57 @@ namespace NUtils {
             assert(right.GetCoef() != 0);
             return left.GetTerm() < right.GetTerm();
         }
+
+        template <typename T>
+        bool operator()(const CriticalPair<T, LexComp>& left, const CriticalPair<T, LexComp>& right) const noexcept {
+            return LexComp()(left.GetGlcm(), right.GetGlcm());
+        }
     };
 
-    class DexComp {
+    class RevLexComp {
     public:
-        template <typename T>
-        bool operator()(const CriticalPair<T>& left, const CriticalPair<T>& right) const noexcept {
-            assert(left.GetGlcm().GetCoef() != 0);
-            assert(right.GetGlcm().GetCoef() != 0);
-            if (left.GetGlcm().GetTerm().GetDegree() != right.GetGlcm().GetTerm().GetDegree()) {
-                return left.GetGlcm().GetTerm().GetDegree() < right.GetGlcm().GetTerm().GetDegree();
+        bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            if (left.size() != right.size()) {
+                return left.size() > right.size();
             }
-            return left.GetGlcm().GetTerm() < right.GetGlcm().GetTerm();
+            for (int i = left.size() - 1; i >= 0; i--) {
+                if (left[i] != right[i]) {
+                    return left[i] > right[i];
+                }
+            }
+            return false;
+        }
+
+        template <typename T>
+        bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
+            assert(left.GetCoef() != 0);
+            assert(right.GetCoef() != 0);
+            const TTerm& l = left.GetTerm();
+            const TTerm& r = right.GetTerm();
+            return RevLexComp()(left, right);
+        }
+    };
+
+    class GrevLexComp {
+    public:
+
+        bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            if (left.GetDegree() != right.GetDegree()) {
+                return left.GetDegree() < right.GetDegree();
+            }
+            return RevLexComp()(left, right);
+        }
+
+        template <typename T>
+        bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
+            assert(left.GetCoef() != 0);
+            assert(right.GetCoef() != 0);
+            return GrevLexComp()(left.GetTerm(), right.GetTerm());
+        }
+
+        template <typename T>
+        bool operator()(const CriticalPair<T, GrevLexComp>& left, const CriticalPair<T, GrevLexComp>& right) const noexcept {
+            return GrevLexComp()(left.GetGlcm(), right.GetGlcm());
         }
     };
 

@@ -8,24 +8,24 @@
 namespace NAlgo {
     namespace NUtil {
         using namespace NUtils;
-        using TDiffSet = std::set<TTerm, TTermReverseComp>;
+        template <typename TComp>
+        using TDiffSet = std::set<TTerm, TComp>;
 
-        template<typename TCoef>
-        using TSymbolicPreprocessingResult = std::pair<TPolynomials<TCoef>, TDiffSet>;
+        template<typename TCoef, typename TComp>
+        using TSymbolicPreprocessingResult = std::pair<TPolynomials<TCoef, TComp>, TDiffSet<TComp>>;
 
-        template <typename TCoef>
-        TPolynomials<TCoef> MatrixReduction(NUtil::TSymbolicPreprocessingResult<TCoef>& L) {
-            TDiffSet& diffSet = L.second;
-            TPolynomials<TCoef>& F = L.first;
+        template <typename TCoef, typename TComp>
+        TPolynomials<TCoef, TComp> MatrixReduction(NUtil::TSymbolicPreprocessingResult<TCoef, TComp>& L) {
+            TDiffSet<TComp>& diffSet = L.second;
+            TPolynomials<TCoef, TComp>& F = L.first;
             std::map<TTerm, size_t> Mp;
-            std::vector<TTerm> vTerms;
+            std::vector<TTerm> vTerms(diffSet.size());
             std::set<TTerm> leadingTerms;
-            vTerms.reserve(diffSet.size());
             size_t cnt = 0;
             auto it = Mp.begin();
             for (const auto& term : diffSet) {
                 it = Mp.insert(it, {term, cnt++});
-                vTerms.push_back(term);
+                vTerms[vTerms.size() - cnt] = term;
             }
             TCoef matrix[F.size()][diffSet.size()];
             for (size_t i = 0; i < F.size(); i++) {
@@ -73,7 +73,7 @@ namespace NAlgo {
                     break;
                 }
             }
-            TPolynomials<TCoef> reduced;
+            TPolynomials<TCoef, TComp> reduced;
             reduced.reserve(F.size());
             for (size_t i = 0; i < F.size(); i++) {
                 TMonomials<TCoef> mons;

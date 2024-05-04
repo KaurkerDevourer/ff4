@@ -10,6 +10,6 @@ int main() {
     #endif
     benchmark_cyclic4_rational();
     benchmark_cyclic4_prime_field();
-    benchmark_katsura4();
-    benchmark_sym3_3();
+    // benchmark_katsura4();
+    // benchmark_sym3_3();
 }

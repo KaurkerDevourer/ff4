@@ -5,8 +5,8 @@
 namespace NAlgo {
     namespace NUtil {
         using namespace NUtils;
-        template <typename TCoef>
-        bool ReduceToZero(Polynomial<TCoef>& F, const TPolynomials<TCoef>& polynomialsSet) {
+        template <typename TCoef, typename TComp>
+        bool ReduceToZero(Polynomial<TCoef, TComp>& F, const TPolynomials<TCoef, TComp>& polynomialsSet) {
             if (F.IsZero()) {
                 return true;
             }
@@ -23,25 +23,25 @@ namespace NAlgo {
             return F.IsZero();
         }
 
-        template <typename TCoef>
-        bool CheckProductCriteria(const Polynomial<TCoef>& a, const Polynomial<TCoef>& b) {
+        template <typename TCoef, typename TComp>
+        bool CheckProductCriteria(const Polynomial<TCoef, TComp>& a, const Polynomial<TCoef, TComp>& b) {
             const Monomial<TCoef>& am = a.GetHeadMonomial();
             const Monomial<TCoef>& bm = b.GetHeadMonomial();
             const TTerm t = gcd(am.GetTerm(), bm.GetTerm());
             return t.GetDegree() == 0;
         }
 
-        template <typename TCoef>
-        bool CheckBasisIsGroebner(const TPolynomials<TCoef>& basis) {
+        template <typename TCoef, typename TComp>
+        bool CheckBasisIsGroebner(const TPolynomials<TCoef, TComp>& basis) {
             std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheck(basis.size());
             while(!pairs_to_check.empty()) {
-                const Polynomial<TCoef>& fi = basis[pairs_to_check.front().first];
-                const Polynomial<TCoef>& fj = basis[pairs_to_check.front().second];
+                const Polynomial<TCoef, TComp>& fi = basis[pairs_to_check.front().first];
+                const Polynomial<TCoef, TComp>& fj = basis[pairs_to_check.front().second];
                 pairs_to_check.pop();
                 const Monomial<TCoef>& gi = fi.GetHeadMonomial();
                 const Monomial<TCoef>& gj = fj.GetHeadMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
-                Polynomial<TCoef> S = fi * (glcm/gi) - fj * (glcm/gj);
+                Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!ReduceToZero(S, basis)) {
                     return false;
                 }
