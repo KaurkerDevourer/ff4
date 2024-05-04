@@ -111,7 +111,7 @@ namespace NUtils {
         }
 
     private:
-        uint64_t number_;
+        int64_t number_;
         static const uint32_t mod = Mod;
     };
 }
