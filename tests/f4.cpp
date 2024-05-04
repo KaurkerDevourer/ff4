@@ -2,6 +2,7 @@
 
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
+#include "../lib/algo/util/groebner_basis_util.h"
 
 void test_f4() {
     using namespace NUtils;
@@ -42,5 +43,6 @@ void test_f4() {
         NAlgo::F4::FindGroebnerBasis(test);
         std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
         std::cout << test << std::endl;
+        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
 }

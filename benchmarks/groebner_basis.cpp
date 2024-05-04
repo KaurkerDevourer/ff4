@@ -58,6 +58,7 @@ namespace  {
         #else
             NAlgo::Buchberger::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
@@ -70,6 +71,7 @@ namespace  {
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
@@ -82,6 +84,7 @@ namespace  {
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
@@ -94,6 +97,7 @@ namespace  {
         #else
             NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
@@ -106,6 +110,7 @@ namespace  {
         #else
             NAlgo::F4::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
@@ -118,6 +123,7 @@ namespace  {
         #else
             NAlgo::F4::FindGroebnerBasis(F);
             std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
