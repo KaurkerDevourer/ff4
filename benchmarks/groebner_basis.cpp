@@ -133,7 +133,7 @@ namespace  {
                 std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 0);
             }
         #else
-            std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 0);
+            std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 4);
             std::cout << basis.size() << std::endl;
             for (const auto& str : basis) {
                 std::cout << str << std::endl;

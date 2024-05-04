@@ -27,8 +27,8 @@ namespace NAlgo {
         bool CheckProductCriteria(const Polynomial<TCoef>& a, const Polynomial<TCoef>& b) {
             const Monomial<TCoef>& am = a.GetHeadMonomial();
             const Monomial<TCoef>& bm = b.GetHeadMonomial();
-            const TTerm t = lcm(am.GetTerm(), bm.GetTerm());
-            return (t == am.GetTerm() * bm.GetTerm());
+            const TTerm t = gcd(am.GetTerm(), bm.GetTerm());
+            return t.GetDegree() == 0;
         }
 
         template <typename TCoef>

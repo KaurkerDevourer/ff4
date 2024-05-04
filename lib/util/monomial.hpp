@@ -112,7 +112,9 @@ namespace NUtils {
         }
 
         friend std::ostream& operator<<(std::ostream& out, const Monomial& monomial) noexcept {
-            if (monomial.GetCoef() == 1) {
+            if (monomial.GetTerm().GetDegree() == 0) {
+                out << monomial.GetCoef();
+            } else if (monomial.GetCoef() == 1) {
                 out << monomial.GetTerm();
             } else if (monomial.GetCoef() == -1) {
                 out << " - " << monomial.GetTerm();
