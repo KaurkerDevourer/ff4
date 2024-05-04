@@ -6,18 +6,15 @@
 namespace NUtils {
     class LexComp {
     public:
-        template <typename T>
-        bool operator()(const CriticalPair<T, LexComp>& left, const CriticalPair<T, LexComp>& right) const noexcept {
-            assert(left.GetGlcm().GetCoef() != 0);
-            assert(right.GetGlcm().GetCoef() != 0);
-            return left.GetGlcm().GetTerm() < right.GetGlcm().GetTerm();
+        bool operator()(const TTerm& left, const TTerm right) const noexcept {
+            return left < right;
         }
 
         template <typename T>
         bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
             assert(left.GetCoef() != 0);
             assert(right.GetCoef() != 0);
-            return left.GetTerm() < right.GetTerm();
+            return LexComp()(left.GetTerm(), right.GetTerm());
         }
 
         template <typename T>
@@ -46,7 +43,7 @@ namespace NUtils {
             assert(right.GetCoef() != 0);
             const TTerm& l = left.GetTerm();
             const TTerm& r = right.GetTerm();
-            return RevLexComp()(left, right);
+            return RevLexComp()(l, r);
         }
     };
 
