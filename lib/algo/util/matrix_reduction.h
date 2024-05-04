@@ -10,13 +10,13 @@ namespace NAlgo {
         using namespace NUtils;
         using TDiffSet = std::set<TTerm, TTermReverseComp>;
 
-        template<typename TCoef>
-        using TSymbolicPreprocessingResult = std::pair<TPolynomials<TCoef>, TDiffSet>;
+        template<typename TCoef, typename TComp>
+        using TSymbolicPreprocessingResult = std::pair<TPolynomials<TCoef, TComp>, TDiffSet>;
 
-        template <typename TCoef>
-        TPolynomials<TCoef> MatrixReduction(NUtil::TSymbolicPreprocessingResult<TCoef>& L) {
+        template <typename TCoef, typename TComp>
+        TPolynomials<TCoef, TComp> MatrixReduction(NUtil::TSymbolicPreprocessingResult<TCoef, TComp>& L) {
             TDiffSet& diffSet = L.second;
-            TPolynomials<TCoef>& F = L.first;
+            TPolynomials<TCoef, TComp>& F = L.first;
             std::map<TTerm, size_t> Mp;
             std::vector<TTerm> vTerms;
             std::set<TTerm> leadingTerms;
@@ -73,7 +73,7 @@ namespace NAlgo {
                     break;
                 }
             }
-            TPolynomials<TCoef> reduced;
+            TPolynomials<TCoef, TComp> reduced;
             reduced.reserve(F.size());
             for (size_t i = 0; i < F.size(); i++) {
                 TMonomials<TCoef> mons;
