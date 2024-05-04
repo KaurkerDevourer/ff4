@@ -19,38 +19,52 @@ namespace NUtils {
             assert(right.GetCoef() != 0);
             return left.GetTerm() < right.GetTerm();
         }
+
+        template <typename T>
+        bool operator()(const CriticalPair<T, LexComp>& left, const CriticalPair<T, LexComp>& right) const noexcept {
+            return LexComp()(left.GetGlcm(), right.GetGlcm());
+        }
     };
 
     class RevLexComp {
     public:
+        bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            if (left.size() != right.size()) {
+                return left.size() > right.size();
+            }
+            for (int i = left.size() - 1; i >= 0; i--) {
+                if (left[i] != right[i]) {
+                    return left[i] > right[i];
+                }
+            }
+            return false;
+        }
+
         template <typename T>
         bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
             assert(left.GetCoef() != 0);
             assert(right.GetCoef() != 0);
             const TTerm& l = left.GetTerm();
             const TTerm& r = right.GetTerm();
-            if (l.size() != r.size()) {
-                return l.size() > r.size();
-            }
-            for (int i = l.size() - 1; i >= 0; i--) {
-                if (l[i] != r[i]) {
-                    return l[i] > r[i];
-                }
-            }
-            return false;
+            return RevLexComp()(left, right);
         }
     };
 
     class GrevLexComp {
     public:
+
+        bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            if (left.GetDegree() != right.GetDegree()) {
+                return left.GetDegree() < right.GetDegree();
+            }
+            return RevLexComp()(left, right);
+        }
+
         template <typename T>
         bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
             assert(left.GetCoef() != 0);
             assert(right.GetCoef() != 0);
-            if (left.GetTerm().GetDegree() != right.GetTerm().GetDegree()) {
-                return left.GetTerm().GetDegree() < right.GetTerm().GetDegree();
-            }
-            return RevLexComp()(left, right);
+            return GrevLexComp()(left.GetTerm(), right.GetTerm());
         }
 
         template <typename T>

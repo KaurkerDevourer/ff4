@@ -41,7 +41,7 @@ namespace NAlgo {
         }
 
         template <typename TCoef, typename TComp>
-        void UpdateL(TPolynomials<TCoef, TComp>& L, const TTerm& term, const TPolynomials<TCoef, TComp>& F, NUtil::TDiffSet& diff, NUtil::TDiffSet& done) {
+        void UpdateL(TPolynomials<TCoef, TComp>& L, const TTerm& term, const TPolynomials<TCoef, TComp>& F, NUtil::TDiffSet<TComp>& diff, NUtil::TDiffSet<TComp>& done) {
             for (const auto& polynomial : F) {
                 const auto& t = polynomial.GetHeadMonomial().GetTerm();
                 if (term.IsDivisibleBy(t)) {
@@ -66,7 +66,7 @@ namespace NAlgo {
                 L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight()); // add right
             }
 
-            NUtil::TDiffSet diff;
+            NUtil::TDiffSet<TComp> diff;
             for (const auto& l : L) {
                 auto it = diff.begin();
                 for (const auto& m : l.GetMonomials()) {
@@ -74,7 +74,7 @@ namespace NAlgo {
                 }
             }
 
-            NUtil::TDiffSet done;
+            NUtil::TDiffSet<TComp> done;
             for (const auto& l : L) {
                 diff.erase(l.GetHeadMonomial().GetTerm());
                 done.insert(l.GetHeadMonomial().GetTerm());

@@ -64,8 +64,8 @@ void test_f4() {
 
         TMonomials<PrimeField<31>> cmon;
         cmon.push_back(Monomial(TTerm({1, 1}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), PrimeField<31>(1)));
         cmon.push_back(Monomial(TTerm({0, 1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), PrimeField<31>(1)));
         cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
