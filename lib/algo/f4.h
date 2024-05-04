@@ -9,7 +9,7 @@ namespace NAlgo {
         using namespace NUtils;
 
         template<typename TCoef>
-        using TPairsSet = std::set<CriticalPair<TCoef>, DexComp>;
+        using TPairsSet = std::multiset<CriticalPair<TCoef>, DexComp>;
 
         template<typename TCoef>
         using TPairsVector = std::vector<CriticalPair<TCoef>>;
