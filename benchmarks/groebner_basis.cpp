@@ -9,6 +9,7 @@
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
 #include "../lib/util/prime_field.hpp"
+#include <openf4.h>
 #include <libopenf4.h>
 
 using namespace NUtils;
@@ -127,18 +128,19 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisOpenF4PrimeField(std::vector<std::string> variableName, std::vector<std::string> polynomialList) {
-        #ifdef NDEBUG
-            for (int i = 0; i < TimesToRun; i++) {
-                std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 0);
-            }
-        #else
-            std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 4);
-            std::cout << basis.size() << std::endl;
-            for (const auto& str : basis) {
-                std::cout << str << std::endl;
-            }
-        #endif
+    void FindGroebnerBasisOpenF4PrimeFieldDebug(std::vector<std::string> variableName, std::vector<std::string> polynomialList) {
+        std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 1, 4);
+        std::cout << basis.size() << std::endl;
+        for (const auto& str : basis) {
+            std::cout << str << std::endl;
+        }
+    }
+
+    typedef F4::ElementPrime<int32_t> eltType;
+    void FindGroebnerBasisOpenF4PrimeField(F4::Ideal<eltType>& ideal) {
+        for (int i = 0; i < TimesToRun; i++) {
+            ideal.f4();
+        }
     }
 }
 
@@ -308,13 +310,24 @@ void benchmark_cyclic4_prime_field() {
         test_time(FindGroebnerBasisF4PrimeField, "f4_cyclic4 ").call(test);
     }
     {
-        std::vector<std::string> polynomialList;
-        polynomialList.emplace_back("x0+x1+x2+x3");
-        polynomialList.emplace_back("x0*x1+x1*x2+x2*x3+x0*x3");
-        polynomialList.emplace_back("x0*x1*x2+x1*x2*x3+x2*x3*x0+x0*x1*x3");
-        polynomialList.emplace_back("x0*x1*x2*x3-1");
-        std::vector<std::string> variableName = {"x0", "x1", "x2", "x3"};
-        test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_cyclic4 ").call(variableName, polynomialList);
+        #ifdef NDEBUG
+            eltType::setModulo(31);
+            std::vector<F4::Polynomial<eltType>> polynomialList;
+            polynomialList.emplace_back("x0+x1+x2+x3");
+            polynomialList.emplace_back("x0*x1+x1*x2+x2*x3+x0*x3");
+            polynomialList.emplace_back("x0*x1*x2+x1*x2*x3+x2*x3*x0+x0*x1*x3");
+            polynomialList.emplace_back("x0*x1*x2*x3-1");
+            F4::Ideal<eltType> cyclic4(polynomialList, 4);
+            test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_cyclic4 ").call(cyclic4);
+        #else
+            std::vector<std::string> polynomialList;
+            polynomialList.emplace_back("x0+x1+x2+x3");
+            polynomialList.emplace_back("x0*x1+x1*x2+x2*x3+x0*x3");
+            polynomialList.emplace_back("x0*x1*x2+x1*x2*x3+x2*x3*x0+x0*x1*x3");
+            polynomialList.emplace_back("x0*x1*x2*x3-1");
+            std::vector<std::string> variableName = {"x0", "x1", "x2", "x3"};
+            test_time(FindGroebnerBasisOpenF4PrimeFieldDebug, "openf4_cyclic4 ").call(variableName, polynomialList);
+        #endif
     }
 }
 
@@ -393,13 +406,25 @@ void benchmark_katsura4() {
         test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_katsura4 ").call(ideal);
     }
     {
-        std::vector<std::string> polynomialList;
-        polynomialList.emplace_back("a^2-a+2*b^2+2*c^2+2*d^2");
-        polynomialList.emplace_back("2*a*b+2*b*c-b+2*c*d");
-        polynomialList.emplace_back("2*a*c+b^2+2*b*d-c");
-        polynomialList.emplace_back("a+2*b+2*c+2*d-1");
-        std::vector<std::string> variableName = {"a", "b", "c", "d"};
-        test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_katsura4 ").call(variableName, polynomialList);
+
+        #ifdef NDEBUG
+            eltType::setModulo(31);
+            std::vector<F4::Polynomial<eltType>> polynomialList;
+            polynomialList.emplace_back("a^2-a+2*b^2+2*c^2+2*d^2");
+            polynomialList.emplace_back("2*a*b+2*b*c-b+2*c*d");
+            polynomialList.emplace_back("2*a*c+b^2+2*b*d-c");
+            polynomialList.emplace_back("a+2*b+2*c+2*d-1");
+            F4::Ideal<eltType> katsura4(polynomialList, 4);
+            test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_katsura4").call(katsura4);
+        #else
+            std::vector<std::string> polynomialList;
+            polynomialList.emplace_back("a^2-a+2*b^2+2*c^2+2*d^2");
+            polynomialList.emplace_back("2*a*b+2*b*c-b+2*c*d");
+            polynomialList.emplace_back("2*a*c+b^2+2*b*d-c");
+            polynomialList.emplace_back("a+2*b+2*c+2*d-1");
+            std::vector<std::string> variableName = {"a", "b", "c", "d"};
+            test_time(FindGroebnerBasisOpenF4PrimeFieldDebug, "openf4_katsura4 ").call(variableName, polynomialList);
+        #endif
     }
 }
 
@@ -430,12 +455,22 @@ void benchmark_sym3_3() {
         test_time(FindGroebnerBasisF4PrimeField, "f4_sym3-3 ").call(test);
     }
     {
-        std::vector<std::string> polynomialList;
-        polynomialList.emplace_back("a+b*c^3-2");
-        polynomialList.emplace_back("a^3*c+b-2");
-        polynomialList.emplace_back("a*b^3+c-2");
-        std::vector<std::string> variableName = {"a", "b", "c"};
-        test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_sym3-3 ").call(variableName, polynomialList);
+        #ifdef NDEBUG
+            eltType::setModulo(31);
+            std::vector<F4::Polynomial<eltType>> polynomialList;
+            polynomialList.emplace_back("a+b*c^3-2");
+            polynomialList.emplace_back("a^3*c+b-2");
+            polynomialList.emplace_back("a*b^3+c-2");
+            F4::Ideal<eltType> sym3(polynomialList, 3);
+            test_time(FindGroebnerBasisOpenF4PrimeField, "openf4_sym3-3").call(sym3);
+        #else
+            std::vector<std::string> polynomialList;
+            polynomialList.emplace_back("a+b*c^3-2");
+            polynomialList.emplace_back("a^3*c+b-2");
+            polynomialList.emplace_back("a*b^3+c-2");
+            std::vector<std::string> variableName = {"a", "b", "c"};
+            test_time(FindGroebnerBasisOpenF4PrimeFieldDebug, "openf4_sym3-3 ").call(variableName, polynomialList);
+        #endif
     }
     
 }
