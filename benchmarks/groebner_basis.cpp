@@ -5,7 +5,6 @@
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
 #include "../lib/algo/buchberger_with_criterias.h"
-#include "../lib/algo/buchberger_with_criterias_version2.h"
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
 #include "../lib/util/prime_field.hpp"
@@ -83,19 +82,6 @@ namespace  {
             }
         #else
             NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
-            std::cout << F << std::endl;
-            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
-        #endif
-    }
-
-    void FindGroebnerBasisWithCriteriasVersion2PrimeField(TPolynomials<PrimeField<31>, GrevLexComp>& F) {
-        #ifdef NDEBUG
-            for (int i = 0; i < TimesToRun; i++) {
-                TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
-                NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F2);
-            }
-        #else
-            NAlgo::BuchbergerWithCreteriasVersion2::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
