@@ -12,7 +12,7 @@ namespace NUtils {
                 : F_(F)
                 , left_idx_(i)
                 , right_idx_(j)
-                , Glcm_(Monomial(lcm((*F)[i].GetHeadMonomial().GetTerm(), (*F)[j].GetHeadMonomial().GetTerm()), TCoef(1)))
+                , Glcm_(Monomial(lcm((*F)[i].GetLeadingTerm(), (*F)[j].GetLeadingTerm()), TCoef(1)))
                 , degree_(Glcm_.GetTerm().GetDegree())
             {
             }
@@ -38,11 +38,11 @@ namespace NUtils {
             }
 
             const TTerm& GetLeftTerm() const noexcept {
-                return (*F_)[left_idx_].GetHeadMonomial().GetTerm();
+                return (*F_)[left_idx_].GetLeadingTerm();
             }
 
             const TTerm& GetRightTerm() const noexcept {
-                return (*F_)[right_idx_].GetHeadMonomial().GetTerm();
+                return (*F_)[right_idx_].GetLeadingTerm();
             }
 
         private:

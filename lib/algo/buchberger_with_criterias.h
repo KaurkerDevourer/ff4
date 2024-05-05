@@ -32,8 +32,8 @@ namespace NAlgo {
             while(changed && !F.IsZero()) {
                 changed = false;
                 for (const auto& f : polynomialsSet) {
-                    while (!F.IsZero() && F.GetHeadMonomial().GetTerm().IsDivisibleBy(f.GetHeadMonomial().GetTerm())) {
-                        F -= f * (F.GetHeadMonomial() / f.GetHeadMonomial());
+                    while (!F.IsZero() && F.GetLeadingTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                        F -= f * (F.GetLeadingMonomial() / f.GetLeadingMonomial());
                         changed = true;
                     }
                 }
@@ -49,8 +49,8 @@ namespace NAlgo {
                 const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
                 const Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
                 pairs_to_check.pop();
-                const Monomial<TCoef>& gi = fi.GetHeadMonomial();
-                const Monomial<TCoef>& gj = fj.GetHeadMonomial();
+                const Monomial<TCoef>& gi = fi.GetLeadingMonomial();
+                const Monomial<TCoef>& gj = fj.GetLeadingMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
                 Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!NUtil::ReduceToZero(S, F)) {

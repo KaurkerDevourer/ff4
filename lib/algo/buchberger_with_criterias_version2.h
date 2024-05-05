@@ -26,9 +26,9 @@ namespace NAlgo {
         // THIS IS THE DIFFERENCE BETWEEN no-number version. Problem is - in cyclic and katsura, this version is 10x times faster. But for sym-sym for some reason this version is 10x slower.
         template <typename TCoef, typename TComp>
         void TailReduce(TPolynomials<TCoef, TComp>& F, Polynomial<TCoef, TComp>& S) {
-            const TTerm& t = S.GetHeadMonomial().GetTerm();
+            const TTerm& t = S.GetLeadingTerm();
             for (size_t i = 0; i < F.size(); i++) {
-                if (!F[i].IsRemoved() && F[i].GetHeadMonomial().GetTerm().IsDivisibleBy(t)) {
+                if (!F[i].IsRemoved() && F[i].GetLeadingTerm().IsDivisibleBy(t)) {
                     F[i].MakeRemoved();
                 }
             }
@@ -45,8 +45,8 @@ namespace NAlgo {
                 if (fi.IsRemoved() || fj.IsRemoved()) {
                     continue;
                 }
-                const Monomial<TCoef>& gi = fi.GetHeadMonomial();
-                const Monomial<TCoef>& gj = fj.GetHeadMonomial();
+                const Monomial<TCoef>& gi = fi.GetLeadingMonomial();
+                const Monomial<TCoef>& gj = fj.GetLeadingMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
                 Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!NUtil::ReduceToZero(S, F)) {

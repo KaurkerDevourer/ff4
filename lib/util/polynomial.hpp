@@ -59,8 +59,12 @@ namespace NUtils {
             return monomials_;
         }
 
-        const Monomial<TCoef>& GetHeadMonomial() const noexcept {
+        const Monomial<TCoef>& GetLeadingMonomial() const noexcept {
             return monomials_[0];
+        }
+
+        const TTerm& GetLeadingTerm() const noexcept {
+            return monomials_[0].GetTerm();
         }
 
         void MakeRemoved() {

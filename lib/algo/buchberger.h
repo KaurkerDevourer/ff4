@@ -12,8 +12,8 @@ namespace NAlgo {
                 const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
                 const Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
                 pairs_to_check.pop();
-                const Monomial<TCoef>& gi = fi.GetHeadMonomial();
-                const Monomial<TCoef>& gj = fj.GetHeadMonomial();
+                const Monomial<TCoef>& gi = fi.GetLeadingMonomial();
+                const Monomial<TCoef>& gj = fj.GetLeadingMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
                 Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!NUtil::ReduceToZero(S, F)) {
