@@ -323,24 +323,24 @@ void benchmark_katsura4() {
     {
         TMonomials<PrimeField<31>> amon;
         amon.push_back(Monomial(TTerm({2}), PrimeField<31>(1)));
-        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(-1)));
         amon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(2)));
         amon.push_back(Monomial(TTerm({0, 0, 2}), PrimeField<31>(2)));
         amon.push_back(Monomial(TTerm({0, 0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
 
         TMonomials<PrimeField<31>> bmon;
         bmon.push_back(Monomial(TTerm({1, 1}), PrimeField<31>(2)));
         bmon.push_back(Monomial(TTerm({0, 1, 1}), PrimeField<31>(2)));
-        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(-1)));
         bmon.push_back(Monomial(TTerm({0, 0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         TMonomials<PrimeField<31>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 0, 1}), PrimeField<31>(2)));
         cmon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 1}), PrimeField<31>(2)));
         cmon.push_back(Monomial(TTerm({0, 1, 0, 1}), PrimeField<31>(2)));
         cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(-1)));
 
@@ -406,8 +406,8 @@ void benchmark_katsura4() {
 void benchmark_sym3_3() {
     {
         TMonomials<PrimeField<31>> amon;
-        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
         amon.push_back(Monomial(TTerm({0, 1, 3}), PrimeField<31>(1)));
+        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
         amon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
 
         Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));

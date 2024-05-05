@@ -28,6 +28,7 @@ namespace NUtils {
             monomials.erase(monomials.end() - cnt, monomials.end());
         }
 
+        assert(isSorted);
         if (!isSorted) {
             std::cout << "!IsSorted" << std::endl;
             for (size_t i = 0; i < monomials.size(); i++) {
@@ -76,6 +77,16 @@ namespace NUtils {
 
         Polynomial operator+() const noexcept {
             return *this;
+        }
+
+        void Normalize() noexcept {
+            const TCoef leadingCoef = monomials_[0].GetCoef();
+            if (leadingCoef == 1) {
+                return;
+            }
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials_[i] /= leadingCoef;
+            }
         }
 
         Polynomial operator-() const noexcept {

@@ -9,7 +9,7 @@ namespace NAlgo {
         using namespace NUtils;
 
         template <typename TCoef, typename TComp>
-        using TPairsSet = std::multiset<CriticalPair<TCoef, TComp>, TComp>;
+        using TPairsSet = std::set<CriticalPair<TCoef, TComp>, TComp>;
 
         template <typename TCoef, typename TComp>
         using TPairsVector = std::vector<CriticalPair<TCoef, TComp>>;
@@ -98,12 +98,16 @@ namespace NAlgo {
 
         template <typename TCoef, typename TComp>
         void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
+            for (auto& f : F) {
+                f.Normalize();
+            }
             TPairsSet<TCoef, TComp> pairs_to_check = GetPairsToCheckWithCriterias(F);
 
             while(!pairs_to_check.empty()) {
                 TPairsVector<TCoef, TComp> selection_group = Select(pairs_to_check);
                 TPolynomials<TCoef, TComp> G = Reduce(selection_group, F);
                 for (size_t i = 0; i < G.size(); i++) {
+                    G[i].Normalize();
                     size_t idx = F.size();
                     F.push_back(G[i]);
                     for (size_t j = 0; j < idx; j++) {
