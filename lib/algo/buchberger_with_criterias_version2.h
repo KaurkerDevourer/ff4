@@ -9,8 +9,8 @@ namespace NAlgo {
         using TPairsQueue = std::queue<std::pair<size_t, size_t>>;
 
         // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
-        template <typename TCoef>
-        TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef>& polynomials) {
+        template <typename TCoef, typename TComp>
+        TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef, TComp>& polynomials) {
             TPairsQueue pairs_to_check;
             for (size_t i = 0; i < polynomials.size(); i++) {
                 for (size_t j = i + 1; j < polynomials.size(); j++) {
@@ -24,8 +24,8 @@ namespace NAlgo {
         }
 
         // THIS IS THE DIFFERENCE BETWEEN no-number version. Problem is - in cyclic and katsura, this version is 10x times faster. But for sym-sym for some reason this version is 10x slower.
-        template <typename TCoef>
-        void TailReduce(TPolynomials<TCoef>& F, Polynomial<TCoef>& S) {
+        template <typename TCoef, typename TComp>
+        void TailReduce(TPolynomials<TCoef, TComp>& F, Polynomial<TCoef, TComp>& S) {
             const TTerm& t = S.GetHeadMonomial().GetTerm();
             for (size_t i = 0; i < F.size(); i++) {
                 if (!F[i].IsRemoved() && F[i].GetHeadMonomial().GetTerm().IsDivisibleBy(t)) {
@@ -34,13 +34,13 @@ namespace NAlgo {
             }
         }
 
-        template <typename TCoef>
-        void FindGroebnerBasis(TPolynomials<TCoef>& F) {
+        template <typename TCoef, typename TComp>
+        void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
             std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheckWithCriterias(F);
 
             while(!pairs_to_check.empty()) {
-                const Polynomial<TCoef>& fi = F[pairs_to_check.front().first];
-                const Polynomial<TCoef>& fj = F[pairs_to_check.front().second];
+                const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
+                const Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
                 pairs_to_check.pop();
                 if (fi.IsRemoved() || fj.IsRemoved()) {
                     continue;
@@ -48,7 +48,7 @@ namespace NAlgo {
                 const Monomial<TCoef>& gi = fi.GetHeadMonomial();
                 const Monomial<TCoef>& gj = fj.GetHeadMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
-                Polynomial<TCoef> S = fi * (glcm/gi) - fj * (glcm/gj);
+                Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!NUtil::ReduceToZero(S, F)) {
                     TailReduce(F, S);
                     size_t idx = F.size();

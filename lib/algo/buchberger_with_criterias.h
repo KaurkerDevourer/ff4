@@ -9,8 +9,8 @@ namespace NAlgo {
         using TPairsQueue = std::queue<std::pair<size_t, size_t>>;
 
         // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
-        template <typename TCoef>
-        TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef>& polynomials) {
+        template <typename TCoef, typename TComp>
+        TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef, TComp>& polynomials) {
             TPairsQueue pairs_to_check;
             for (size_t i = 0; i < polynomials.size(); i++) {
                 for (size_t j = i + 1; j < polynomials.size(); j++) {
@@ -23,8 +23,8 @@ namespace NAlgo {
             return pairs_to_check;
         }
 
-        template <typename TCoef>
-        bool ReduceToZero(Polynomial<TCoef>& F, TPolynomials<TCoef>& polynomialsSet) {
+        template <typename TCoef, typename TComp>
+        bool ReduceToZero(Polynomial<TCoef, TComp>& F, TPolynomials<TCoef, TComp>& polynomialsSet) {
             if (F.IsZero()) {
                 return true;
             }
@@ -41,18 +41,18 @@ namespace NAlgo {
             return F.IsZero();
         }
 
-        template <typename TCoef>
-        void FindGroebnerBasis(TPolynomials<TCoef>& F) {
+        template <typename TCoef, typename TComp>
+        void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
             TPairsQueue pairs_to_check = GetPairsToCheckWithCriterias(F);
 
             while(!pairs_to_check.empty()) {
-                const Polynomial<TCoef>& fi = F[pairs_to_check.front().first];
-                const Polynomial<TCoef>& fj = F[pairs_to_check.front().second];
+                const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
+                const Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
                 pairs_to_check.pop();
                 const Monomial<TCoef>& gi = fi.GetHeadMonomial();
                 const Monomial<TCoef>& gj = fj.GetHeadMonomial();
                 Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
-                Polynomial<TCoef> S = fi * (glcm/gi) - fj * (glcm/gj);
+                Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                 if (!NUtil::ReduceToZero(S, F)) {
                     size_t idx = F.size();
                     // std::cout << S << std::endl;

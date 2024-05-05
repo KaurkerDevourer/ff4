@@ -8,6 +8,7 @@ namespace NUtils {
             term[i] = std::min(left[i], right[i]);
             term.sum_ += term[i];
         }
+        term.Normalize();
         return std::move(term);
     }
 
@@ -27,6 +28,7 @@ namespace NUtils {
             term[i] = left[i];
             term.sum_ += term[i];
         }
+        term.Normalize();
         return std::move(term);
     }
 

@@ -5,7 +5,6 @@
 
 namespace NUtils {
 
-    class LexComp;
     template <typename TCoef>
     using TMonomials = std::vector<Monomial<TCoef>>;
 
@@ -29,13 +28,18 @@ namespace NUtils {
             monomials.erase(monomials.end() - cnt, monomials.end());
         }
 
+        assert(isSorted);
         if (!isSorted) {
             std::cout << "!IsSorted" << std::endl;
+            for (size_t i = 0; i < monomials.size(); i++) {
+                std::cout << monomials[i] << ' ';
+            }
+            std::cout << std::endl;
             std::sort(monomials.rbegin(), monomials.rend(), TComp());
         }
     }
 
-    template <typename TCoef, typename TComp = LexComp>
+    template <typename TCoef, typename TComp>
     class Polynomial {
     public:
         Polynomial() = default;
@@ -73,6 +77,16 @@ namespace NUtils {
 
         Polynomial operator+() const noexcept {
             return *this;
+        }
+
+        void Normalize() noexcept {
+            const TCoef leadingCoef = monomials_[0].GetCoef();
+            if (leadingCoef == 1) {
+                return;
+            }
+            for (size_t i = 0; i < monomials_.size(); i++) {
+                monomials_[i] /= leadingCoef;
+            }
         }
 
         Polynomial operator-() const noexcept {
@@ -228,8 +242,8 @@ namespace NUtils {
         bool isRemoved_ = false;
     };
 
-    template <typename TCoef>
-    using TPolynomials = std::vector<Polynomial<TCoef>>;
+    template <typename TCoef, typename TComp>
+    using TPolynomials = std::vector<Polynomial<TCoef, TComp>>;
 
     std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
         std::queue<std::pair<size_t, size_t>> pairs_to_check;
@@ -241,10 +255,10 @@ namespace NUtils {
         return pairs_to_check;
     }
 
-    template <typename TCoef>
-    std::ostream& operator<<(std::ostream& out, const TPolynomials<TCoef>& polynomials) noexcept {
+    template <typename TCoef, typename TComp>
+    std::ostream& operator<<(std::ostream& out, const TPolynomials<TCoef, TComp>& polynomials) noexcept {
         out << "{\n";
-        for (const Polynomial<TCoef>& polynomial : polynomials) {
+        for (const Polynomial<TCoef, TComp>& polynomial : polynomials) {
             out << polynomial << '\n';
         }
         return out << "}\n";

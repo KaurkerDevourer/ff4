@@ -4,11 +4,11 @@
 
 namespace NUtils {
 
-    template<typename TCoef>
+    template<typename TCoef, typename TComp>
     class CriticalPair {
         public:
             CriticalPair() = default;
-            CriticalPair(const TPolynomials<TCoef>* F, size_t i, size_t j)
+            CriticalPair(const TPolynomials<TCoef, TComp>* F, size_t i, size_t j)
                 : F_(F)
                 , left_idx_(i)
                 , right_idx_(j)
@@ -29,11 +29,11 @@ namespace NUtils {
                 return Glcm_.GetTerm();
             }
 
-            const Polynomial<TCoef>& GetLeft() const noexcept {
+            const Polynomial<TCoef, TComp>& GetLeft() const noexcept {
                 return (*F_)[left_idx_];
             }
 
-            const Polynomial<TCoef>& GetRight() const noexcept {
+            const Polynomial<TCoef, TComp>& GetRight() const noexcept {
                 return (*F_)[right_idx_];
             }
 
@@ -46,7 +46,7 @@ namespace NUtils {
             }
 
         private:
-            const TPolynomials<TCoef>* F_;
+            const TPolynomials<TCoef, TComp>* F_;
             size_t left_idx_;
             size_t right_idx_;
             Monomial<TCoef> Glcm_;
