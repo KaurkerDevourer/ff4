@@ -85,4 +85,79 @@ void test_f4() {
         std::cout << test << std::endl;
         assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
+
+    // katsura4
+    {
+        TMonomials<PrimeField<31>> amon;
+        amon.push_back(Monomial(TTerm({2}), PrimeField<31>(1)));
+        amon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(TTerm({0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(TTerm({0, 0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        TMonomials<PrimeField<31>> bmon;
+        bmon.push_back(Monomial(TTerm({1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(TTerm({0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(TTerm({0, 0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        TMonomials<PrimeField<31>> cmon;
+        cmon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(TTerm({0, 1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        TMonomials<PrimeField<31>> dmon;
+        dmon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
+        std::cout << "F4: " << test << std::endl;
+        NAlgo::F4::FindGroebnerBasis(test);
+        std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
+        std::cout << test << std::endl;
+        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+    }
+
+    // sym3-3
+    {
+        TMonomials<PrimeField<31>> amon;
+        amon.push_back(Monomial(TTerm({0, 1, 3}), PrimeField<31>(1)));
+        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        TMonomials<PrimeField<31>> bmon;
+        bmon.push_back(Monomial(TTerm({3, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        TMonomials<PrimeField<31>> cmon;
+        cmon.push_back(Monomial(TTerm({1, 3, 0}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
+        std::cout << "F4: " << test << std::endl;
+        NAlgo::F4::FindGroebnerBasis(test);
+        std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
+        std::cout << test << std::endl;
+        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+    }
 }
