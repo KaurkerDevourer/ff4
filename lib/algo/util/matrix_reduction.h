@@ -34,7 +34,7 @@ namespace NAlgo {
                 }
             }
             for (size_t i = 0; i < F.size(); i++) {
-                leadingTerms.insert(F[i].GetHeadMonomial().GetTerm());
+                leadingTerms.insert(F[i].GetLeadingTerm());
                 for (const auto& m : F[i].GetMonomials()) {
                     const auto& term = m.GetTerm();
                     matrix[i][Mp[term]] = m.GetCoef();

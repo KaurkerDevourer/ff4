@@ -43,7 +43,7 @@ namespace NAlgo {
         template <typename TCoef, typename TComp>
         void UpdateL(TPolynomials<TCoef, TComp>& L, const TTerm& term, const TPolynomials<TCoef, TComp>& F, NUtil::TDiffSet<TComp>& diff, NUtil::TDiffSet<TComp>& done) {
             for (const auto& polynomial : F) {
-                const auto& t = polynomial.GetHeadMonomial().GetTerm();
+                const auto& t = polynomial.GetLeadingTerm();
                 if (term.IsDivisibleBy(t)) {
                     Polynomial<TCoef, TComp> reducer = (term / t) * polynomial;
                     for (const auto& m : reducer.GetMonomials()) {
@@ -76,8 +76,8 @@ namespace NAlgo {
 
             NUtil::TDiffSet<TComp> done;
             for (const auto& l : L) {
-                diff.erase(l.GetHeadMonomial().GetTerm());
-                done.insert(l.GetHeadMonomial().GetTerm());
+                diff.erase(l.GetLeadingTerm());
+                done.insert(l.GetLeadingTerm());
             }
 
             while(!diff.empty()) {
@@ -108,11 +108,23 @@ namespace NAlgo {
                 TPolynomials<TCoef, TComp> G = Reduce(selection_group, F);
                 for (size_t i = 0; i < G.size(); i++) {
                     G[i].Normalize();
+                    const Polynomial<TCoef, TComp>& h = G[i];
                     size_t idx = F.size();
-                    F.push_back(G[i]);
+                    F.push_back(h);
                     for (size_t j = 0; j < idx; j++) {
-                        if (NUtil::CheckProductCriteria(F[j], F[idx])) {
+                        // KIND OF GMI INSTALLATION
+                        if (NUtil::CheckProductCriteria(F[j], h)) {
                             continue;
+                        }
+                        for (auto it = pairs_to_check.begin(); it != pairs_to_check.end();) {
+                            const CriticalPair<TCoef, TComp>& cp = (*it);
+                            if (cp.GetGlcmTerm().IsDivisibleBy(h.GetLeadingTerm()) &&
+                            lcm(cp.GetLeftTerm(), h.GetLeadingTerm()) != cp.GetGlcmTerm() &&
+                            lcm(cp.GetRightTerm(), h.GetLeadingTerm()) != cp.GetGlcmTerm()) {
+                                it = pairs_to_check.erase(it);
+                            } else {
+                                ++it;
+                            }
                         }
                         pairs_to_check.insert(CriticalPair(&F, j, idx));
                     }
