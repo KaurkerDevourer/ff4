@@ -6,14 +6,14 @@ If you want to build current benchmarks, and check results by yourself, first yo
 Current benchmarks:
 | Name of test | Time |
 | ------------- | ------------- |
-| GroebnerBasisLibBuchberger_cyclic4_rational  | 10474.6 milliseconds. | 
-| buchberger_cyclic4  | 1375.32 milliseconds. | 
-| buchberger_with_criterion_cyclic4_rational  | 830.283 milliseconds. | 
-| GroebnerBasisLibF4_cyclic4_rational  | 3098.22 milliseconds. | 
-| f4_cyclic4  | 105.864 milliseconds. | 
-| openf4_cyclic4  | 508.256 milliseconds. | 
-| f4_katsura4  | 162.999 milliseconds. | 
-| GroebnerBasisLibF4_katsura4  | 2021.25 milliseconds. | 
-| openf4_katsura4  | 479.571 milliseconds. | 
-| f4_sym3-3  | 507.267 milliseconds. | 
-| openf4_sym3-3  | 484.556 milliseconds. | 
+| GroebnerBasisLibBuchberger_cyclic4_rational  | 10463.2 milliseconds. | 
+| buchberger_cyclic4  | 1343.74 milliseconds. | 
+| buchberger_with_criterion_cyclic4_rational  | 820.6 milliseconds. | 
+| GroebnerBasisLibF4_cyclic4_rational  | 3038.68 milliseconds. | 
+| f4_cyclic4  | 83.32 milliseconds. | 
+| openf4_cyclic4  | 504.021 milliseconds. | 
+| f4_katsura4  | 120.388 milliseconds. | 
+| GroebnerBasisLibF4_katsura4  | 2020.44 milliseconds. | 
+| openf4_katsura4  | 481.079 milliseconds. | 
+| f4_sym3-3  | 198.457 milliseconds. | 
+| openf4_sym3-3  | 475.16 milliseconds. | 
