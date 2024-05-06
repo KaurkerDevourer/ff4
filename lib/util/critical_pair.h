@@ -1,6 +1,6 @@
 #pragma once
 
-#include "polynomial.hpp"
+#include "polynomial.h"
 
 namespace FF4 {
     namespace NUtils {

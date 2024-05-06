@@ -2,7 +2,7 @@
 
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
-#include "../lib/util/prime_field.hpp"
+#include "../lib/util/prime_field.h"
 #include "../lib/algo/util/groebner_basis_util.h"
 
 void test_f4() {

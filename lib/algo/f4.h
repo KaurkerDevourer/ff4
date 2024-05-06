@@ -1,5 +1,5 @@
 #pragma once
-#include "../util/critical_pair.hpp"
+#include "../util/critical_pair.h"
 #include "util/groebner_basis_util.h"
 #include "util/matrix_reduction.h"
 #include <cassert>
