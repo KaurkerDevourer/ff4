@@ -5,57 +5,55 @@
 
 namespace NUtils {
 
-    template <typename TCoef>
-    using TMonomials = std::vector<Monomial<TCoef>>;
-
-    template <typename TCoef, typename TComp>
-    void DebugCheckPolynomialIsCorrect(TMonomials<TCoef>& monomials) {
-        bool isSorted = true;
-        size_t cnt = 0;
-        for (size_t i = 0; i < monomials.size(); i++) {
-            if (monomials[i].GetCoef() == 0) {
-                cnt++;
-                continue;
-            }
-            monomials[i] = monomials[i + cnt];
-            if (i != 0 && TComp()(monomials[i - 1], monomials[i])) {
-                isSorted = false;
-            }
-            i++;
-        }
-        if (cnt) {
-            std::cout << "Zero coef" << std::endl;
-            monomials.erase(monomials.end() - cnt, monomials.end());
-        }
-
-        assert(isSorted);
-        if (!isSorted) {
-            std::cout << "!IsSorted" << std::endl;
-            for (size_t i = 0; i < monomials.size(); i++) {
-                std::cout << monomials[i] << ' ';
-            }
-            std::cout << std::endl;
-            std::sort(monomials.rbegin(), monomials.rend(), TComp());
-        }
-    }
-
     template <typename TCoef, typename TComp>
     class Polynomial {
+        using TMonomials = std::vector<Monomial<TCoef>>;
+
+        bool isPolynomialCorrect(TMonomials& monomials) {
+            bool isSorted = true;
+            size_t cnt = 0;
+            for (size_t i = 0; i < monomials.size(); i++) {
+                if (monomials[i].GetCoef() == 0) {
+                    cnt++;
+                    continue;
+                }
+                monomials[i] = monomials[i + cnt];
+                if (i != 0 && TComp()(monomials[i - 1], monomials[i])) {
+                    isSorted = false;
+                }
+                i++;
+            }
+            if (cnt) {
+                std::cout << "Zero coef" << std::endl;
+                for (size_t i = 0; i < monomials.size(); i++) {
+                    std::cout << monomials[i] << ' ';
+                }
+                monomials.erase(monomials.end() - cnt, monomials.end());
+                return false;
+            }
+
+            if (!isSorted) {
+                std::cout << "!IsSorted" << std::endl;
+                for (size_t i = 0; i < monomials.size(); i++) {
+                    std::cout << monomials[i] << ' ';
+                }
+                std::cout << std::endl;
+                std::sort(monomials.rbegin(), monomials.rend(), TComp());
+                return false;
+            }
+            return true;
+        }
+
     public:
         Polynomial() = default;
 
-        Polynomial(TMonomials<TCoef>&& monomials)
+        Polynomial(TMonomials&& monomials)
         : monomials_(std::move(monomials))
-        , isRemoved_(false)
         {
-            #ifdef NDEBUG
-                // nondebug
-            #else
-                DebugCheckPolynomialIsCorrect<TCoef, TComp>(monomials_);
-            #endif
+            assert(isPolynomialCorrect(monomials_));
         }
 
-        const TMonomials<TCoef>& GetMonomials() const noexcept {
+        const TMonomials& GetMonomials() const noexcept {
             return monomials_;
         }
 
@@ -65,14 +63,6 @@ namespace NUtils {
 
         const TTerm& GetLeadingTerm() const noexcept {
             return monomials_[0].GetTerm();
-        }
-
-        void MakeRemoved() {
-            isRemoved_ = true;
-        }
-
-        bool IsRemoved() const {
-            return isRemoved_;
         }
 
         bool IsZero() const noexcept {
@@ -94,25 +84,20 @@ namespace NUtils {
         }
 
         Polynomial operator-() const noexcept {
-            TMonomials<TCoef> monomials(monomials_.size());
-            for (size_t i = 0; i < monomials_.size(); i++) {
-                monomials[i] = -monomials_[i];
+            TMonomials monomials = monomials_;
+            for (size_t i = 0; i < monomials.size(); i++) {
+                monomials[i] *= -1;
             }
             return Polynomial(std::move(monomials));
         }
 
         friend bool operator==(const Polynomial& left, const Polynomial& right) noexcept {
-            const TMonomials<TCoef>& lefTMonomials = left.GetMonomials();
-            const TMonomials<TCoef>& righTMonomials = right.GetMonomials();
-            if (lefTMonomials.size() != righTMonomials.size()) {
+            const TMonomials& leftMonomials = left.GetMonomials();
+            const TMonomials& rightMonomials = right.GetMonomials();
+            if (leftMonomials.size() != rightMonomials.size()) {
                 return false;
             }
-            for (size_t i = 0; i < lefTMonomials.size(); i++) {
-                if (lefTMonomials[i] != righTMonomials[i]) {
-                    return false;
-                }
-            }
-            return true;
+            return leftMonomials == rightMonomials;
         }
 
         friend bool operator!=(const Polynomial& left, const Polynomial& right) noexcept {
@@ -120,7 +105,7 @@ namespace NUtils {
         }
 
         Polynomial& operator+=(const Polynomial& other) noexcept {
-            TMonomials<TCoef> monomials;
+            TMonomials monomials;
             monomials.reserve(monomials_.size() + other.monomials_.size());
             size_t i = 0;
             size_t j = 0;
@@ -202,12 +187,12 @@ namespace NUtils {
         }
 
         Polynomial& operator*=(const Polynomial& polynomial) noexcept {
-            const TMonomials<TCoef>& monomials = polynomial.GetMonomials();
+            const TMonomials& monomials = polynomial.GetMonomials();
             Polynomial newPolynomial;
             for (size_t i = 0; i < monomials.size(); i++) {
-                Polynomial tmpMonomials = (*this);
-                tmpMonomials *= monomials[i];
-                newPolynomial += tmpMonomials;
+                Polynomial addPolynomial = *this;
+                addPolynomial *= monomials[i];
+                newPolynomial += addPolynomial;
             }
             *this = std::move(newPolynomial);
             return *this;
@@ -231,7 +216,7 @@ namespace NUtils {
         }
 
         friend std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
-            const TMonomials<TCoef>& monomials = polynomial.GetMonomials();
+            const TMonomials& monomials = polynomial.GetMonomials();
             for (size_t i = 0; i < monomials.size(); i++) {
                 if (i > 0 && monomials[i].GetCoef().MoreThanZero()) {
                     out << " + ";
@@ -242,22 +227,11 @@ namespace NUtils {
         }
 
     private:
-        TMonomials<TCoef> monomials_;
-        bool isRemoved_ = false;
+        TMonomials monomials_;
     };
 
     template <typename TCoef, typename TComp>
     using TPolynomials = std::vector<Polynomial<TCoef, TComp>>;
-
-    std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
-        std::queue<std::pair<size_t, size_t>> pairs_to_check;
-        for (size_t i = 0; i < sz; i++) {
-            for (size_t j = i + 1; j < sz; j++) {
-                pairs_to_check.push({i, j});
-            }
-        }
-        return pairs_to_check;
-    }
 
     template <typename TCoef, typename TComp>
     std::ostream& operator<<(std::ostream& out, const TPolynomials<TCoef, TComp>& polynomials) noexcept {

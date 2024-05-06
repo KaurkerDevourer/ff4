@@ -20,7 +20,6 @@ namespace NAlgo {
             TPolynomials<TCoef, TComp>& F = L.first;
             std::map<TTerm, size_t> Mp;
             std::vector<TTerm> vTerms(diffSet.size());
-            std::set<TTerm> leadingTerms;
             size_t cnt = 0;
             auto it = Mp.begin();
             for (const auto& term : diffSet) {
@@ -33,6 +32,7 @@ namespace NAlgo {
                     matrix[i][j] = 0;
                 }
             }
+            std::set<TTerm> leadingTerms;
             for (size_t i = 0; i < F.size(); i++) {
                 leadingTerms.insert(F[i].GetLeadingTerm());
                 for (const auto& m : F[i].GetMonomials()) {
@@ -76,7 +76,7 @@ namespace NAlgo {
             TPolynomials<TCoef, TComp> reduced;
             reduced.reserve(F.size());
             for (size_t i = 0; i < F.size(); i++) {
-                TMonomials<TCoef> mons;
+                std::vector<Monomial<TCoef>> mons;
                 bool shouldAdd = false;
                 for (int j = 0; j < diffSet.size(); j++) {
                     if (matrix[i][j] == 0) {

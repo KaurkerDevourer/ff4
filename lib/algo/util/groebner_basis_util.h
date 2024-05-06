@@ -5,6 +5,17 @@
 namespace NAlgo {
     namespace NUtil {
         using namespace NUtils;
+
+        std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
+            std::queue<std::pair<size_t, size_t>> pairs_to_check;
+            for (size_t i = 0; i < sz; i++) {
+                for (size_t j = i + 1; j < sz; j++) {
+                    pairs_to_check.push({i, j});
+                }
+            }
+            return pairs_to_check;
+        }
+
         template <typename TCoef, typename TComp>
         bool ReduceToZero(Polynomial<TCoef, TComp>& F, const TPolynomials<TCoef, TComp>& polynomialsSet) {
             if (F.IsZero()) {

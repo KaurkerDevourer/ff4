@@ -6,7 +6,7 @@ namespace NAlgo {
         using namespace NUtils;
         template <typename TCoef, typename TComp>
         void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
-            std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheck(F.size());
+            std::queue<std::pair<size_t, size_t> > pairs_to_check = NUtil::GetPairsToCheck(F.size());
 
             while(!pairs_to_check.empty()) {
                 const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];

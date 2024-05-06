@@ -23,7 +23,7 @@ namespace NAlgo {
                     if (NUtil::CheckProductCriteria(polynomials[i], polynomials[j])) {
                         continue;
                     }
-                    pairs_to_check.insert(CriticalPair(&polynomials, i, j));
+                    pairs_to_check.insert(CriticalPair(polynomials, i, j));
                 }
             }
             return pairs_to_check;
@@ -62,8 +62,8 @@ namespace NAlgo {
             TPolynomials<TCoef, TComp> L;
             L.reserve(selected.size() * 2);
             for (const auto& pair : selected) {
-                L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft()); // add left
-                L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight()); // add right
+                L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft());
+                L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight());
             }
 
             NUtil::TDiffSet<TComp> diff;
@@ -126,7 +126,7 @@ namespace NAlgo {
                                 ++it;
                             }
                         }
-                        pairs_to_check.insert(CriticalPair(&F, j, idx));
+                        pairs_to_check.insert(CriticalPair(F, j, idx));
                     }
                 }
             };

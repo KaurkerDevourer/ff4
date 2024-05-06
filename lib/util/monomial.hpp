@@ -10,11 +10,11 @@ namespace NUtils {
 
         Monomial(TTerm&& term, TCoef coef = 1)
         : term_(std::move(term))
-        , coef_(coef)
+        , coef_(std::move(coef))
         {
         }
 
-        Monomial(const TTerm& term, TCoef coef)
+        Monomial(const TTerm& term, TCoef coef = 1)
         : term_(term)
         , coef_(coef)
         {
@@ -26,14 +26,6 @@ namespace NUtils {
 
         const TCoef& GetCoef() const noexcept {
             return coef_;
-        }
-
-        int64_t GetNumerator() const noexcept {
-            return coef_.GetNumerator();
-        }
-
-        int64_t GetDenominator() const noexcept {
-            return coef_.GetDenominator();
         }
 
         void AddCoef(const Monomial& other) noexcept {
@@ -49,8 +41,7 @@ namespace NUtils {
         }
 
         Monomial operator-() const noexcept {
-            TTerm tmpTerm = term_;
-            return Monomial(std::move(tmpTerm), -coef_);
+            return Monomial(term_ -coef_);
         }
 
         friend bool operator==(const Monomial& left, const Monomial& right) noexcept {
@@ -101,6 +92,7 @@ namespace NUtils {
 
         Monomial& operator/=(const Monomial& other) {
             assert(other.GetCoef() != 0);
+            assert(term_.IsDivisibleBy(other.GetTerm()));
             coef_ /= other.GetCoef();
             term_ /= other.GetTerm();
             return *this;

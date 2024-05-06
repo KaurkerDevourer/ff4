@@ -7,12 +7,11 @@ namespace NUtils {
     template<typename TCoef, typename TComp>
     class CriticalPair {
         public:
-            CriticalPair() = default;
-            CriticalPair(const TPolynomials<TCoef, TComp>* F, size_t i, size_t j)
+            CriticalPair(const TPolynomials<TCoef, TComp>& F, size_t i, size_t j)
                 : F_(F)
                 , left_idx_(i)
                 , right_idx_(j)
-                , Glcm_(Monomial(lcm((*F)[i].GetLeadingTerm(), (*F)[j].GetLeadingTerm()), TCoef(1)))
+                , Glcm_(Monomial(lcm(F[i].GetLeadingTerm(), F[j].GetLeadingTerm()), TCoef(1)))
                 , degree_(Glcm_.GetTerm().GetDegree())
             {
             }
@@ -30,23 +29,23 @@ namespace NUtils {
             }
 
             const Polynomial<TCoef, TComp>& GetLeft() const noexcept {
-                return (*F_)[left_idx_];
+                return F_[left_idx_];
             }
 
             const Polynomial<TCoef, TComp>& GetRight() const noexcept {
-                return (*F_)[right_idx_];
+                return F_[right_idx_];
             }
 
             const TTerm& GetLeftTerm() const noexcept {
-                return (*F_)[left_idx_].GetLeadingTerm();
+                return F_[left_idx_].GetLeadingTerm();
             }
 
             const TTerm& GetRightTerm() const noexcept {
-                return (*F_)[right_idx_].GetLeadingTerm();
+                return F_[right_idx_].GetLeadingTerm();
             }
 
         private:
-            const TPolynomials<TCoef, TComp>* F_;
+            const TPolynomials<TCoef, TComp>& F_;
             size_t left_idx_;
             size_t right_idx_;
             Monomial<TCoef> Glcm_;

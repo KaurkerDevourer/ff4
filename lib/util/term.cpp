@@ -9,7 +9,7 @@ namespace NUtils {
             term.sum_ += term[i];
         }
         term.Normalize();
-        return std::move(term);
+        return term;
     }
 
     TTerm lcm(const TTerm& left, const TTerm& right) noexcept {
@@ -29,7 +29,7 @@ namespace NUtils {
             term.sum_ += term[i];
         }
         term.Normalize();
-        return std::move(term);
+        return term;
     }
 
     bool TTerm::IsDivisibleBy(const TTerm& other) const noexcept {
@@ -49,13 +49,12 @@ namespace NUtils {
     }
 
     TTerm& TTerm::operator/=(const TTerm& other) noexcept {
-        if (other.size() > size()) {
-            resize(other.size());
-        }
+        assert(other.size() <= size());
         for (size_t i = 0; i < other.size(); i++) {
-            sum_ -= other[i];
+            assert((*this[i]) >= other[i]);
             (*this)[i] -= other[i];
         }
+        sum_ -= other.sum_;
         Normalize();
         return *this;
     }
@@ -65,9 +64,9 @@ namespace NUtils {
             resize(other.size());
         }
         for (size_t i = 0; i < other.size(); i++) {
-            sum_ += other[i];
             (*this)[i] += other[i];
         }
+        sum_ += other.sum_;
         return *this;
     }
 
@@ -86,10 +85,9 @@ namespace NUtils {
             return out << "1";
         }
         for (size_t i = 0; i < term.size(); i++) {
-            if (term[i] == 1) {
-                out << "x_" << i;
-            } else if (term[i] != 0) {
-                out << "x_" << i << "^{" << term[i] << "}";
+            out << "x_" << i;
+            if (term[i] != 0) {
+                out << term[i] << "}";
             }
         }
         return out;
