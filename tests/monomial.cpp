@@ -5,7 +5,7 @@
 #include <cassert>
 
 void test_monomial() {
-    using namespace NUtils;
+    using namespace FF4::NUtils;
     Monomial a(TTerm({0, 2}), 2);
     Monomial b(TTerm({1, 0}), 3);
 

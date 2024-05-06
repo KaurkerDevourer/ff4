@@ -4,7 +4,7 @@
 #include <cassert>
 
 void test_term() {
-    using namespace NUtils;
+    using namespace FF4::NUtils;
     TTerm a({1, 2, 3});
     TTerm b({3, 2, 1});
     ASSERT_EQUAL(lcm(a, b), TTerm({3, 2, 3}));

@@ -6,7 +6,7 @@
 #include "../lib/algo/util/groebner_basis_util.h"
 
 void test_f4() {
-    using namespace NUtils;
+    using namespace FF4::NUtils;
     // cyclic-4
     {
         std::vector<Monomial<Rational>> amon;
@@ -41,10 +41,10 @@ void test_f4() {
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
         std::cout << "F4: " << test << std::endl;
-        NAlgo::F4::FindGroebnerBasis(test);
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        FF4::NAlgo::F4::FindGroebnerBasis(test);
         std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
         std::cout << test << std::endl;
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
     // cyclic-4-prime-field
     {
@@ -80,10 +80,10 @@ void test_f4() {
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
         std::cout << "F4: " << test << std::endl;
-        NAlgo::F4::FindGroebnerBasis(test);
+        FF4::NAlgo::F4::FindGroebnerBasis(test);
         std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
         std::cout << test << std::endl;
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
 
     // katsura4
@@ -124,10 +124,10 @@ void test_f4() {
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
         std::cout << "F4: " << test << std::endl;
-        NAlgo::F4::FindGroebnerBasis(test);
+        FF4::NAlgo::F4::FindGroebnerBasis(test);
         std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
         std::cout << test << std::endl;
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
 
     // sym3-3
@@ -155,9 +155,9 @@ void test_f4() {
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
         std::cout << "F4: " << test << std::endl;
-        NAlgo::F4::FindGroebnerBasis(test);
+        FF4::NAlgo::F4::FindGroebnerBasis(test);
         std::cout << "Size of Groebner basis by F4: " << test.size() << std::endl;
         std::cout << test << std::endl;
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
     }
 }

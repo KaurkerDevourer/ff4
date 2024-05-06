@@ -4,7 +4,7 @@
 #include <cassert>
 
 void test_polynomial() {
-    using namespace NUtils;
+    using namespace FF4::NUtils;
     std::vector<Monomial<Rational>> amon;
     amon.push_back(Monomial(TTerm({3}), Rational(1)));
     amon.push_back(Monomial(TTerm({1, 1}), Rational(-2)));

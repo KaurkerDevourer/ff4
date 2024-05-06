@@ -7,7 +7,7 @@
 #include "../lib/util/comp.hpp"
 
 void test_buchberger() {
-    using namespace NUtils;
+    using namespace FF4::NUtils;
     // cyclic-4-
     {
         std::vector<Monomial<Rational>> amon;
@@ -42,8 +42,8 @@ void test_buchberger() {
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
         std::cout << "Buchberger: " << test << std::endl;
-        NAlgo::Buchberger::FindGroebnerBasis(test);
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        FF4::NAlgo::Buchberger::FindGroebnerBasis(test);
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
         std::cout << "Size of Groebner basis by Buchberger: " << test.size() << std::endl;
         std::cout << test << std::endl;
     }
@@ -81,8 +81,8 @@ void test_buchberger() {
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
         std::cout << "Buchberger with criterias: " << test << std::endl;
-        NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(test);
-        assert(NAlgo::NUtil::CheckBasisIsGroebner(test));
+        FF4::NAlgo::Buchberger::FindGroebnerBasis(test);
+        assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
         std::cout << "Size of Groebner basis by Buchberger with criterias: " << test.size() << std::endl;
         std::cout << test << std::endl;
     }
