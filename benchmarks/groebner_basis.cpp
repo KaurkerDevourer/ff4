@@ -130,35 +130,6 @@ namespace  {
 }
 
 void benchmark_cyclic4_rational() {
-    // {
-    //     gb::Polynomial<gb::fields::Rational> i1({
-    //         {{{1, 1, 1, 1}}, 1},
-    //         {{{0}}, -1},
-    //     });
-    //     gb::Polynomial<gb::fields::Rational> i2({
-    //         {{{1, 1, 1}}, 1},
-    //         {{{1, 1, 0, 1}}, 1},
-    //         {{{1, 0, 1, 1}}, 1},
-    //         {{{0, 1, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i3({
-    //         {{{1, 1}}, 1},
-    //         {{{1, 0, 0, 1}}, 1},
-    //         {{{0, 1, 1, 0}}, 1},
-    //         {{{0, 0, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i4({
-    //         {{{1}}, 1},
-    //         {{{0, 1}}, 1},
-    //         {{{0, 0, 1}}, 1},
-    //         {{{0, 0, 0, 1}}, 1},
-    //     });
-    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-    //     test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_cyclic4_rational ").call(ideal);
-    // }
-
     {
         std::vector<Monomial<Rational>> amon;
         amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
@@ -227,35 +198,6 @@ void benchmark_cyclic4_rational() {
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
         test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4_rational ").call(test);
     }
-
-    // {
-    //     gb::Polynomial<gb::fields::Rational> i1({
-    //         {{{1, 1, 1, 1}}, 1},
-    //         {{{0}}, -1},
-    //     });
-    //     gb::Polynomial<gb::fields::Rational> i2({
-    //         {{{1, 1, 1}}, 1},
-    //         {{{1, 1, 0, 1}}, 1},
-    //         {{{1, 0, 1, 1}}, 1},
-    //         {{{0, 1, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i3({
-    //         {{{1, 1}}, 1},
-    //         {{{1, 0, 0, 1}}, 1},
-    //         {{{0, 1, 1, 0}}, 1},
-    //         {{{0, 0, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i4({
-    //         {{{1}}, 1},
-    //         {{{0, 1}}, 1},
-    //         {{{0, 0, 1}}, 1},
-    //         {{{0, 0, 0, 1}}, 1},
-    //     });
-    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-    //     test_time(FindGroebnerBasisF4Lib, "GroebnerBasisLibF4_cyclic4_rational ").call(ideal);
-    // }
 }
 
 
@@ -293,6 +235,36 @@ void benchmark_cyclic4_prime_field() {
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
         test_time(FindGroebnerBasisF4PrimeField, "f4_cyclic4 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 1}}, 1},
+            {{{0, 1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
     }
     {
         std::vector<std::string> polynomialList;
@@ -407,7 +379,7 @@ void benchmark_sym3_3() {
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         std::vector<Monomial<PrimeField<31>>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 3, 0}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(TTerm({1, 3}), PrimeField<31>(1)));
         cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(1)));
         cmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
 
@@ -415,6 +387,28 @@ void benchmark_sym3_3() {
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
         test_time(FindGroebnerBasisF4PrimeField, "f4_sym3-3 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{0, 1, 3}}, 1},
+            {{{1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{3, 0, 1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 3}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3});
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_sym3-3 ").call(ideal);
     }
     {
         std::vector<std::string> polynomialList;

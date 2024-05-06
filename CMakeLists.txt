@@ -8,23 +8,14 @@ set(CMAKE_CXX_EXTENSIONS false)
 
 
 add_library(util
-    lib/util/critical_pair.h
-    lib/util/comp.h
-    lib/util/monomial.h
-    lib/util/polynomial.h
-    lib/util/prime_field.h
+    lib/util
     lib/util/rational.cpp
-    lib/util/rational.h
-    lib/util/term.cpp
-    lib/util/term.h)
+    lib/util/term.cpp)
 
 add_library(algo
     INTERFACE
-    lib/algo/util/groebner_basis_util.h
-    lib/algo/util/matrix_reduction.h
-    lib/algo/f4.h
-    lib/algo/buchberger.h
-    lib/algo/buchberger_with_criterias.h)
+    lib/algo/util/
+    lib/algo/)
 
 add_library(external
     external/GroebnerBasisFork/GroebnerLib/includes/PolynomialSet.hpp
