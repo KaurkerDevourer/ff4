@@ -1,6 +1,6 @@
 #pragma once
-#include "../../util/polynomial.hpp"
-#include "../../util/comp.hpp"
+#include "../../util/polynomial.h"
+#include "../../util/comp.h"
 #include <set>
 #include <map>
 #include <cstring>

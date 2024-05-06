@@ -1,5 +1,5 @@
 #pragma once
-#include "monomial.hpp"
+#include "monomial.h"
 #include <vector>
 #include <queue>
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "monomial.hpp"
-#include "critical_pair.hpp"
+#include "monomial.h"
+#include "critical_pair.h"
 
 namespace FF4 {
     namespace NUtils {

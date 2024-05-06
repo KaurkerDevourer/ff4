@@ -4,7 +4,7 @@
 #include "../lib/algo/buchberger_with_criterias.h"
 #include "../lib/util/rational.h"
 #include "../lib/algo/util/groebner_basis_util.h"
-#include "../lib/util/comp.hpp"
+#include "../lib/util/comp.h"
 
 void test_buchberger() {
     using namespace FF4::NUtils;

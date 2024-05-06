@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../util/polynomial.hpp"
+#include "../../util/polynomial.h"
 
 namespace FF4 {
     namespace NAlgo {

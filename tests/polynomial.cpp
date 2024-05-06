@@ -1,4 +1,4 @@
-#include "../lib/util/polynomial.hpp"
+#include "../lib/util/polynomial.h"
 #include "testing.h"
 #include <iostream>
 #include <cassert>

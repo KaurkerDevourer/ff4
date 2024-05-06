@@ -7,7 +7,7 @@
 #include "../lib/algo/buchberger_with_criterias.h"
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
-#include "../lib/util/prime_field.hpp"
+#include "../lib/util/prime_field.h"
 #include <libopenf4.h>
 
 using namespace FF4;
