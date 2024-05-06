@@ -4,8 +4,8 @@
 #include <cassert>
 
 void test_polynomial() {
-    using namespace NUtils;
-    TMonomials<Rational> amon;
+    using namespace FF4::NUtils;
+    std::vector<Monomial<Rational>> amon;
     amon.push_back(Monomial(TTerm({3}), Rational(1)));
     amon.push_back(Monomial(TTerm({1, 1}), Rational(-2)));
 
@@ -22,17 +22,17 @@ void test_polynomial() {
     ASSERT_EQUAL(d.GetMonomials()[1], Monomial(TTerm({1, 3}), Rational(-6)));
 
 
-    TMonomials<Rational> emon;
+    std::vector<Monomial<Rational>> emon;
     emon.push_back(Monomial(TTerm({1}), Rational(1)));
     emon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
     Polynomial<Rational, LexComp> e(std::move(emon));
 
-    TMonomials<Rational> fmon;
+    std::vector<Monomial<Rational>> fmon;
     fmon.push_back(Monomial(TTerm({1}), Rational(1)));
     fmon.push_back(Monomial(TTerm({0, 1}), Rational(-1)));
     Polynomial<Rational, LexComp> f(std::move(fmon));
 
-    TMonomials<Rational> kmon;
+    std::vector<Monomial<Rational>> kmon;
     kmon.push_back(Monomial(TTerm({2}), Rational(1)));
     kmon.push_back(Monomial(TTerm({0, 2}), Rational(-1)));
     Polynomial<Rational, LexComp> k(std::move(kmon));

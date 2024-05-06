@@ -28,9 +28,7 @@ add_library(algo
     lib/algo/buchberger.cpp
     lib/algo/buchberger.h
     lib/algo/buchberger_with_criterias.cpp
-    lib/algo/buchberger_with_criterias.h
-    lib/algo/buchberger_with_criterias_version2.cpp
-    lib/algo/buchberger_with_criterias_version2.h)
+    lib/algo/buchberger_with_criterias.h)
 
 add_library(external
     external/GroebnerBasisFork/GroebnerLib/includes/PolynomialSet.hpp
