@@ -40,7 +40,7 @@ namespace FF4 {
                 const Monomial<TCoef>& am = a.GetLeadingMonomial();
                 const Monomial<TCoef>& bm = b.GetLeadingMonomial();
                 const TTerm t = gcd(am.GetTerm(), bm.GetTerm());
-                return t.GetDegree() == 0;
+                return t.TotalDegree() == 0;
             }
 
             template <typename TCoef, typename TComp>

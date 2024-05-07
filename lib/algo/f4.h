@@ -17,7 +17,7 @@ namespace FF4 {
 
             // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
             template <typename TCoef, typename TComp>
-            TPairsSet<TCoef, TComp> GetPairsToCheckWithCriterias(const TPolynomials<TCoef, TComp>& polynomials) {
+            TPairsSet<TCoef, TComp> GetPairsToCheckWithCriteria(const TPolynomials<TCoef, TComp>& polynomials) {
                 TPairsSet<TCoef, TComp> pairs_to_check;
                 for (size_t i = 0; i < polynomials.size(); i++) {
                     for (size_t j = i + 1; j < polynomials.size(); j++) {
@@ -33,8 +33,8 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             TPairsVector<TCoef, TComp> Select(TPairsSet<TCoef, TComp>& pairs_to_check) {
                 TPairsVector<TCoef, TComp> selectionGroup;
-                uint64_t value = pairs_to_check.begin()->GetDegree();
-                while(pairs_to_check.size() && pairs_to_check.begin()->GetDegree() == value) {
+                uint64_t value = pairs_to_check.begin()->TotalDegree();
+                while(pairs_to_check.size() && pairs_to_check.begin()->TotalDegree() == value) {
                     selectionGroup.push_back(*pairs_to_check.begin());
                     pairs_to_check.erase(pairs_to_check.begin());
                 }
@@ -102,7 +102,7 @@ namespace FF4 {
                 for (auto& f : F) {
                     f.Normalize();
                 }
-                TPairsSet<TCoef, TComp> pairs_to_check = GetPairsToCheckWithCriterias(F);
+                TPairsSet<TCoef, TComp> pairs_to_check = GetPairsToCheckWithCriteria(F);
 
                 while(!pairs_to_check.empty()) {
                     TPairsVector<TCoef, TComp> selection_group = Select(pairs_to_check);

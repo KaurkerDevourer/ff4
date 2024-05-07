@@ -4,7 +4,7 @@
 #include "../external/GroebnerBasisFork/GroebnerLib/includes/F4GB.hpp"
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
-#include "../lib/algo/buchberger_with_criterias.h"
+#include "../lib/algo/buchberger_with_criteria.h"
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
 #include "../lib/util/prime_field.h"
@@ -66,10 +66,10 @@ namespace  {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<Rational, LexComp> F2 = F;
-                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
@@ -79,10 +79,10 @@ namespace  {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
-                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif

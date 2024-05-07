@@ -2,11 +2,19 @@
 
 namespace FF4 {
     namespace NUtils {
+        TTerm::TTerm(std::initializer_list<uint64_t> il) : TBase(il) {
+            Normalize();
+            for (size_t i = 0; i < (*this).size(); i++) {
+                sum_ += (*this)[i];
+            }
+        }
+
         TTerm gcd(const TTerm& left, const TTerm& right) noexcept {
             size_t sz = std::min(left.size(), right.size());
-            TTerm term(sz);
+            TTerm term;
+            term.reserve(sz);
             for (size_t i = 0; i < sz; i++) {
-                term[i] = std::min(left[i], right[i]);
+                term.push_back(std::min(left[i], right[i]));
                 term.sum_ += term[i];
             }
             term.Normalize();
@@ -16,17 +24,18 @@ namespace FF4 {
         TTerm lcm(const TTerm& left, const TTerm& right) noexcept {
             size_t sz = std::min(left.size(), right.size());
             size_t lcm_sz = std::max(left.size(), right.size());
-            TTerm term(lcm_sz);
+            TTerm term;
+            term.reserve(lcm_sz);
             for (size_t i = 0; i < sz; i++) {
-                term[i] = std::max(left[i], right[i]);
+                term.push_back(std::max(left[i], right[i]));
                 term.sum_ += term[i];
             }
             for (size_t i = left.size(); i < lcm_sz; i++) {
-                term[i] = right[i];
+                term.push_back(right[i]);
                 term.sum_ += term[i];
             }
             for (size_t i = right.size(); i < lcm_sz; i++) {
-                term[i] = left[i];
+                term.push_back(left[i]);
                 term.sum_ += term[i];
             }
             term.Normalize();
@@ -45,7 +54,7 @@ namespace FF4 {
             return true;
         };
 
-        uint64_t TTerm::GetDegree() const noexcept {
+        uint64_t TTerm::TotalDegree() const noexcept {
             return sum_;
         }
 

@@ -4,18 +4,18 @@
 
 namespace FF4 {
     namespace NUtils {
-        Rational::Rational(numerator numerator, denominator denominator)
+        Rational::Rational(Integer numerator, Integer denominator)
         : numerator_(numerator)
         , denominator_(denominator)
         {
             Normalize();
         }
 
-        numerator Rational::GetNumerator() const noexcept {
+        int64_t Rational::GetNumerator() const noexcept {
             return numerator_;
         }
 
-        denominator Rational::GetDenominator() const noexcept {
+        int64_t Rational::GetDenominator() const noexcept {
             return denominator_;
         }
 
@@ -76,7 +76,7 @@ namespace FF4 {
         }
 
         Rational& Rational::operator/=(const Rational& other) {
-            //assert(other != 0);
+            assert(other != 0);
             numerator_ *= other.GetDenominator();
             denominator_ *= other.GetNumerator();
             Normalize();
@@ -97,7 +97,7 @@ namespace FF4 {
         }
 
         bool operator<=(const Rational& left, const Rational& right) noexcept {
-            return left.numerator_ * right.denominator_ <= right.numerator_ * left.denominator_;
+            return !(right < left);
         }
 
         bool operator>=(const Rational& left, const Rational& right) noexcept {
@@ -142,7 +142,7 @@ namespace FF4 {
             if (numerator_ == 0) {
                 return;
             }
-            int64_t gcd = std::gcd(abs(numerator_), abs(denominator_));
+            Integer gcd = std::gcd(numerator_, denominator_);
             numerator_ /= gcd;
             denominator_ /= gcd;
         }

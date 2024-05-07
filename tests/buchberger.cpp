@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../lib/algo/buchberger.h"
-#include "../lib/algo/buchberger_with_criterias.h"
+#include "../lib/algo/buchberger_with_criteria.h"
 #include "../lib/util/rational.h"
 #include "../lib/algo/util/groebner_basis_util.h"
 #include "../lib/util/comp.h"

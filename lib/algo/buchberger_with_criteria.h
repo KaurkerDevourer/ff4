@@ -5,13 +5,13 @@
 
 namespace FF4 {
     namespace NAlgo {
-        namespace BuchbergerWithCreterias {
+        namespace BuchbergerWithCreteria {
             using namespace NUtils;
             using TPairsQueue = std::queue<std::pair<size_t, size_t>>;
 
             // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
             template <typename TCoef, typename TComp>
-            TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef, TComp>& polynomials) {
+            TPairsQueue GetPairsToCheckWithCriteria(const TPolynomials<TCoef, TComp>& polynomials) {
                 TPairsQueue pairs_to_check;
                 for (size_t i = 0; i < polynomials.size(); i++) {
                     for (size_t j = i + 1; j < polynomials.size(); j++) {
@@ -44,7 +44,7 @@ namespace FF4 {
 
             template <typename TCoef, typename TComp>
             void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
-                TPairsQueue pairs_to_check = GetPairsToCheckWithCriterias(F);
+                TPairsQueue pairs_to_check = GetPairsToCheckWithCriteria(F);
 
                 while(!pairs_to_check.empty()) {
                     const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];

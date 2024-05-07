@@ -6,25 +6,17 @@
 namespace FF4 {
     namespace NUtils {
         class TTerm : public std::vector<uint64_t> {
-            private:
                 void Normalize();
             public:
                 using TBase = std::vector<uint64_t>;
                 using size_type = typename TBase::size_type;
 
-                inline TTerm() : TBase() {}
+                inline TTerm() = default;
 
-                inline TTerm(size_type sz) : TBase(sz) {}
-
-                inline TTerm(std::initializer_list<uint64_t> il) : TBase(il) {
-                    Normalize();
-                    for (size_t i = 0; i < (*this).size(); i++) {
-                        sum_ += (*this)[i];
-                    }
-                }
+                TTerm(std::initializer_list<uint64_t> il);
 
                 bool IsDivisibleBy(const TTerm&) const noexcept;
-                uint64_t GetDegree() const noexcept;
+                uint64_t TotalDegree() const noexcept;
                 TTerm& operator*=(const TTerm&) noexcept;
                 friend TTerm operator*(TTerm, const TTerm&) noexcept;
                 TTerm& operator/=(const TTerm&) noexcept;

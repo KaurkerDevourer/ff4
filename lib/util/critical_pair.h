@@ -13,11 +13,11 @@ namespace FF4 {
                     , left_idx_(i)
                     , right_idx_(j)
                     , Glcm_(Monomial(lcm(F[i].GetLeadingTerm(), F[j].GetLeadingTerm()), TCoef(1)))
-                    , degree_(Glcm_.GetTerm().GetDegree())
+                    , degree_(Glcm_.GetTerm().TotalDegree())
                 {
                 }
 
-                uint64_t GetDegree() const noexcept {
+                uint64_t TotalDegree() const noexcept {
                     return degree_;
                 }
 

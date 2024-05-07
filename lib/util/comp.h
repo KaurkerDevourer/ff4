@@ -52,8 +52,8 @@ namespace FF4 {
         public:
 
             bool operator()(const TTerm& left, const TTerm& right) const noexcept {
-                if (left.GetDegree() != right.GetDegree()) {
-                    return left.GetDegree() < right.GetDegree();
+                if (left.TotalDegree() != right.TotalDegree()) {
+                    return left.TotalDegree() < right.TotalDegree();
                 }
                 return RevLexComp()(left, right);
             }
