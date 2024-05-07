@@ -97,7 +97,7 @@ namespace FF4 {
             for (size_t i = 0; i < term.size(); i++) {
                 out << "x_" << i;
                 if (term[i] != 0) {
-                    out << term[i] << "}";
+                    out << "^{" << term[i] << "}";
                 }
             }
             return out;
