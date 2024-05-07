@@ -6,10 +6,10 @@
 
 void test_monomial() {
     using namespace FF4::NUtils;
-    Monomial a(TTerm({0, 2}), 2);
-    Monomial b(TTerm({1, 0}), 3);
+    Monomial a(Term({0, 2}), 2);
+    Monomial b(Term({1, 0}), 3);
 
-    ASSERT_EQUAL(a * b, Monomial(TTerm({1, 2}), 6));
+    ASSERT_EQUAL(a * b, Monomial(Term({1, 2}), 6));
     ASSERT_EQUAL((a * b) / b, a);
     ASSERT_EQUAL((a * b) / a, b);
     ASSERT_EQUAL((a * b), (b * a));

@@ -4,7 +4,7 @@
 #include "../external/GroebnerBasisFork/GroebnerLib/includes/F4GB.hpp"
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
-#include "../lib/algo/buchberger_with_criterias.h"
+#include "../lib/algo/buchberger_with_criteria.h"
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
 #include "../lib/util/prime_field.h"
@@ -66,10 +66,10 @@ namespace  {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<Rational, LexComp> F2 = F;
-                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
@@ -79,10 +79,10 @@ namespace  {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
                 TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
-                NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F2);
+                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreterias::FindGroebnerBasis(F);
+            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
@@ -130,63 +130,34 @@ namespace  {
 }
 
 void benchmark_cyclic4_rational() {
-    // {
-    //     gb::Polynomial<gb::fields::Rational> i1({
-    //         {{{1, 1, 1, 1}}, 1},
-    //         {{{0}}, -1},
-    //     });
-    //     gb::Polynomial<gb::fields::Rational> i2({
-    //         {{{1, 1, 1}}, 1},
-    //         {{{1, 1, 0, 1}}, 1},
-    //         {{{1, 0, 1, 1}}, 1},
-    //         {{{0, 1, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i3({
-    //         {{{1, 1}}, 1},
-    //         {{{1, 0, 0, 1}}, 1},
-    //         {{{0, 1, 1, 0}}, 1},
-    //         {{{0, 0, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i4({
-    //         {{{1}}, 1},
-    //         {{{0, 1}}, 1},
-    //         {{{0, 0, 1}}, 1},
-    //         {{{0, 0, 0, 1}}, 1},
-    //     });
-    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-    //     test_time(FindGroebnerBasisLib, "GroebnerBasisLibBuchberger_cyclic4_rational ").call(ideal);
-    // }
-
     {
         std::vector<Monomial<Rational>> amon;
-        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
-        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+        amon.push_back(Monomial(Term({1, 1, 1, 1}), Rational(1)));
+        amon.push_back(Monomial(Term({0}), Rational(-1)));
 
         Polynomial<Rational, LexComp> a(std::move(amon));
 
         std::vector<Monomial<Rational>> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 1, 0, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 0, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({0, 1, 1, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> b(std::move(bmon));
 
         std::vector<Monomial<Rational>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({1, 0, 0, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> c(std::move(cmon));
 
         std::vector<Monomial<Rational>> dmon;
-        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> d(std::move(dmon));
 
@@ -195,104 +166,105 @@ void benchmark_cyclic4_rational() {
     }
     {
         std::vector<Monomial<Rational>> amon;
-        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), Rational(1)));
-        amon.push_back(Monomial(TTerm({0}), Rational(-1)));
+        amon.push_back(Monomial(Term({1, 1, 1, 1}), Rational(1)));
+        amon.push_back(Monomial(Term({0}), Rational(-1)));
 
         Polynomial<Rational, LexComp> a(std::move(amon));
 
         std::vector<Monomial<Rational>> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), Rational(1)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 1, 0, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({1, 0, 1, 1}), Rational(1)));
+        bmon.push_back(Monomial(Term({0, 1, 1, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> b(std::move(bmon));
 
         std::vector<Monomial<Rational>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 1, 1}), Rational(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({1, 0, 0, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({0, 1, 1}), Rational(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> c(std::move(cmon));
 
         std::vector<Monomial<Rational>> dmon;
-        dmon.push_back(Monomial(TTerm({1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), Rational(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), Rational(1)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), Rational(1)));
 
         Polynomial<Rational, LexComp> d(std::move(dmon));
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
         test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4_rational ").call(test);
     }
-
-    // {
-    //     gb::Polynomial<gb::fields::Rational> i1({
-    //         {{{1, 1, 1, 1}}, 1},
-    //         {{{0}}, -1},
-    //     });
-    //     gb::Polynomial<gb::fields::Rational> i2({
-    //         {{{1, 1, 1}}, 1},
-    //         {{{1, 1, 0, 1}}, 1},
-    //         {{{1, 0, 1, 1}}, 1},
-    //         {{{0, 1, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i3({
-    //         {{{1, 1}}, 1},
-    //         {{{1, 0, 0, 1}}, 1},
-    //         {{{0, 1, 1, 0}}, 1},
-    //         {{{0, 0, 1, 1}}, 1},
-    //     });
-
-    //     gb::Polynomial<gb::fields::Rational> i4({
-    //         {{{1}}, 1},
-    //         {{{0, 1}}, 1},
-    //         {{{0, 0, 1}}, 1},
-    //         {{{0, 0, 0, 1}}, 1},
-    //     });
-    //     gb::PolynomialSet<gb::fields::Rational> ideal({i1, i2, i3, i4});
-    //     test_time(FindGroebnerBasisF4Lib, "GroebnerBasisLibF4_cyclic4_rational ").call(ideal);
-    // }
 }
 
 
 void benchmark_cyclic4_prime_field() {
     {
         std::vector<Monomial<PrimeField<31>>> amon;
-        amon.push_back(Monomial(TTerm({1, 1, 1, 1}), PrimeField<31>(1)));
-        amon.push_back(Monomial(TTerm({0}), PrimeField<31>(-1)));
+        amon.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
 
         std::vector<Monomial<PrimeField<31>>> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1, 1}), PrimeField<31>(1)));
-        bmon.push_back(Monomial(TTerm({1, 1, 0, 1}), PrimeField<31>(1)));
-        bmon.push_back(Monomial(TTerm({1, 0, 1, 1}), PrimeField<31>(1)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 1, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 0, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         std::vector<Monomial<PrimeField<31>>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 1}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({0, 1, 1}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 0, 1}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
 
         std::vector<Monomial<PrimeField<31>>> dmon;
-        dmon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(1)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
         test_time(FindGroebnerBasisF4PrimeField, "f4_cyclic4 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 1}}, 1},
+            {{{0, 1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_cyclic4 ").call(ideal);
     }
     {
         std::vector<std::string> polynomialList;
@@ -309,36 +281,36 @@ void benchmark_cyclic4_prime_field() {
 void benchmark_katsura4() {
     {
         std::vector<Monomial<PrimeField<31>>> amon;
-        amon.push_back(Monomial(TTerm({2}), PrimeField<31>(1)));
-        amon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(2)));
-        amon.push_back(Monomial(TTerm({0, 0, 2}), PrimeField<31>(2)));
-        amon.push_back(Monomial(TTerm({0, 0, 0, 2}), PrimeField<31>(2)));
-        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(-1)));
+        amon.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
 
         std::vector<Monomial<PrimeField<31>>> bmon;
-        bmon.push_back(Monomial(TTerm({1, 1}), PrimeField<31>(2)));
-        bmon.push_back(Monomial(TTerm({0, 1, 1}), PrimeField<31>(2)));
-        bmon.push_back(Monomial(TTerm({0, 0, 1, 1}), PrimeField<31>(2)));
-        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(-1)));
+        bmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         std::vector<Monomial<PrimeField<31>>> cmon;
-        cmon.push_back(Monomial(TTerm({0, 2}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({1, 0, 1}), PrimeField<31>(2)));
-        cmon.push_back(Monomial(TTerm({0, 1, 0, 1}), PrimeField<31>(2)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(-1)));
+        cmon.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
 
         std::vector<Monomial<PrimeField<31>>> dmon;
-        dmon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
-        dmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(2)));
-        dmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(2)));
-        dmon.push_back(Monomial(TTerm({0, 0, 0, 1}), PrimeField<31>(2)));
-        dmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-1)));
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
 
@@ -393,28 +365,50 @@ void benchmark_katsura4() {
 void benchmark_sym3_3() {
     {
         std::vector<Monomial<PrimeField<31>>> amon;
-        amon.push_back(Monomial(TTerm({0, 1, 3}), PrimeField<31>(1)));
-        amon.push_back(Monomial(TTerm({1}), PrimeField<31>(1)));
-        amon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+        amon.push_back(Monomial(Term({0, 1, 3}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
 
         Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
 
         std::vector<Monomial<PrimeField<31>>> bmon;
-        bmon.push_back(Monomial(TTerm({3, 0, 1}), PrimeField<31>(1)));
-        bmon.push_back(Monomial(TTerm({0, 1}), PrimeField<31>(1)));
-        bmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+        bmon.push_back(Monomial(Term({3, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
 
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         std::vector<Monomial<PrimeField<31>>> cmon;
-        cmon.push_back(Monomial(TTerm({1, 3, 0}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({0, 0, 1}), PrimeField<31>(1)));
-        cmon.push_back(Monomial(TTerm({0}), PrimeField<31>(-2)));
+        cmon.push_back(Monomial(Term({1, 3}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
 
         Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
         test_time(FindGroebnerBasisF4PrimeField, "f4_sym3-3 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{0, 1, 3}}, 1},
+            {{{1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{3, 0, 1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 3}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3});
+        test_time(FindGroebnerBasisF4LibModular, "GroebnerBasisLibF4_sym3-3 ").call(ideal);
     }
     {
         std::vector<std::string> polynomialList;

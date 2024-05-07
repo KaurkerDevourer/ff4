@@ -7,7 +7,7 @@ namespace FF4 {
     namespace NUtils {
         class LexComp {
         public:
-            bool operator()(const TTerm& left, const TTerm right) const noexcept {
+            bool operator()(const Term& left, const Term right) const noexcept {
                 return left < right;
             }
 
@@ -26,7 +26,7 @@ namespace FF4 {
 
         class RevLexComp {
         public:
-            bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            bool operator()(const Term& left, const Term& right) const noexcept {
                 if (left.size() != right.size()) {
                     return left.size() > right.size();
                 }
@@ -42,8 +42,8 @@ namespace FF4 {
             bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
                 assert(left.GetCoef() != 0);
                 assert(right.GetCoef() != 0);
-                const TTerm& l = left.GetTerm();
-                const TTerm& r = right.GetTerm();
+                const Term& l = left.GetTerm();
+                const Term& r = right.GetTerm();
                 return RevLexComp()(l, r);
             }
         };
@@ -51,9 +51,9 @@ namespace FF4 {
         class GrevLexComp {
         public:
 
-            bool operator()(const TTerm& left, const TTerm& right) const noexcept {
-                if (left.GetDegree() != right.GetDegree()) {
-                    return left.GetDegree() < right.GetDegree();
+            bool operator()(const Term& left, const Term& right) const noexcept {
+                if (left.TotalDegree() != right.TotalDegree()) {
+                    return left.TotalDegree() < right.TotalDegree();
                 }
                 return RevLexComp()(left, right);
             }
@@ -71,9 +71,9 @@ namespace FF4 {
             }
         };
 
-        class TTermReverseComp {
+        class TermReverseComp {
         public:
-            bool operator()(const TTerm& left, const TTerm& right) const noexcept {
+            bool operator()(const Term& left, const Term& right) const noexcept {
                 return right < left;
             }
         };

@@ -9,19 +9,19 @@ namespace FF4 {
         public:
             Monomial() = default;
 
-            Monomial(TTerm&& term, TCoef coef = 1)
+            Monomial(Term&& term, TCoef coef = 1)
             : term_(std::move(term))
             , coef_(std::move(coef))
             {
             }
 
-            Monomial(const TTerm& term, TCoef coef = 1)
+            Monomial(const Term& term, TCoef coef = 1)
             : term_(term)
             , coef_(coef)
             {
             }
 
-            const TTerm& GetTerm() const noexcept {
+            const Term& GetTerm() const noexcept {
                 return term_;
             }
 
@@ -105,7 +105,7 @@ namespace FF4 {
             }
 
             friend std::ostream& operator<<(std::ostream& out, const Monomial& monomial) noexcept {
-                if (monomial.GetTerm().GetDegree() == 0) {
+                if (monomial.GetTerm().TotalDegree() == 0) {
                     out << monomial.GetCoef();
                 } else if (monomial.GetCoef() == 1) {
                     out << monomial.GetTerm();
@@ -118,7 +118,7 @@ namespace FF4 {
             }
 
         private:
-            TTerm term_;
+            Term term_;
             TCoef coef_;
         };
     }

@@ -4,15 +4,14 @@
 
 namespace FF4 {
     namespace NUtils {
-        using numerator = int64_t;
-        using denominator = int64_t;
         class Rational {
+            using Integer = int64_t;
         public:
-            Rational(numerator numerator = 0, denominator denominator = 1);
+            Rational(Integer numerator = 0, Integer denominator = 1);
 
-            numerator GetNumerator() const noexcept;
-            denominator GetDenominator() const noexcept;
-            bool MoreThanZero() const noexcept ;
+            Integer GetNumerator() const noexcept;
+            Integer GetDenominator() const noexcept;
+            bool MoreThanZero() const noexcept;
 
             Rational operator+() const noexcept;
             Rational operator-() const noexcept;
@@ -44,8 +43,8 @@ namespace FF4 {
         private:
             void Normalize() noexcept;
 
-            numerator numerator_;
-            denominator denominator_;
+            Integer numerator_;
+            Integer denominator_;
         };
     }
 }

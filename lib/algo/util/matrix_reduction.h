@@ -8,19 +8,18 @@
 namespace FF4 {
     namespace NAlgo {
         namespace NUtil {
-            using namespace NUtils;
             template <typename TComp>
-            using TDiffSet = std::set<TTerm, TComp>;
+            using TTermSet = std::set<NUtils::Term, TComp>;
 
             template<typename TCoef, typename TComp>
-            using TSymbolicPreprocessingResult = std::pair<TPolynomials<TCoef, TComp>, TDiffSet<TComp>>;
+            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
 
             template <typename TCoef, typename TComp>
-            TPolynomials<TCoef, TComp> MatrixReduction(NUtil::TSymbolicPreprocessingResult<TCoef, TComp>& L) {
-                TDiffSet<TComp>& diffSet = L.second;
-                TPolynomials<TCoef, TComp>& F = L.first;
-                std::map<TTerm, size_t> Mp;
-                std::vector<TTerm> vTerms(diffSet.size());
+            NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
+                TTermSet<TComp>& diffSet = L.second;
+                NUtils::TPolynomials<TCoef, TComp>& F = L.first;
+                std::map<NUtils::Term, size_t> Mp;
+                std::vector<NUtils::Term> vTerms(diffSet.size());
                 size_t cnt = 0;
                 auto it = Mp.begin();
                 for (const auto& term : diffSet) {
@@ -33,7 +32,7 @@ namespace FF4 {
                         matrix[i][j] = 0;
                     }
                 }
-                std::set<TTerm> leadingTerms;
+                std::set<NUtils::Term> leadingTerms;
                 for (size_t i = 0; i < F.size(); i++) {
                     leadingTerms.insert(F[i].GetLeadingTerm());
                     for (const auto& m : F[i].GetMonomials()) {
@@ -74,10 +73,10 @@ namespace FF4 {
                         break;
                     }
                 }
-                TPolynomials<TCoef, TComp> reduced;
+                NUtils::TPolynomials<TCoef, TComp> reduced;
                 reduced.reserve(F.size());
                 for (size_t i = 0; i < F.size(); i++) {
-                    std::vector<Monomial<TCoef>> mons;
+                    std::vector<NUtils::Monomial<TCoef>> mons;
                     bool shouldAdd = false;
                     for (int j = 0; j < diffSet.size(); j++) {
                         if (matrix[i][j] == 0) {

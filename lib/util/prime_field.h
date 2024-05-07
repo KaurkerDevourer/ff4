@@ -9,7 +9,7 @@ namespace FF4 {
                 return 1;
             }
             if (pow % 2 == 0) {
-                uint64_t half = binpow(value, pow/2, mod);
+                uint64_t half = binpow(value, pow / 2, mod);
                 return (half * half) % mod;
             } else {
                 return (value * binpow(value, pow - 1, mod)) % mod;
@@ -17,10 +17,10 @@ namespace FF4 {
         }
 
         constexpr bool IsPrime(uint32_t n) noexcept {
-            if (n == 1) {
+            if (n == 1 || n % 2 == 0) {
                 return false;
             }
-            for (uint32_t i = 2; i * i <= n; i++) {
+            for (uint32_t i = 3; i * i <= n; i += 2) {
                 if (n % i == 0) {
                     return false;
                 }
@@ -33,10 +33,10 @@ namespace FF4 {
         public:
             PrimeField(int64_t number = 0)
             {
-                if (number < 0) {
-                    number += Mod;
+                number_ = number % Mod;
+                if (number_ < 0) {
+                    number_ += Mod;
                 }
-                number_ = number%Mod;
                 static_assert(IsPrime(Mod));
             }
 
@@ -98,6 +98,7 @@ namespace FF4 {
             }
 
             PrimeField& operator/=(const PrimeField& other) {
+                assert(other.number_ != 0);
                 *this *= binpow(other.number_, Mod - 2, Mod);
                 return *this;
             }
@@ -113,7 +114,6 @@ namespace FF4 {
 
         private:
             int64_t number_;
-            static const uint32_t mod = Mod;
         };
     }
 }

@@ -5,13 +5,12 @@
 
 namespace FF4 {
     namespace NAlgo {
-        namespace BuchbergerWithCreterias {
-            using namespace NUtils;
+        namespace BuchbergerWithCreteria {
             using TPairsQueue = std::queue<std::pair<size_t, size_t>>;
 
             // https://apmi.bsu.by/assets/files/agievich/em-atk.pdf
             template <typename TCoef, typename TComp>
-            TPairsQueue GetPairsToCheckWithCriterias(const TPolynomials<TCoef, TComp>& polynomials) {
+            TPairsQueue GetPairsToCheckWithCriteria(const NUtils::TPolynomials<TCoef, TComp>& polynomials) {
                 TPairsQueue pairs_to_check;
                 for (size_t i = 0; i < polynomials.size(); i++) {
                     for (size_t j = i + 1; j < polynomials.size(); j++) {
@@ -25,7 +24,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            bool ReduceToZero(Polynomial<TCoef, TComp>& F, TPolynomials<TCoef, TComp>& polynomialsSet) {
+            bool ReduceToZero(NUtils::Polynomial<TCoef, TComp>& F, NUtils::TPolynomials<TCoef, TComp>& polynomialsSet) {
                 if (F.IsZero()) {
                     return true;
                 }
@@ -43,17 +42,17 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void FindGroebnerBasis(TPolynomials<TCoef, TComp>& F) {
-                TPairsQueue pairs_to_check = GetPairsToCheckWithCriterias(F);
+            void FindGroebnerBasis(NUtils::TPolynomials<TCoef, TComp>& F) {
+                TPairsQueue pairs_to_check = GetPairsToCheckWithCriteria(F);
 
                 while(!pairs_to_check.empty()) {
-                    const Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
-                    const Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
+                    const NUtils::Polynomial<TCoef, TComp>& fi = F[pairs_to_check.front().first];
+                    const NUtils::Polynomial<TCoef, TComp>& fj = F[pairs_to_check.front().second];
                     pairs_to_check.pop();
-                    const Monomial<TCoef>& gi = fi.GetLeadingMonomial();
-                    const Monomial<TCoef>& gj = fj.GetLeadingMonomial();
-                    Monomial<TCoef> glcm = Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
-                    Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
+                    const NUtils::Monomial<TCoef>& gi = fi.GetLeadingMonomial();
+                    const NUtils::Monomial<TCoef>& gj = fj.GetLeadingMonomial();
+                    NUtils::Monomial<TCoef> glcm = NUtils::Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
+                    NUtils::Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
                     if (!NUtil::ReduceToZero(S, F)) {
                         size_t idx = F.size();
                         // std::cout << S << std::endl;
