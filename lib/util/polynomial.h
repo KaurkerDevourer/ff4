@@ -62,7 +62,7 @@ namespace FF4 {
                 return monomials_[0];
             }
 
-            const TTerm& GetLeadingTerm() const noexcept {
+            const Term& GetLeadingTerm() const noexcept {
                 return monomials_[0].GetTerm();
             }
 

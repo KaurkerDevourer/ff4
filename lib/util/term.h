@@ -5,27 +5,27 @@
 
 namespace FF4 {
     namespace NUtils {
-        class TTerm : public std::vector<uint64_t> {
+        class Term : public std::vector<uint64_t> {
                 void Normalize();
             public:
                 using TBase = std::vector<uint64_t>;
                 using size_type = typename TBase::size_type;
 
-                inline TTerm() = default;
+                inline Term() = default;
 
-                TTerm(std::initializer_list<uint64_t> il);
+                Term(std::initializer_list<uint64_t> il);
 
-                bool IsDivisibleBy(const TTerm&) const noexcept;
+                bool IsDivisibleBy(const Term&) const noexcept;
                 uint64_t TotalDegree() const noexcept;
-                TTerm& operator*=(const TTerm&) noexcept;
-                friend TTerm operator*(TTerm, const TTerm&) noexcept;
-                TTerm& operator/=(const TTerm&) noexcept;
-                friend TTerm operator/(TTerm, const TTerm&) noexcept;
+                Term& operator*=(const Term&) noexcept;
+                friend Term operator*(Term, const Term&) noexcept;
+                Term& operator/=(const Term&) noexcept;
+                friend Term operator/(Term, const Term&) noexcept;
 
-                friend TTerm gcd(const TTerm&, const TTerm&) noexcept;
-                friend TTerm lcm(const TTerm&, const TTerm&) noexcept;
+                friend Term gcd(const Term&, const Term&) noexcept;
+                friend Term lcm(const Term&, const Term&) noexcept;
 
-                friend std::ostream& operator<<(std::ostream&, const TTerm&) noexcept;
+                friend std::ostream& operator<<(std::ostream&, const Term&) noexcept;
             private:
                 uint64_t sum_ = 0;
         };

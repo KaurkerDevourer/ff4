@@ -2,16 +2,16 @@
 
 namespace FF4 {
     namespace NUtils {
-        TTerm::TTerm(std::initializer_list<uint64_t> il) : TBase(il) {
+        Term::Term(std::initializer_list<uint64_t> il) : TBase(il) {
             Normalize();
             for (size_t i = 0; i < (*this).size(); i++) {
                 sum_ += (*this)[i];
             }
         }
 
-        TTerm gcd(const TTerm& left, const TTerm& right) noexcept {
+        Term gcd(const Term& left, const Term& right) noexcept {
             size_t sz = std::min(left.size(), right.size());
-            TTerm term;
+            Term term;
             term.reserve(sz);
             for (size_t i = 0; i < sz; i++) {
                 term.push_back(std::min(left[i], right[i]));
@@ -21,10 +21,10 @@ namespace FF4 {
             return term;
         }
 
-        TTerm lcm(const TTerm& left, const TTerm& right) noexcept {
+        Term lcm(const Term& left, const Term& right) noexcept {
             size_t sz = std::min(left.size(), right.size());
             size_t lcm_sz = std::max(left.size(), right.size());
-            TTerm term;
+            Term term;
             term.reserve(lcm_sz);
             for (size_t i = 0; i < sz; i++) {
                 term.push_back(std::max(left[i], right[i]));
@@ -42,7 +42,7 @@ namespace FF4 {
             return term;
         }
 
-        bool TTerm::IsDivisibleBy(const TTerm& other) const noexcept {
+        bool Term::IsDivisibleBy(const Term& other) const noexcept {
             if (other.size() > size()) {
                 return false;
             }
@@ -54,11 +54,11 @@ namespace FF4 {
             return true;
         };
 
-        uint64_t TTerm::TotalDegree() const noexcept {
+        uint64_t Term::TotalDegree() const noexcept {
             return sum_;
         }
 
-        TTerm& TTerm::operator/=(const TTerm& other) noexcept {
+        Term& Term::operator/=(const Term& other) noexcept {
             assert(other.size() <= size());
             for (size_t i = 0; i < other.size(); i++) {
                 assert((*this)[i] >= other[i]);
@@ -69,7 +69,7 @@ namespace FF4 {
             return *this;
         }
 
-        TTerm& TTerm::operator*=(const TTerm& other) noexcept {
+        Term& Term::operator*=(const Term& other) noexcept {
             if (other.size() > size()) {
                 resize(other.size());
             }
@@ -80,17 +80,17 @@ namespace FF4 {
             return *this;
         }
 
-        TTerm operator*(TTerm left, const TTerm& right) noexcept {
+        Term operator*(Term left, const Term& right) noexcept {
             left *= right;
             return left;
         }
 
-        TTerm operator/(TTerm left, const TTerm& right) noexcept {
+        Term operator/(Term left, const Term& right) noexcept {
             left /= right;
             return left;
         }
 
-        std::ostream& operator<<(std::ostream& out, const TTerm& term) noexcept {
+        std::ostream& operator<<(std::ostream& out, const Term& term) noexcept {
             if (term.size() == 1 && term[0] == 0) {
                 return out << "1";
             }
@@ -103,7 +103,7 @@ namespace FF4 {
             return out;
         }
 
-        void TTerm::Normalize() {
+        void Term::Normalize() {
             while(size() > 1 && back() == 0) {
                 pop_back();
             }

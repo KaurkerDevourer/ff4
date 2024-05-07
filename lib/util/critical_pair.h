@@ -25,7 +25,7 @@ namespace FF4 {
                     return Glcm_;
                 }
 
-                const TTerm& GetGlcmTerm() const noexcept {
+                const Term& GetGlcmTerm() const noexcept {
                     return Glcm_.GetTerm();
                 }
 
@@ -37,11 +37,11 @@ namespace FF4 {
                     return F_[right_idx_];
                 }
 
-                const TTerm& GetLeftTerm() const noexcept {
+                const Term& GetLeftTerm() const noexcept {
                     return F_[left_idx_].GetLeadingTerm();
                 }
 
-                const TTerm& GetRightTerm() const noexcept {
+                const Term& GetRightTerm() const noexcept {
                     return F_[right_idx_].GetLeadingTerm();
                 }
 
