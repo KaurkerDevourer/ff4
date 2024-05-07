@@ -4,6 +4,10 @@
 
 namespace FF4 {
     namespace NUtils {
+        Rational::Rational(Integer numerator)
+        : numerator_(numerator)
+        {}
+
         Rational::Rational(Integer numerator, Integer denominator)
         : numerator_(numerator)
         , denominator_(denominator)
@@ -19,24 +23,12 @@ namespace FF4 {
             return denominator_;
         }
 
-        bool Rational::MoreThanZero() const noexcept {
-            return numerator_ > 0;
-        }
-
         Rational Rational::operator+() const noexcept {
             return *this;
         }
 
         Rational Rational::operator-() const noexcept {
             return Rational(-numerator_, denominator_);
-        }
-
-        bool operator==(const Rational& left, const Rational& right) noexcept {
-            return left.numerator_ == right.numerator_ && (left.numerator_ == 0 || left.denominator_ == right.denominator_);
-        }
-
-        bool operator!=(const Rational& left, const Rational& right) noexcept {
-            return !(left == right);
         }
 
         Rational& Rational::operator+=(const Rational& other) noexcept {
@@ -104,18 +96,16 @@ namespace FF4 {
             return right <= left;
         }
 
-        Rational pow(const Rational& number, int64_t power) noexcept {
-            if (power < 0) {
-                return pow(1 / number, -power);
-            } else if (power == 0) {
-                return 1;
-            }
-            if (power % 2 != 0) {
-                return number * pow(number, power - 1);
-            } else {
-                Rational tmp = pow(number, power / 2);
-                return tmp * tmp;
-            }
+        bool operator==(const Rational& left, const Rational& right) noexcept {
+            return left.numerator_ == right.numerator_ && left.denominator_ == right.denominator_;
+        }
+
+        bool operator!=(const Rational& left, const Rational& right) noexcept {
+            return !(left == right);
+        }
+
+        bool Rational::IsPositive() const noexcept {
+            return numerator_ > 0;
         }
 
         std::ostream& operator<<(std::ostream& out, const Rational& rational) noexcept {
@@ -135,12 +125,13 @@ namespace FF4 {
         }
 
         void Rational::Normalize() noexcept {
+            if (numerator_ == 0) {
+                denominator_ = 1;
+                return;
+            }
             if (denominator_ < 0) {
                 numerator_ = -numerator_;
                 denominator_ = -denominator_;
-            }
-            if (numerator_ == 0) {
-                return;
             }
             Integer gcd = std::gcd(numerator_, denominator_);
             numerator_ /= gcd;

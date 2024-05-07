@@ -4,23 +4,12 @@
 
 namespace FF4 {
     namespace NUtils {
-        uint64_t binpow(uint64_t value, int32_t pow, int32_t mod) {
-            if (pow == 0) {
-                return 1;
-            }
-            if (pow % 2 == 0) {
-                uint64_t half = binpow(value, pow / 2, mod);
-                return (half * half) % mod;
-            } else {
-                return (value * binpow(value, pow - 1, mod)) % mod;
-            }
-        }
 
-        constexpr bool IsPrime(uint32_t n) noexcept {
-            if (n == 1 || n % 2 == 0) {
+        constexpr bool IsPrime(int32_t n) noexcept {
+            if (n <= 1 || n % 2 == 0) {
                 return false;
             }
-            for (uint32_t i = 3; i * i <= n; i += 2) {
+            for (int32_t i = 3; i * i <= n; i += 2) {
                 if (n % i == 0) {
                     return false;
                 }
@@ -28,10 +17,26 @@ namespace FF4 {
             return true;
         }
 
-        template <uint32_t Mod>
+        template <int32_t Mod>
         class PrimeField {
+            static int32_t binpow(int32_t value, int32_t pow) {
+                int32_t res = 1;
+                while(pow != 0) {
+                    if (pow & 1) {
+                        res = (res * 1ll * value) % Mod;
+                    }
+                    value = (value * 1ll * value) % Mod;
+                    pow >>= 1;
+                }
+                return res;
+            }
+
         public:
-            PrimeField(int64_t number = 0)
+            PrimeField() {
+                static_assert(IsPrime(Mod));
+            }
+
+            PrimeField(int32_t number)
             {
                 number_ = number % Mod;
                 if (number_ < 0) {
@@ -48,7 +53,7 @@ namespace FF4 {
                 return !(left == right);
             }
 
-            bool MoreThanZero() const noexcept {
+            bool IsPositive() const noexcept {
                 return number_ != 0;
             }
 
@@ -87,8 +92,7 @@ namespace FF4 {
             }
 
             PrimeField& operator*=(const PrimeField& other) noexcept {
-                number_ *= other.number_;
-                number_ %= Mod;
+                number_ = (number_ * 1ll * other.number_) % Mod;
                 return *this;
             }
 
@@ -99,7 +103,7 @@ namespace FF4 {
 
             PrimeField& operator/=(const PrimeField& other) {
                 assert(other.number_ != 0);
-                *this *= binpow(other.number_, Mod - 2, Mod);
+                *this *= binpow(other.number_, Mod - 2);
                 return *this;
             }
 
@@ -113,7 +117,7 @@ namespace FF4 {
             }
 
         private:
-            int64_t number_;
+            int32_t number_ = 0;
         };
     }
 }

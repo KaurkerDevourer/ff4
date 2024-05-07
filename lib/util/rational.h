@@ -7,17 +7,15 @@ namespace FF4 {
         class Rational {
             using Integer = int64_t;
         public:
-            Rational(Integer numerator = 0, Integer denominator = 1);
+            Rational() = default;
+            Rational(Integer numerator);
+            Rational(Integer numerator, Integer denominator);
 
             Integer GetNumerator() const noexcept;
             Integer GetDenominator() const noexcept;
-            bool MoreThanZero() const noexcept;
 
             Rational operator+() const noexcept;
             Rational operator-() const noexcept;
-
-            friend bool operator==(const Rational&, const Rational&) noexcept;
-            friend bool operator!=(const Rational&, const Rational&) noexcept;
 
             Rational& operator+=(const Rational&) noexcept;
             friend Rational operator+(Rational, const Rational&) noexcept;
@@ -35,16 +33,17 @@ namespace FF4 {
             friend bool operator>(const Rational&, const Rational&) noexcept;
             friend bool operator<=(const Rational&, const Rational&) noexcept;
             friend bool operator>=(const Rational&, const Rational&) noexcept;
-
-            friend Rational pow(const Rational&, int64_t) noexcept;
+            friend bool operator==(const Rational&, const Rational&) noexcept;
+            friend bool operator!=(const Rational&, const Rational&) noexcept;
+            bool IsPositive() const noexcept;
 
             friend std::ostream& operator<<(std::ostream&, const Rational&) noexcept;
 
         private:
             void Normalize() noexcept;
 
-            Integer numerator_;
-            Integer denominator_;
+            Integer numerator_ = 0;
+            Integer denominator_ = 1;
         };
     }
 }

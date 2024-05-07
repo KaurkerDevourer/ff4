@@ -219,7 +219,7 @@ namespace FF4 {
             friend std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
                 const TMonomials& monomials = polynomial.GetMonomials();
                 for (size_t i = 0; i < monomials.size(); i++) {
-                    if (i > 0 && monomials[i].GetCoef().MoreThanZero()) {
+                    if (i > 0 && monomials[i].GetCoef().IsPositive()) {
                         out << " + ";
                     }
                     out << monomials[i];

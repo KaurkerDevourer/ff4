@@ -16,7 +16,7 @@ namespace FF4 {
                     const NUtils::Monomial<TCoef>& gj = fj.GetLeadingMonomial();
                     NUtils::Monomial<TCoef> glcm = NUtils::Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
                     NUtils::Polynomial<TCoef, TComp> S = fi * (glcm / gi) - fj * (glcm / gj);
-                    if (!NUtil::ReduceToZero(S, F)) {
+                    if (!NUtil::InplaceReduceToZero(S, F)) {
                         for (size_t i = 0; i < F.size(); i++) {
                             pairs_to_check.push({i, F.size()});
                         }
