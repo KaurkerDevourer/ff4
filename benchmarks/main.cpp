@@ -12,4 +12,5 @@ int main() {
     benchmark_cyclic4_prime_field();
     benchmark_katsura4();
     benchmark_sym3_3();
+    benchmark_cyclic9();
 }
