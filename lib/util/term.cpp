@@ -1,4 +1,5 @@
 #include "term.h"
+#include <cassert>
 
 namespace FF4 {
     namespace NUtils {
@@ -95,8 +96,11 @@ namespace FF4 {
                 return out << "1";
             }
             for (size_t i = 0; i < term.size(); i++) {
+                if (term[i] == 0) {
+                    continue;
+                }
                 out << "x_" << i;
-                if (term[i] != 0) {
+                if (term[i] != 1) {
                     out << "^{" << term[i] << "}";
                 }
             }

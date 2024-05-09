@@ -79,6 +79,7 @@ namespace FF4 {
                 if (leadingCoef == 1) {
                     return;
                 }
+                assert(leadingCoef != 0);
                 for (size_t i = 0; i < monomials_.size(); i++) {
                     monomials_[i] /= leadingCoef;
                 }

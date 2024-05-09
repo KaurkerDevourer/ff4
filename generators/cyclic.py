@@ -3,6 +3,7 @@ n = 7
 
 
 print("std::vector<Monomial<PrimeField<31>>> mon0;")
+print()
 
 kk = ""
 for i in range(n):
@@ -12,13 +13,14 @@ for i in range(n):
 
 print("mon0.push_back(Monomial(Term({" + kk + "}), PrimeField<31>(1)));")
 print("mon0.push_back(Monomial(Term({0}), PrimeField<31>(-1)));")
+print()
 print("Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));")
 print()
 
-for i in range(1, n - 1):
+for i in range(1, n):
     print("std::vector<Monomial<PrimeField<31>>> mon" + str(i) + ";")
     print()
-    l = i + 1
+    l = i
     kkk = []
     arrr = []
     for k in range(n): # сдвиг
@@ -48,8 +50,8 @@ for i in range(1, n - 1):
     print()
 
 finish = ""
-for i in range(n - 1):
+for i in range(n):
     finish += "p" + str(i)
-    if i != n - 2:
+    if i != n - 1:
         finish += ", "
 print("TPolynomials<PrimeField<31>, GrevLexComp> test = {" + finish + "};")

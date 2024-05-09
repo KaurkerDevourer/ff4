@@ -8,11 +8,10 @@ namespace FF4 {
         template<typename TCoef, typename TComp>
         class CriticalPair {
             public:
-                CriticalPair(const TPolynomials<TCoef, TComp>& F, size_t i, size_t j)
-                    : F_(F)
-                    , left_idx_(i)
-                    , right_idx_(j)
-                    , Glcm_(Monomial(lcm(F[i].GetLeadingTerm(), F[j].GetLeadingTerm()), TCoef(1)))
+                CriticalPair(const NUtils::Polynomial<TCoef, TComp>& left, const NUtils::Polynomial<TCoef, TComp>& right)
+                    : left_(left)
+                    , right_(right)
+                    , Glcm_(Monomial(lcm(left.GetLeadingTerm(), right.GetLeadingTerm()), TCoef(1)))
                     , degree_(Glcm_.GetTerm().TotalDegree())
                 {
                 }
@@ -30,25 +29,28 @@ namespace FF4 {
                 }
 
                 const Polynomial<TCoef, TComp>& GetLeft() const noexcept {
-                    return F_[left_idx_];
+                    return left_;
                 }
 
                 const Polynomial<TCoef, TComp>& GetRight() const noexcept {
-                    return F_[right_idx_];
+                    return right_;
                 }
 
                 const Term& GetLeftTerm() const noexcept {
-                    return F_[left_idx_].GetLeadingTerm();
+                    return left_.GetLeadingTerm();
                 }
 
                 const Term& GetRightTerm() const noexcept {
-                    return F_[right_idx_].GetLeadingTerm();
+                    return right_.GetLeadingTerm();
+                }
+
+                friend std::ostream& operator<<(std::ostream& out, const CriticalPair& cp) noexcept {
+                    return out << cp.degree_ << " | " << cp.GetLeftTerm() << " " << cp.GetRightTerm() << " : " << cp.GetGlcmTerm();
                 }
 
             private:
-                const TPolynomials<TCoef, TComp>& F_;
-                size_t left_idx_;
-                size_t right_idx_;
+                const NUtils::Polynomial<TCoef, TComp>& left_;
+                const NUtils::Polynomial<TCoef, TComp>& right_;
                 Monomial<TCoef> Glcm_;
                 uint64_t degree_;
         };

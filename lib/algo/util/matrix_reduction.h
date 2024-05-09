@@ -16,7 +16,7 @@ namespace FF4 {
             using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
 
             template <typename TCoef, typename TComp>
-            void FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, const std::map<NUtils::Term, size_t>& Mp, std::set<NUtils::Term>& leadingTerms) {
+            void FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, const std::map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms) {
                 for (size_t i = 0; i < F.size(); i++) {
                     leadingTerms.insert(F[i].GetLeadingTerm());
                     for (const auto& m : F[i].GetMonomials()) {
@@ -48,8 +48,14 @@ namespace FF4 {
                             }
                             TCoef factor = matrix(k, j);
                             if (factor != 0) {
-                                for (size_t q = j; q < matrix.M_; q++) {
-                                    matrix(k, q) -= matrix(i, q) * factor;
+                                if (factor == 1) {
+                                    for (size_t q = j; q < matrix.M_; q++) {
+                                        matrix(k, q) -= matrix(i, q);
+                                    }
+                                } else {
+                                    for (size_t q = j; q < matrix.M_; q++) {
+                                        matrix(k, q) -= matrix(i, q) * factor;
+                                    }
                                 }
                             }
                         }
@@ -59,7 +65,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const std::set<NUtils::Term>& leadingTerms, const std::vector<NUtils::Term>& vTerms) {
+            NUtils::TPolynomials<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const TTermSet<TComp>& leadingTerms, const std::vector<NUtils::Term>& vTerms) {
                 NUtils::TPolynomials<TCoef, TComp> reduced;
                 reduced.reserve(matrix.N_);
                 for (size_t i = 0; i < matrix.N_; i++) {
@@ -89,18 +95,22 @@ namespace FF4 {
             NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
                 TTermSet<TComp>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
+                // std::sort(F.begin(), F.end(), [](NUtils::Polynomial<TCoef, TComp>& a, NUtils::Polynomial<TCoef, TComp>& b){
+                //     return a.GetMonomials().size() > b.GetMonomials().size();
+                // });
 
                 std::map<NUtils::Term, size_t> Mp;
                 std::vector<NUtils::Term> vTerms(diffSet.size());
-                size_t cnt = 0;
+                size_t cnt = diffSet.size() - 1;
                 auto it = Mp.begin();
                 for (const auto& term : diffSet) {
-                    it = Mp.insert(it, {term, cnt++});
-                    vTerms[vTerms.size() - cnt] = term;
+                    it = Mp.insert(it, {term, cnt});
+                    vTerms[cnt] = term;
+                    cnt--;
                 }
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
-                std::set<NUtils::Term> leadingTerms;
+                TTermSet<TComp> leadingTerms;
                 FillMatrixAndLeadingTerms(F, matrix, Mp, leadingTerms);
 
                 GaussElimination(matrix);

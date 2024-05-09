@@ -9,7 +9,6 @@ namespace FF4 {
                 void Normalize();
             public:
                 using TBase = std::vector<uint64_t>;
-                using size_type = typename TBase::size_type;
 
                 inline Term() = default;
 

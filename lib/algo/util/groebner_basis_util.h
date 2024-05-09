@@ -59,6 +59,56 @@ namespace FF4 {
                 }
                 return true;
             }
+
+            template <typename TCoef, typename TComp>
+            std::queue<std::pair<size_t, size_t> > GetPairsToCheckWithCriterias(const NUtils::TPolynomials<TCoef, TComp>& basis) {
+                std::queue<std::pair<size_t, size_t> > pairs_to_check;
+                std::vector<std::pair<NUtils::Term, std::pair<size_t, size_t>>> terms;
+                for (size_t i = 0; i < basis.size(); i++) {
+                    for (size_t j = i + 1; j < basis.size(); j++) {
+                        if (NUtil::CheckProductCriteria(basis[i], basis[j])) {
+                            continue;
+                        }
+                        bool isLcmCriteria = false;
+                        for (size_t k = 0; k < terms.size(); k++) {
+                            if (terms[k].first.IsDivisibleBy(basis[j].GetLeadingTerm()) && terms[k].second.first != j && terms[k].second.second != j) {
+                                isLcmCriteria = true;
+                                break;
+                            }
+                            if (terms[k].first.IsDivisibleBy(basis[i].GetLeadingTerm()) && terms[k].second.first != i && terms[k].second.second != i) {
+                                isLcmCriteria = true;
+                                break;
+                            }
+                        }
+                        if (isLcmCriteria) {
+                            continue;
+                        }
+                        pairs_to_check.push({i, j});
+                        terms.push_back({lcm(basis[i].GetLeadingTerm(), basis[j].GetLeadingTerm()), {i, j}});
+                    }
+                }
+                return pairs_to_check;
+            }
+
+
+            template <typename TCoef, typename TComp>
+            bool CheckBasisIsGroebnerBig(const NUtils::TPolynomials<TCoef, TComp>& basis) {
+                std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheckWithCriterias(basis);
+                std::cout << pairs_to_check.size() << std::endl;
+                while(!pairs_to_check.empty()) {
+                    const NUtils::Polynomial<TCoef, TComp>& fi = basis[pairs_to_check.front().first];
+                    const NUtils::Polynomial<TCoef, TComp>& fj = basis[pairs_to_check.front().second];
+                    pairs_to_check.pop();
+                    const NUtils::Monomial<TCoef>& gi = fi.GetLeadingMonomial();
+                    const NUtils::Monomial<TCoef>& gj = fj.GetLeadingMonomial();
+                    NUtils::Monomial<TCoef> glcm = NUtils::Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
+                    NUtils::Polynomial<TCoef, TComp> S = fi * (glcm / gi) - fj * (glcm / gj);
+                    if (!InplaceReduceToZero(S, basis)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
         }
     }
 }

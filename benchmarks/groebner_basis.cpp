@@ -115,10 +115,11 @@ namespace  {
     }
 
 
-    void FindGroebnerBasisF4PrimeFieldBig(TPolynomials<PrimeField<31>, GrevLexComp>& F) {
+    void FindGroebnerBasisF4PrimeFieldBig(TPolynomials<PrimeField<31>, GrevLexComp>& F, int timesToRun) {
         #ifdef NDEBUG
-            for (int i = 0; i < TimesToRun / 100; i++) {
-                NAlgo::F4::FindGroebnerBasis(F);
+            for (int i = 0; i < timesToRun; i++) {
+                TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
+                NAlgo::F4::FindGroebnerBasis(F2);
             }
         #else
             NAlgo::F4::FindGroebnerBasis(F);
@@ -141,9 +142,9 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisOpenF4PrimeFieldBig(std::vector<std::string> variableName, std::vector<std::string> polynomialList) {
+    void FindGroebnerBasisOpenF4PrimeFieldBig(std::vector<std::string> variableName, std::vector<std::string> polynomialList, int timesToRun) {
         #ifdef NDEBUG
-            for (int i = 0; i < TimesToRun / 100; i++) {
+            for (int i = 0; i < timesToRun; i++) {
                 std::vector<std::string> basis = groebnerBasisF4(31, variableName.size(), variableName, polynomialList, 32, 0);
             }
         #else
@@ -448,76 +449,237 @@ void benchmark_sym3_3() {
     
 }
 
-void benchmark_cyclic7() {
+void benchmark_cyclic5() {
     {
         std::vector<Monomial<PrimeField<31>>> mon0;
-        mon0.push_back(Monomial(Term({1, 1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+
+        mon0.push_back(Monomial(Term({1, 1, 1, 1, 1}), PrimeField<31>(1)));
         mon0.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
         Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
 
         std::vector<Monomial<PrimeField<31>>> mon1;
 
-        mon1.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({1, 0, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
-        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
 
         std::vector<Monomial<PrimeField<31>>> mon2;
 
-        mon2.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({0, 0, 1, 1, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({1, 1, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({1, 0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
-        mon2.push_back(Monomial(Term({0, 0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
 
         std::vector<Monomial<PrimeField<31>>> mon3;
 
-        mon3.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({0, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({1, 1, 1, 0, 0, 0, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({1, 1, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({1, 0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
-        mon3.push_back(Monomial(Term({0, 0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 1, 0, 0, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 1, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
 
         std::vector<Monomial<PrimeField<31>>> mon4;
 
-        mon4.push_back(Monomial(Term({1, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({1, 1, 1, 1, 0, 0, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({1, 1, 1, 0, 0, 1, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({1, 1, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({1, 0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon4.push_back(Monomial(Term({0, 0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 1, 0, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 0, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 1, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p4(std::move(mon4));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {p0, p1, p2, p3, p4};
+
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-5 ").call(test, 1);
+    }
+    // {
+    //     std::vector<std::string> polCyclic6;
+    //     polCyclic6.emplace_back("x0+x1+x2+x3+x4");
+    //     polCyclic6.emplace_back("x0*x1+x1*x2+x2*x3+x3*x4+x0*x4");
+    //     polCyclic6.emplace_back("x0*x1*x2+x1*x2*x3+x2*x3*x4+x0*x1*x4+x0*x3*x4");
+    //     polCyclic6.emplace_back("x0*x1*x2*x3+x1*x2*x3*x4+x0*x2*x3*x4+x0*x1*x3*x4+x0*x1*x2*x4");
+    //     polCyclic6.emplace_back("x0*x1*x2*x3*x4-1");
+    //     std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4"};
+    //     test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-5 ").call(variableName, polCyclic6, 1);
+    // }
+}
+
+void benchmark_cyclic6() {
+    {
+        std::vector<Monomial<PrimeField<31>>> mon0;
+
+        mon0.push_back(Monomial(Term({1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon0.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
+
+        std::vector<Monomial<PrimeField<31>>> mon1;
+
+        mon1.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
+
+        std::vector<Monomial<PrimeField<31>>> mon2;
+
+        mon2.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
+
+        std::vector<Monomial<PrimeField<31>>> mon3;
+
+        mon3.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 1, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
+
+        std::vector<Monomial<PrimeField<31>>> mon4;
+
+        mon4.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 1, 0, 0, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> p4(std::move(mon4));
 
         std::vector<Monomial<PrimeField<31>>> mon5;
 
-        mon5.push_back(Monomial(Term({1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({1, 1, 1, 1, 1, 0, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({1, 1, 1, 1, 0, 1, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({1, 1, 1, 0, 1, 1, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({1, 1, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({1, 0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
-        mon5.push_back(Monomial(Term({0, 1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 1, 1, 0, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 1, 0, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
 
         Polynomial<PrimeField<31>, GrevLexComp> p5(std::move(mon5));
 
         TPolynomials<PrimeField<31>, GrevLexComp> test = {p0, p1, p2, p3, p4, p5};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-7 ").call(test);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-6 ").call(test, 1);
+    }
+
+    {
+        std::vector<std::string> polCyclic6;
+        polCyclic6.emplace_back("x0+x1+x2+x3+x4+x5");
+        polCyclic6.emplace_back("x0*x1+x1*x2+x2*x3+x3*x4+x0*x5+x4*x5");
+        polCyclic6.emplace_back("x0*x1*x2+x1*x2*x3+x2*x3*x4+x0*x1*x5+x0*x4*x5+x3*x4*x5");
+        polCyclic6.emplace_back("x0*x1*x2*x3+x1*x2*x3*x4+x0*x1*x2*x5+x0*x1*x4*x5+x0*x3*x4*x5+x2*x3*x4*x5");
+        polCyclic6.emplace_back("x0*x1*x2*x3*x4+x0*x1*x2*x3*x5+x0*x1*x2*x4*x5+x0*x1*x3*x4*x5+x0*x2*x3*x4*x5+x1*x2*x3*x4*x5");
+        polCyclic6.emplace_back("x0*x1*x2*x3*x4*x5-1");
+        std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5"};
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-6 ").call(variableName, polCyclic6, 1);
+    }
+}
+
+void benchmark_cyclic7() {
+    {
+        std::vector<Monomial<PrimeField<31>>> mon0;
+
+        mon0.push_back(Monomial(Term({1, 1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon0.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
+
+        std::vector<Monomial<PrimeField<31>>> mon1;
+
+        mon1.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
+
+        std::vector<Monomial<PrimeField<31>>> mon2;
+
+        mon2.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
+
+        std::vector<Monomial<PrimeField<31>>> mon3;
+
+        mon3.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 1, 0, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
+
+        std::vector<Monomial<PrimeField<31>>> mon4;
+
+        mon4.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 1, 0, 0, 0, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 1, 0, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({1, 0, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p4(std::move(mon4));
+
+        std::vector<Monomial<PrimeField<31>>> mon5;
+
+        mon5.push_back(Monomial(Term({1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 1, 1, 0, 0, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 1, 0, 0, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 1, 0, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({1, 0, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon5.push_back(Monomial(Term({0, 0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p5(std::move(mon5));
+
+        std::vector<Monomial<PrimeField<31>>> mon6;
+
+        mon6.push_back(Monomial(Term({1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({1, 1, 1, 1, 1, 0, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({1, 1, 1, 1, 0, 1, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({1, 1, 1, 0, 1, 1, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({1, 1, 0, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({1, 0, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({0, 1, 1, 1, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p6(std::move(mon6));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {p0, p1, p2, p3, p4, p5, p6};
+
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-7 ").call(test, 1);
     }
     {
         std::vector<std::string> polCyclic7;
@@ -529,7 +691,149 @@ void benchmark_cyclic7() {
         polCyclic7.emplace_back("x0*x1*x2*x3*x4*x5+x0*x1*x2*x3*x4*x6+x0*x1*x2*x3*x5*x6+x0*x1*x2*x4*x5*x6+x0*x1*x3*x4*x5*x6+x0*x2*x3*x4*x5*x6+x1*x2*x3*x4*x5*x6");
         polCyclic7.emplace_back("x0*x1*x2*x3*x4*x5*x6-1");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-7 ").call(variableName, polCyclic7);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-7 ").call(variableName, polCyclic7, 1);
+    }
+}
+
+void benchmark_katsura9() {
+    {
+        std::vector<Monomial<PrimeField<31>>> monk;
+
+        monk.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        monk.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> pk(std::move(monk));
+
+        std::vector<Monomial<PrimeField<31>>> mon0;
+
+        mon0.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        mon0.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
+
+        std::vector<Monomial<PrimeField<31>>> mon1;
+
+        mon1.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
+
+        std::vector<Monomial<PrimeField<31>>> mon2;
+
+        mon2.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
+
+        std::vector<Monomial<PrimeField<31>>> mon3;
+
+        mon3.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 0, 0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
+
+        std::vector<Monomial<PrimeField<31>>> mon4;
+
+        mon4.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(1)));
+        mon4.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({0, 1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({0, 0, 1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({0, 0, 0, 1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({0, 0, 0, 0, 1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon4.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p4(std::move(mon4));
+
+        std::vector<Monomial<PrimeField<31>>> mon5;
+
+        mon5.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({1, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({0, 1, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({0, 0, 1, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({0, 0, 0, 1, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon5.push_back(Monomial(Term({0, 0, 0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p5(std::move(mon5));
+
+        std::vector<Monomial<PrimeField<31>>> mon6;
+
+        mon6.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(1)));
+        mon6.push_back(Monomial(Term({0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon6.push_back(Monomial(Term({0, 1, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon6.push_back(Monomial(Term({1, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon6.push_back(Monomial(Term({0, 1, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon6.push_back(Monomial(Term({0, 0, 1, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon6.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p6(std::move(mon6));
+
+        std::vector<Monomial<PrimeField<31>>> mon7;
+
+        mon7.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon7.push_back(Monomial(Term({0, 0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon7.push_back(Monomial(Term({0, 1, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon7.push_back(Monomial(Term({1, 0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon7.push_back(Monomial(Term({0, 1, 0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        mon7.push_back(Monomial(Term({0, 0, 0, 0, 0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p7(std::move(mon7));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {pk, p0, p1, p2, p3, p4, p5, p6, p7};
+
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-9 ").call(test, 1);
+    }
+
+    {
+        std::vector<std::string> polKatsura9;
+        polKatsura9.emplace_back("x0+2*x1+2*x2+2*x3+2*x4+2*x5+2*x6+2*x7+2*x8-1");
+        polKatsura9.emplace_back("x0^2+2*x1^2+2*x2^2+2*x3^2+2*x4^2+2*x5^2+2*x6^2+2*x7^2+2*x8^2-x0");
+        polKatsura9.emplace_back("2*x0*x1+2*x1*x2+2*x2*x3+2*x3*x4+2*x4*x5+2*x5*x6+2*x6*x7+2*x7*x8-x1");
+        polKatsura9.emplace_back("x1^2+2*x0*x2+2*x1*x3+2*x2*x4+2*x3*x5+2*x4*x6+2*x5*x7+2*x6*x8-x2");
+        polKatsura9.emplace_back("2*x1*x2+2*x0*x3+2*x1*x4+2*x2*x5+2*x3*x6+2*x4*x7+2*x5*x8-x3");
+        polKatsura9.emplace_back("x2^2+2*x1*x3+2*x0*x4+2*x1*x5+2*x2*x6+2*x3*x7+2*x4*x8-x4");
+        polKatsura9.emplace_back("2*x2*x3+2*x1*x4+2*x0*x5+2*x1*x6+2*x2*x7+2*x3*x8-x5");
+        polKatsura9.emplace_back("x3^2+2*x2*x4+2*x1*x5+2*x0*x6+2*x1*x7+2*x2*x8-x6");
+        polKatsura9.emplace_back("2*x3*x4+2*x2*x5+2*x1*x6+2*x0*x7+2*x1*x8-x7");
+        std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"};
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura9 ").call(variableName, polKatsura9, 1);
     }
 
 }

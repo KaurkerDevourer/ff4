@@ -8,9 +8,12 @@ int main() {
     #else
         std::cout << "DEBUG MODE" << std::endl;
     #endif
-    benchmark_cyclic4_rational();
+    // benchmark_cyclic4_rational();
     benchmark_cyclic4_prime_field();
     benchmark_katsura4();
     benchmark_sym3_3();
+    benchmark_cyclic5();
+    benchmark_cyclic6();
     benchmark_cyclic7();
+    benchmark_katsura9();
 }

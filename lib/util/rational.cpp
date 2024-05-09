@@ -1,6 +1,7 @@
 #include "rational.h"
 #include <algorithm>
 #include <numeric>
+#include <cassert>
 
 namespace FF4 {
     namespace NUtils {
@@ -89,7 +90,7 @@ namespace FF4 {
         }
 
         bool operator<=(const Rational& left, const Rational& right) noexcept {
-            return !(right < left);
+            return !(right > left);
         }
 
         bool operator>=(const Rational& left, const Rational& right) noexcept {

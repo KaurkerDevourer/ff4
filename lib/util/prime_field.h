@@ -54,7 +54,7 @@ namespace FF4 {
             }
 
             bool IsPositive() const noexcept {
-                return number_ != 0;
+                return number_ != 0 && number_ != Mod - 1;
             }
 
             PrimeField operator+() const noexcept {
