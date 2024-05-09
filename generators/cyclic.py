@@ -1,4 +1,4 @@
-n = 9
+n = 7
 # generator for my lib
 
 
