@@ -39,7 +39,7 @@ namespace FF4 {
                 const NUtils::Monomial<TCoef>& am = a.GetLeadingMonomial();
                 const NUtils::Monomial<TCoef>& bm = b.GetLeadingMonomial();
                 const NUtils::Term t = gcd(am.GetTerm(), bm.GetTerm());
-                return t.TotalDegree() == 0;
+                return t.IsOne();
             }
 
             template <typename TCoef, typename TComp>
@@ -61,7 +61,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            std::queue<std::pair<size_t, size_t> > GetPairsToCheckWithCriterias(const NUtils::TPolynomials<TCoef, TComp>& basis) {
+            std::queue<std::pair<size_t, size_t> > GetPairsToCheckWithCriteria(const NUtils::TPolynomials<TCoef, TComp>& basis) {
                 std::queue<std::pair<size_t, size_t> > pairs_to_check;
                 std::vector<std::pair<NUtils::Term, std::pair<size_t, size_t>>> terms;
                 for (size_t i = 0; i < basis.size(); i++) {
@@ -90,11 +90,9 @@ namespace FF4 {
                 return pairs_to_check;
             }
 
-
             template <typename TCoef, typename TComp>
             bool CheckBasisIsGroebnerBig(const NUtils::TPolynomials<TCoef, TComp>& basis) {
-                std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheckWithCriterias(basis);
-                std::cout << pairs_to_check.size() << std::endl;
+                std::queue<std::pair<size_t, size_t> > pairs_to_check = GetPairsToCheckWithCriteria(basis);
                 while(!pairs_to_check.empty()) {
                     const NUtils::Polynomial<TCoef, TComp>& fi = basis[pairs_to_check.front().first];
                     const NUtils::Polynomial<TCoef, TComp>& fj = basis[pairs_to_check.front().second];

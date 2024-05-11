@@ -80,12 +80,5 @@ namespace FF4 {
                 return GrevLexComp()(left.GetGlcm(), right.GetGlcm());
             }
         };
-
-        class TermReverseComp {
-        public:
-            bool operator()(const Term& left, const Term& right) const noexcept {
-                return right < left;
-            }
-        };
     }
 }

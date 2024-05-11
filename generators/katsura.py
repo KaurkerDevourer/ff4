@@ -1,23 +1,24 @@
-n = 4
+n = 12
+mod = 1000000007
 # generator for my lib
 
-print("std::vector<Monomial<PrimeField<31>>> monk;")
+print("std::vector<Monomial<PrimeField<" + str(mod) + ">>> monk;")
 print()
 
-print("monk.push_back(Monomial(Term({1}), PrimeField<31>(1)));")
+print("monk.push_back(Monomial(Term({1}), PrimeField<" + str(mod) + ">(1)));")
 
 tt = "0, "
 for i in range(1, n):
     kk = tt + "1"
     tt += "0, "
-    print("monk.push_back(Monomial(Term({" + kk + "}), PrimeField<31>(2)));")
-print("monk.push_back(Monomial(Term({0}), PrimeField<31>(-1)));")
+    print("monk.push_back(Monomial(Term({" + kk + "}), PrimeField<" + str(mod) + ">(2)));")
+print("monk.push_back(Monomial(Term({0}), PrimeField<" + str(mod) + ">(-1)));")
 print()
-print("Polynomial<PrimeField<31>, GrevLexComp> pk(std::move(monk));")
+print("Polynomial<PrimeField<" + str(mod) + ">, GrevLexComp> pk(std::move(monk));")
 print()
 
 for i in range(n - 1):
-    print("std::vector<Monomial<PrimeField<31>>> mon" + str(i) + ";")
+    print("std::vector<Monomial<PrimeField<" + str(mod) + ">>> mon" + str(i) + ";")
     print()
     arr = []
     for j in range(n):
@@ -43,9 +44,9 @@ for i in range(n - 1):
             t += str(x[0][k])
             if k != len(x[0]) - 1:
                 t += ", "
-        print("mon" + str(i) + ".push_back(Monomial(Term({" + t + "}), PrimeField<31>(" + str(x[1]) + ")));")
+        print("mon" + str(i) + ".push_back(Monomial(Term({" + t + "}), PrimeField<" + str(mod) + ">(" + str(x[1]) + ")));")
     print()
-    print("Polynomial<PrimeField<31>, GrevLexComp> p" + str(i) + "(std::move(mon" + str(i) + "));")
+    print("Polynomial<PrimeField<" + str(mod) + ">, GrevLexComp> p" + str(i) + "(std::move(mon" + str(i) + "));")
     print()
 
 finish = "pk, "
@@ -53,4 +54,4 @@ for i in range(n - 1):
     finish += "p" + str(i)
     if i != n - 2:
         finish += ", "
-print("TPolynomials<PrimeField<31>, GrevLexComp> test = {" + finish + "};")
+print("TPolynomials<PrimeField<" + str(mod) + ">, GrevLexComp> test = {" + finish + "};")

@@ -105,7 +105,7 @@ namespace FF4 {
             }
 
             friend std::ostream& operator<<(std::ostream& out, const Monomial& monomial) noexcept {
-                if (monomial.GetTerm().TotalDegree() == 0) {
+                if (monomial.GetTerm().IsOne()) {
                     if (monomial.GetCoef() == -1) {
                         out << " - 1 ";
                     } else {

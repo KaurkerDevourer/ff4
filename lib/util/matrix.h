@@ -12,21 +12,21 @@ namespace FF4 {
             : N_(n)
             , M_(m)
             {
-                Data_.resize(N_ * M_);
+                data_.resize(N_ * M_);
             }
 
             TCoef& operator()(size_t i, size_t j) {
-                return Data_[i * M_ + j];
+                return data_[i * M_ + j];
             }
 
             const TCoef& operator()(size_t i, size_t j) const {
-                return Data_[i * M_ + j];
+                return data_[i * M_ + j];
             }
 
             size_t N_;
             size_t M_;
         private:
-            std::vector<TCoef> Data_;
+            std::vector<TCoef> data_;
         };
     }
 }

@@ -20,7 +20,7 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             TPairsVector<TCoef, TComp> Select(TPairsSet<TCoef, TComp>& pairs_to_check) {
                 TPairsVector<TCoef, TComp> selectionGroup;
-                uint64_t value = pairs_to_check.begin()->TotalDegree();
+                NUtils::Term::Degree value = pairs_to_check.begin()->TotalDegree();
                 while(pairs_to_check.size() && pairs_to_check.begin()->TotalDegree() == value) {
                     selectionGroup.push_back(*pairs_to_check.begin());
                     pairs_to_check.erase(pairs_to_check.begin());
@@ -29,7 +29,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const TPolynomialSet<TCoef, TComp> polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done) {
+            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
                     if (term.IsDivisibleBy(t)) {
@@ -46,7 +46,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtil::TSymbolicPreprocessingResult<TCoef, TComp> SymbolicPreprocessing(TPairsVector<TCoef, TComp>& selected, const TPolynomialSet<TCoef, TComp> polynomials) {
+            NUtil::TSymbolicPreprocessingResult<TCoef, TComp> SymbolicPreprocessing(TPairsVector<TCoef, TComp>& selected, const TPolynomialSet<TCoef, TComp>& polynomials) {
                 NUtils::TPolynomials<TCoef, TComp> L;
                 L.reserve(selected.size() * 2);
                 for (const auto& pair : selected) {
@@ -81,7 +81,7 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             void EraseByLcm(TPairsSet<TCoef, TComp>& pairs_to_check, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (auto it = pairs_to_check.begin(); it != pairs_to_check.end();) {
-                    if (gcd(f.GetLeadingTerm(), it->GetRightTerm()).TotalDegree() == 0) {
+                    if (gcd(f.GetLeadingTerm(), it->GetRightTerm()).IsOne()) {
                         ++it;
                         continue;
                     }
@@ -91,7 +91,7 @@ namespace FF4 {
                         if (it == jt) {
                             continue;
                         }
-                        if (lcm(f.GetLeadingTerm(), it->GetRightTerm()) == lcm(f.GetLeadingTerm(), jt->GetRightTerm())) {
+                        if (lcm(f.GetLeadingTerm(), it->GetRightTerm()).IsDivisibleBy(lcm(f.GetLeadingTerm(), jt->GetRightTerm()))) {
                             it = pairs_to_check.erase(it);
                             deleted = true;
                             break;
@@ -99,17 +99,6 @@ namespace FF4 {
                     }
 
                     if (!deleted) {
-                        ++it;
-                    }
-                }
-            }
-
-            template <typename TCoef, typename TComp>
-            void EraseByGcd(TPairsSet<TCoef, TComp>& pairs_to_check) {
-                for (auto it = pairs_to_check.begin(); it != pairs_to_check.end();) {
-                    if (gcd(it->GetLeftTerm(), it->GetRightTerm()).TotalDegree() == 0) {
-                        it = pairs_to_check.erase(it);
-                    } else {
                         ++it;
                     }
                 }
@@ -127,35 +116,50 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void EraseByChain(TPairsSet<TCoef, TComp>& pairs_to_check, TPairsSet<TCoef, TComp>& current_pairs_to_check, const NUtils::Polynomial<TCoef, TComp>& f) {
-                for (const auto& cp : pairs_to_check) {
-                    if (!(cp.GetGlcmTerm().IsDivisibleBy(f.GetLeadingTerm()) &&
-                    lcm(cp.GetLeftTerm(), f.GetLeadingTerm()) != cp.GetGlcmTerm() &&
-                    lcm(cp.GetRightTerm(), f.GetLeadingTerm()) != cp.GetGlcmTerm())) {
-                        current_pairs_to_check.insert(cp);
+            bool CheckLcm(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term& h) {
+                return cp.GetGlcmTerm().IsDivisibleBy(h) &&
+                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcmTerm() &&
+                    lcm(cp.GetRightTerm(), h) != cp.GetGlcmTerm();
+            }
+
+            template <typename TCoef, typename TComp>
+            void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
+                for (const auto& cp : old_crit_pairs) {
+                    if (CheckLcm(cp, f.GetLeadingTerm())) {
+                        continue;
+                    }
+                    new_crit_pairs.insert(cp);
+                }
+            }
+
+            template <typename TCoef, typename TComp>
+            void InsertByGcd(TPairsSet<TCoef, TComp>& all_crit, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
+                for (const auto& cp : all_crit) {
+                    if (gcd(f.GetLeadingTerm(), cp.GetRightTerm()).TotalDegree() != 0) {
+                        new_crit_pairs.insert(cp);
                     }
                 }
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& pairs_to_check, NUtils::Polynomial<TCoef, TComp>& f) {
+            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, NUtils::Polynomial<TCoef, TComp>& f) {
                 f.Normalize();
-                TPairsSet<TCoef, TComp> сurrent_pairs_to_check;
+                TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
                 for (const auto& p : polynomials) {
-                    сurrent_pairs_to_check.insert(NUtils::CriticalPair(f, p));
+                    all_crit.insert(NUtils::CriticalPair(f, p));
                 }
 
-                EraseByLcm(сurrent_pairs_to_check, f);
-                EraseByGcd(сurrent_pairs_to_check);
-                EraseByChain(pairs_to_check, сurrent_pairs_to_check, f);
-                pairs_to_check = std::move(сurrent_pairs_to_check);
+                EraseByLcm(all_crit, f);
+                InsertByGcd(all_crit, new_crit_pairs, f);
+                InsertByLcm(old_crit_pairs, new_crit_pairs, f);
+                old_crit_pairs = std::move(new_crit_pairs);
 
                 EraseByLead(polynomials, f);
                 polynomials.insert(f);
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp> polynomials) {
+            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp>& polynomials) {
                 NUtil::TSymbolicPreprocessingResult<TCoef, TComp> L = SymbolicPreprocessing(selected, polynomials);
                 return NUtil::MatrixReduction(L);
             }

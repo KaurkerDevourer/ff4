@@ -16,7 +16,7 @@ namespace FF4 {
                 {
                 }
 
-                uint64_t TotalDegree() const noexcept {
+                Term::Degree TotalDegree() const noexcept {
                     return degree_;
                 }
 
@@ -49,10 +49,10 @@ namespace FF4 {
                 }
 
             private:
-                const NUtils::Polynomial<TCoef, TComp>& left_;
-                const NUtils::Polynomial<TCoef, TComp>& right_;
+                NUtils::Polynomial<TCoef, TComp> left_;
+                NUtils::Polynomial<TCoef, TComp> right_;
                 Monomial<TCoef> Glcm_;
-                uint64_t degree_;
+                Term::Degree degree_;
         };
     }
 }
