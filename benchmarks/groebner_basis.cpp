@@ -190,7 +190,7 @@ void benchmark_cyclic4_rational() {
         Polynomial<Rational, LexComp> d(std::move(dmon));
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
-        test_time(FindGroebnerBasis, "buchberger_cyclic4 ").call(test);
+        test_time(FindGroebnerBasis, "buchberger_cyclic4_rational ").call(test);
     }
     {
         std::vector<Monomial<Rational>> amon;

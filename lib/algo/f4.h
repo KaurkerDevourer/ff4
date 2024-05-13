@@ -142,7 +142,7 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             void InsertByGcd(TPairsSet<TCoef, TComp>& all_crit, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (const auto& cp : all_crit) {
-                    if (gcd(f.GetLeadingTerm(), cp.GetRightTerm()).TotalDegree() != 0) {
+                    if (!gcd(f.GetLeadingTerm(), cp.GetRightTerm()).IsOne()) {
                         new_crit_pairs.insert(cp);
                     }
                 }
@@ -154,7 +154,7 @@ namespace FF4 {
                 TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
                 auto [fit, _] = polynomials.insert(g);
                 for (auto it = polynomials.begin(); it != polynomials.end(); ++it) {
-                    if (it != fit) {
+                    if (it != fit && !it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
                         all_crit.insert(NUtils::CriticalPair(*fit, *it));
                     }
                 }
