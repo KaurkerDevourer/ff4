@@ -79,6 +79,7 @@ namespace FF4 {
                 if (leadingCoef == 1) {
                     return;
                 }
+                assert(leadingCoef != 0);
                 for (size_t i = 0; i < monomials_.size(); i++) {
                     monomials_[i] /= leadingCoef;
                 }
@@ -219,7 +220,7 @@ namespace FF4 {
             friend std::ostream& operator<<(std::ostream& out, const Polynomial& polynomial) noexcept {
                 const TMonomials& monomials = polynomial.GetMonomials();
                 for (size_t i = 0; i < monomials.size(); i++) {
-                    if (i > 0 && monomials[i].GetCoef().MoreThanZero()) {
+                    if (i > 0 && monomials[i].GetCoef().IsPositive()) {
                         out << " + ";
                     }
                     out << monomials[i];

@@ -22,6 +22,11 @@ namespace FF4 {
             bool operator()(const CriticalPair<T, LexComp>& left, const CriticalPair<T, LexComp>& right) const noexcept {
                 return LexComp()(left.GetGlcm(), right.GetGlcm());
             }
+
+            template <typename T>
+            bool operator()(const Polynomial<T, LexComp>& left, const Polynomial<T, LexComp>& right) const noexcept {
+                return LexComp()(left.GetLeadingTerm(), right.GetLeadingTerm());
+            }
         };
 
         class RevLexComp {
@@ -66,15 +71,13 @@ namespace FF4 {
             }
 
             template <typename T>
+            bool operator()(const Polynomial<T, GrevLexComp>& left, const Polynomial<T, GrevLexComp>& right) const noexcept {
+                return GrevLexComp()(left.GetLeadingTerm(), right.GetLeadingTerm());
+            }
+
+            template <typename T>
             bool operator()(const CriticalPair<T, GrevLexComp>& left, const CriticalPair<T, GrevLexComp>& right) const noexcept {
                 return GrevLexComp()(left.GetGlcm(), right.GetGlcm());
-            }
-        };
-
-        class TermReverseComp {
-        public:
-            bool operator()(const Term& left, const Term& right) const noexcept {
-                return right < left;
             }
         };
     }

@@ -24,7 +24,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            bool ReduceToZero(NUtils::Polynomial<TCoef, TComp>& F, NUtils::TPolynomials<TCoef, TComp>& polynomialsSet) {
+            bool InplaceReduceToZero(NUtils::Polynomial<TCoef, TComp>& F, NUtils::TPolynomials<TCoef, TComp>& polynomialsSet) {
                 if (F.IsZero()) {
                     return true;
                 }
@@ -52,8 +52,8 @@ namespace FF4 {
                     const NUtils::Monomial<TCoef>& gi = fi.GetLeadingMonomial();
                     const NUtils::Monomial<TCoef>& gj = fj.GetLeadingMonomial();
                     NUtils::Monomial<TCoef> glcm = NUtils::Monomial(lcm(gi.GetTerm(), gj.GetTerm()), TCoef(1));
-                    NUtils::Polynomial<TCoef, TComp> S = fi * (glcm/gi) - fj * (glcm/gj);
-                    if (!NUtil::ReduceToZero(S, F)) {
+                    NUtils::Polynomial<TCoef, TComp> S = fi * (glcm / gi) - fj * (glcm / gj);
+                    if (!NUtil::InplaceReduceToZero(S, F)) {
                         size_t idx = F.size();
                         // std::cout << S << std::endl;
                         // std::cout << pairs_to_check.size() << ' ' << F.size() << std::endl;

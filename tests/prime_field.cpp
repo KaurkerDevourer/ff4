@@ -33,6 +33,10 @@ void test_prime_field() {
 
     ASSERT_EQUAL(m, s);
 
+    PrimeField<1000000007> pm(1000000006);
+    PrimeField<1000000007> pk(1);
+    ASSERT_EQUAL(pm * pm, pk);
+
     //PrimeField<6> check_not_prime_module(1);
 
     std::cout << "Successfully tested Prime field" << std::endl;

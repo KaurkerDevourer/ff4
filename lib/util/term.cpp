@@ -1,12 +1,133 @@
 #include "term.h"
+#include <cassert>
 
 namespace FF4 {
     namespace NUtils {
-        Term::Term(std::initializer_list<uint64_t> il) : TBase(il) {
-            Normalize();
-            for (size_t i = 0; i < (*this).size(); i++) {
-                sum_ += (*this)[i];
+        Term::Term(std::initializer_list<uint64_t> il) {
+            data_.resize(il.size());
+            size_t i = 0;
+            for (uint64_t x : il) {
+                data_[i] = x;
+                sum_ += x;
+                i++;
             }
+            Normalize();
+        }
+
+        uint64_t& Term::operator[](size_t i) {
+            return data_[i];
+        }
+
+        const uint64_t& Term::operator[](size_t i) const {
+            return data_[i];
+        }
+
+        void Term::resize(size_t sz) {
+            data_.resize(sz);
+        }
+
+        size_t Term::size() const {
+            return data_.size();
+        }
+
+        void Term::reserve(size_t sz) {
+            data_.reserve(sz);
+        }
+
+        void Term::push_back(uint64_t value) {
+            data_.push_back(value);
+        }
+
+        bool Term::IsOne() const noexcept {
+            return sum_ == 0;
+        }
+
+        bool Term::IsDivisibleBy(const Term& other) const noexcept {
+            if (other.size() > size()) {
+                return false;
+            }
+            for (size_t i = 0; i < other.size(); i++) {
+                if (other[i] > data_[i]) {
+                    return false;
+                }
+            }
+            return true;
+        };
+
+        uint64_t Term::TotalDegree() const noexcept {
+            return sum_;
+        }
+
+        Term& Term::operator/=(const Term& other) noexcept {
+            assert(other.size() <= size());
+            for (size_t i = 0; i < other.size(); i++) {
+                assert(data_[i] >= other[i]);
+                data_[i] -= other[i];
+            }
+            sum_ -= other.sum_;
+            Normalize();
+            return *this;
+        }
+
+        Term& Term::operator*=(const Term& other) noexcept {
+            if (other.size() > size()) {
+                resize(other.size());
+            }
+            for (size_t i = 0; i < other.size(); i++) {
+                data_[i] += other[i];
+            }
+            sum_ += other.sum_;
+            return *this;
+        }
+
+        Term operator*(Term left, const Term& right) noexcept {
+            left *= right;
+            return left;
+        }
+
+        Term operator/(Term left, const Term& right) noexcept {
+            left /= right;
+            return left;
+        }
+
+        std::ostream& operator<<(std::ostream& out, const Term& term) noexcept {
+            if (term.size() == 1 && term[0] == 0) {
+                return out << "1";
+            }
+            for (size_t i = 0; i < term.size(); i++) {
+                if (term[i] == 0) {
+                    continue;
+                }
+                out << "x_" << i;
+                if (term[i] != 1) {
+                    out << "^{" << term[i] << "}";
+                }
+            }
+            return out;
+        }
+
+        bool operator<(const Term& a, const Term& b) noexcept {
+            return a.data_ < b.data_;
+        }
+
+        bool operator>(const Term& a, const Term& b) noexcept {
+            return a.data_ > b.data_;
+        }
+
+        bool operator<=(const Term& a, const Term& b) noexcept {
+            return a.data_ <= b.data_;
+        }
+
+        bool operator>=(const Term& a, const Term& b) noexcept {
+            return a.data_ >= b.data_;
+        }
+
+        bool operator==(const Term& a, const Term& b) noexcept {
+            return a.sum_ == b.sum_ && a.data_ == b.data_;
+        }
+
+        bool operator!=(const Term& a, const Term& b) noexcept {
+            return a.sum_ != b.sum_ || a.data_ != b.data_;
         }
 
         Term gcd(const Term& left, const Term& right) noexcept {
@@ -42,70 +163,9 @@ namespace FF4 {
             return term;
         }
 
-        bool Term::IsDivisibleBy(const Term& other) const noexcept {
-            if (other.size() > size()) {
-                return false;
-            }
-            for (size_t i = 0; i < other.size(); i++) {
-                if (other[i] > (*this)[i]) {
-                    return false;
-                }
-            }
-            return true;
-        };
-
-        uint64_t Term::TotalDegree() const noexcept {
-            return sum_;
-        }
-
-        Term& Term::operator/=(const Term& other) noexcept {
-            assert(other.size() <= size());
-            for (size_t i = 0; i < other.size(); i++) {
-                assert((*this)[i] >= other[i]);
-                (*this)[i] -= other[i];
-            }
-            sum_ -= other.sum_;
-            Normalize();
-            return *this;
-        }
-
-        Term& Term::operator*=(const Term& other) noexcept {
-            if (other.size() > size()) {
-                resize(other.size());
-            }
-            for (size_t i = 0; i < other.size(); i++) {
-                (*this)[i] += other[i];
-            }
-            sum_ += other.sum_;
-            return *this;
-        }
-
-        Term operator*(Term left, const Term& right) noexcept {
-            left *= right;
-            return left;
-        }
-
-        Term operator/(Term left, const Term& right) noexcept {
-            left /= right;
-            return left;
-        }
-
-        std::ostream& operator<<(std::ostream& out, const Term& term) noexcept {
-            if (term.size() == 1 && term[0] == 0) {
-                return out << "1";
-            }
-            for (size_t i = 0; i < term.size(); i++) {
-                out << "x_" << i;
-                if (term[i] != 0) {
-                    out << term[i] << "}";
-                }
-            }
-            return out;
-        }
-
         void Term::Normalize() {
-            while(size() > 1 && back() == 0) {
-                pop_back();
+            while(data_.size() > 1 && data_.back() == 0) {
+                data_.pop_back();
             }
         }
     }
