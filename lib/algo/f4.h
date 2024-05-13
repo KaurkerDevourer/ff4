@@ -105,9 +105,13 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void EraseByLead(TPolynomialSet<TCoef, TComp>& polynomials, const NUtils::Polynomial<TCoef, TComp>& f) {
+            void EraseByLead(TPolynomialSet<TCoef, TComp>& polynomials, auto fit) {
                 for (auto it = polynomials.begin(); it != polynomials.end(); ) {
-                    if (it->GetLeadingTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                    if (it == fit) {
+                        ++it;
+                        continue;
+                    }
+                    if (it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
                         it = polynomials.erase(it);
                     } else {
                         ++it;
@@ -125,6 +129,9 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (const auto& cp : old_crit_pairs) {
+                    if (cp.GetGlcmTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                        continue;
+                    }
                     if (CheckLcm(cp, f.GetLeadingTerm())) {
                         continue;
                     }
@@ -142,20 +149,22 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, NUtils::Polynomial<TCoef, TComp>& f) {
-                f.Normalize();
+            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, NUtils::Polynomial<TCoef, TComp>& g) {
+                g.Normalize();
                 TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
-                for (const auto& p : polynomials) {
-                    all_crit.insert(NUtils::CriticalPair(f, p));
+                auto [fit, _] = polynomials.insert(g);
+                for (auto it = polynomials.begin(); it != polynomials.end(); ++it) {
+                    if (it != fit) {
+                        all_crit.insert(NUtils::CriticalPair(*fit, *it));
+                    }
                 }
 
-                EraseByLcm(all_crit, f);
-                InsertByGcd(all_crit, new_crit_pairs, f);
-                InsertByLcm(old_crit_pairs, new_crit_pairs, f);
+                EraseByLcm(all_crit, *fit);
+                InsertByGcd(all_crit, new_crit_pairs, *fit);
+                InsertByLcm(old_crit_pairs, new_crit_pairs, *fit);
                 old_crit_pairs = std::move(new_crit_pairs);
 
-                EraseByLead(polynomials, f);
-                polynomials.insert(f);
+                EraseByLead(polynomials, fit);
             }
 
             template <typename TCoef, typename TComp>

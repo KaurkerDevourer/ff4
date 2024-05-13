@@ -49,8 +49,8 @@ namespace FF4 {
                 }
 
             private:
-                NUtils::Polynomial<TCoef, TComp> left_;
-                NUtils::Polynomial<TCoef, TComp> right_;
+                const NUtils::Polynomial<TCoef, TComp>& left_;
+                const NUtils::Polynomial<TCoef, TComp>& right_;
                 Monomial<TCoef> Glcm_;
                 Term::Degree degree_;
         };
