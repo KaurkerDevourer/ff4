@@ -18,9 +18,6 @@ namespace FF4 {
             using TPolynomialSet = std::set<NUtils::Polynomial<TCoef, TComp>, TComp>;
 
             template <typename TCoef, typename TComp>
-            using TEvaluatedResults = std::vector<std::pair<TPolynomialSet<TCoef, TComp>, NUtils::TPolynomials<TCoef, TComp>>>;
-
-            template <typename TCoef, typename TComp>
             TPairsVector<TCoef, TComp> Select(TPairsSet<TCoef, TComp>& pairs_to_check) {
                 TPairsVector<TCoef, TComp> selectionGroup;
                 NUtils::Term::Degree value = pairs_to_check.begin()->TotalDegree();
@@ -32,35 +29,11 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::Polynomial<TCoef, TComp> Simplify(const NUtils::Term& term, const NUtils::Polynomial<TCoef, TComp>& polynomial, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
-                for (const auto& div : term.GetAllDivisors()) {
-                    const NUtils::Polynomial<TCoef, TComp> mul = term * polynomial;
-                    for (const auto& [start, evaluated] : evaluatedResults) {
-                        if (!start.contains(mul)) {
-                            continue;
-                        }
-                        for (const auto& ev_pol : evaluated) {
-                            if (ev_pol.GetLeadingTerm() == mul.GetLeadingTerm()) {
-                                if (div.IsOne()) {
-                                    return term * ev_pol;
-                                } else if (div != term) {
-                                    return Simplify(term / div, ev_pol, evaluatedResults);
-                                } else {
-                                    return ev_pol;
-                                }
-                            }
-                        }
-                    }
-                }
-                return term * polynomial;
-            }
-
-            template <typename TCoef, typename TComp>
-            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
+            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
                     if (term.IsDivisibleBy(t)) {
-                        NUtils::Polynomial<TCoef, TComp> reducer = Simplify((term / t), polynomial, evaluatedResults);
+                        NUtils::Polynomial<TCoef, TComp> reducer = (term / t) * polynomial;
                         for (const auto& m : reducer.GetMonomials()) {
                             if (!done.contains(m.GetTerm())) {
                                 diff.insert(m.GetTerm());
@@ -73,21 +46,24 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtil::TSymbolicPreprocessingResult<TCoef, TComp> SymbolicPreprocessing(TPairsVector<TCoef, TComp>& selected, const TPolynomialSet<TCoef, TComp>& polynomials, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
+            NUtil::TSymbolicPreprocessingResult<TCoef, TComp> SymbolicPreprocessing(TPairsVector<TCoef, TComp>& selected, const TPolynomialSet<TCoef, TComp>& polynomials) {
                 NUtils::TPolynomials<TCoef, TComp> L;
                 L.reserve(selected.size() * 3);
                 for (const auto& pair : selected) {
-                    L.push_back(Simplify(pair.GetGlcmTerm() / pair.GetLeftTerm(), pair.GetLeft(), evaluatedResults));
-                    L.push_back(Simplify(pair.GetGlcmTerm() / pair.GetRightTerm(), pair.GetRight(), evaluatedResults));
+                    L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft());
+                    L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight());
                 }
 
                 NUtil::TTermSet<TComp> diff;
-                NUtil::TTermSet<TComp> done;
                 for (const auto& l : L) {
                     auto it = diff.begin();
                     for (const auto& m : l.GetMonomials()) {
                         it = diff.insert(it, m.GetTerm());
                     }
+                }
+
+                NUtil::TTermSet<TComp> done;
+                for (const auto& l : L) {
                     diff.erase(l.GetLeadingTerm());
                     done.insert(l.GetLeadingTerm());
                 }
@@ -96,7 +72,7 @@ namespace FF4 {
                     NUtils::Term term = *diff.begin();
                     diff.erase(diff.begin());
                     done.insert(done.begin(), term);
-                    UpdateL(L, term, polynomials, diff, done, evaluatedResults);
+                    UpdateL(L, term, polynomials, diff, done);
                 }
 
                 return {L, done};
@@ -192,15 +168,9 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp>& polynomials, TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
-                NUtil::TSymbolicPreprocessingResult<TCoef, TComp> L = SymbolicPreprocessing(selected, polynomials, evaluatedResults);
-                NUtil::PolynomialsPair<TCoef, TComp> result = NUtil::MatrixReduction(L);
-                TPolynomialSet<TCoef, TComp> start;
-                for (const auto& pol : L.first) {
-                    start.insert(pol);
-                }
-                evaluatedResults.emplace_back(start, result.second);
-                return result.first;
+            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp>& polynomials) {
+                NUtil::TSymbolicPreprocessingResult<TCoef, TComp> L = SymbolicPreprocessing(selected, polynomials);
+                return NUtil::MatrixReduction(L);
             }
 
             template <typename TCoef, typename TComp>
@@ -216,14 +186,13 @@ namespace FF4 {
             void FindGroebnerBasis(NUtils::TPolynomials<TCoef, TComp>& F) {
                 TPolynomialSet<TCoef, TComp> polynomials;
                 TPairsSet<TCoef, TComp> pairs_to_check;
-                TEvaluatedResults<TCoef, TComp> evaluatedResults;
                 for (auto& f : F) {
                     UpdateCriticalPairs(polynomials, pairs_to_check, f);
                 }
 
                 while(!pairs_to_check.empty()) {
                     TPairsVector<TCoef, TComp> selection_group = Select(pairs_to_check);
-                    NUtils::TPolynomials<TCoef, TComp> G = Reduce(selection_group, polynomials, evaluatedResults);
+                    NUtils::TPolynomials<TCoef, TComp> G = Reduce(selection_group, polynomials);
                     for (auto& g : G) {
                         UpdateCriticalPairs(polynomials, pairs_to_check, g);
                     }

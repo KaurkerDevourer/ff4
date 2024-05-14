@@ -24,7 +24,7 @@ namespace FF4 {
                 bool IsOne() const noexcept;
                 bool IsDivisibleBy(const Term&) const noexcept;
                 Degree TotalDegree() const noexcept;
-                std::vector<Term> GetAllDivisors() const noexcept;
+                std::vector<Term> GetAllDivisors() noexcept;
                 Term& operator*=(const Term&) noexcept;
                 friend Term operator*(Term, const Term&) noexcept;
                 Term& operator/=(const Term&) noexcept;
@@ -43,7 +43,7 @@ namespace FF4 {
                 friend std::ostream& operator<<(std::ostream&, const Term&) noexcept;
             private:
                 void Normalize() noexcept;
-                friend void FillDivisors(Term&, std::vector<Term>&, size_t) noexcept;
+                void FillDivisors(std::vector<Term>&, size_t) noexcept;
                 std::vector<uint64_t> data_;
                 Degree sum_ = 0;
         };

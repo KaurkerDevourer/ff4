@@ -62,10 +62,9 @@ namespace FF4 {
             return sum_;
         }
 
-        std::vector<Term> Term::GetAllDivisors() const noexcept {
-            Term to_change = (*this);
-            std::vector<Term> divisors = {to_change};
-            FillDivisors(to_change, divisors, 0);
+        std::vector<Term> Term::GetAllDivisors() noexcept {
+            std::vector<Term> divisors = {(*this)};
+            FillDivisors(divisors, 0);
             for (auto& div : divisors) {
                 div.Normalize();
             }
@@ -183,15 +182,15 @@ namespace FF4 {
             }
         }
 
-        void FillDivisors(Term& term, std::vector<Term>& divisors, size_t idx) noexcept {
-            for (size_t i = idx; i < term.size(); i++) {
-                if (term[i] != 0) {
-                    term[i]--;
-                    term.sum_--;
-                    divisors.push_back(term);
-                    FillDivisors(term, divisors, i);
-                    term[i]++;
-                    term.sum_++;
+        void Term::FillDivisors(std::vector<Term>& divisors, size_t idx) noexcept {
+            for (size_t i = idx; i < data_.size(); i++) {
+                if (data_[i] != 0) {
+                    data_[i]--;
+                    sum_--;
+                    divisors.push_back((*this));
+                    FillDivisors(divisors, i);
+                    data_[i]++;
+                    sum_++;
                 }
             }
         }
