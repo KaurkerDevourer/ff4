@@ -7,7 +7,7 @@
 void test_monomial() {
     using namespace FF4::NUtils;
     Monomial a(Term({0, 2}), 2);
-    Monomial b(Term({1}), 3);
+    Monomial b(Term({1, 0}), 3);
 
     ASSERT_EQUAL(a * b, Monomial(Term({1, 2}), 6));
     ASSERT_EQUAL((a * b) / b, a);

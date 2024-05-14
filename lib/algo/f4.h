@@ -7,6 +7,7 @@
 namespace FF4 {
     namespace NAlgo {
         namespace F4 {
+
             template <typename TCoef, typename TComp>
             using TPairsSet = std::set<NUtils::CriticalPair<TCoef, TComp>, TComp>;
 
@@ -31,12 +32,9 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::Polynomial<TCoef, TComp> Simplify(const std::vector<NUtils::Term>& divisors, const NUtils::Term& term, const NUtils::Polynomial<TCoef, TComp>& polynomial, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
-                for (const auto& div : divisors) {
-                    if (!term.IsDivisibleBy(div)) {
-                        continue;
-                    }
-                    const NUtils::Polynomial<TCoef, TComp> mul = div * polynomial;
+            NUtils::Polynomial<TCoef, TComp> Simplify(const NUtils::Term& term, const NUtils::Polynomial<TCoef, TComp>& polynomial, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
+                for (const auto& div : term.GetAllDivisors()) {
+                    const NUtils::Polynomial<TCoef, TComp> mul = term * polynomial;
                     for (const auto& [start, evaluated] : evaluatedResults) {
                         if (!start.contains(mul)) {
                             continue;
@@ -45,11 +43,11 @@ namespace FF4 {
                             if (ev_pol.GetLeadingTerm() == mul.GetLeadingTerm()) {
                                 if (div.IsOne()) {
                                     return term * ev_pol;
+                                } else if (div != term) {
+                                    return Simplify(term / div, ev_pol, evaluatedResults);
+                                } else {
+                                    return ev_pol;
                                 }
-                                if (div != term) {
-                                    return Simplify(divisors, term / div, ev_pol, evaluatedResults);
-                                }
-                                return ev_pol;
                             }
                         }
                     }
@@ -61,19 +59,16 @@ namespace FF4 {
             void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done, const TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
-                    if (!term.IsDivisibleBy(t)) {
-                        continue;
-                    }
-
-                    NUtils::Term te = (term / t);
-                    NUtils::Polynomial<TCoef, TComp> reducer = Simplify(te.GetAllDivisors(), te, polynomial, evaluatedResults);
-                    for (const auto& m : reducer.GetMonomials()) {
-                        if (!done.contains(m.GetTerm())) {
-                            diff.insert(m.GetTerm());
+                    if (term.IsDivisibleBy(t)) {
+                        NUtils::Polynomial<TCoef, TComp> reducer = Simplify((term / t), polynomial, evaluatedResults);
+                        for (const auto& m : reducer.GetMonomials()) {
+                            if (!done.contains(m.GetTerm())) {
+                                diff.insert(m.GetTerm());
+                            }
                         }
+                        L.push_back(std::move(reducer));
+                        break;
                     }
-                    L.push_back(std::move(reducer));
-                    break;
                 }
             }
 
@@ -82,10 +77,8 @@ namespace FF4 {
                 NUtils::TPolynomials<TCoef, TComp> L;
                 L.reserve(selected.size() * 3);
                 for (const auto& pair : selected) {
-                    NUtils::Term leftTerm = pair.GetGlcmTerm() / pair.GetLeftTerm();
-                    NUtils::Term rightTerm = pair.GetGlcmTerm() / pair.GetRightTerm();
-                    L.push_back(Simplify(leftTerm.GetAllDivisors(), leftTerm, pair.GetLeft(), evaluatedResults));
-                    L.push_back(Simplify(rightTerm.GetAllDivisors(), rightTerm, pair.GetRight(), evaluatedResults));
+                    L.push_back(Simplify(pair.GetGlcmTerm() / pair.GetLeftTerm(), pair.GetLeft(), evaluatedResults));
+                    L.push_back(Simplify(pair.GetGlcmTerm() / pair.GetRightTerm(), pair.GetRight(), evaluatedResults));
                 }
 
                 NUtil::TTermSet<TComp> diff;
@@ -180,7 +173,8 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& g) {
+            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, NUtils::Polynomial<TCoef, TComp>& g) {
+                g.Normalize();
                 TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
                 auto [fit, _] = polynomials.insert(g);
                 for (auto it = polynomials.begin(); it != polynomials.end(); ++it) {
@@ -198,9 +192,9 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtil::TPolynomialsIndexes Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp>& polynomials, TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
+            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, TPolynomialSet<TCoef, TComp>& polynomials, TEvaluatedResults<TCoef, TComp>& evaluatedResults) {
                 NUtil::TSymbolicPreprocessingResult<TCoef, TComp> L = SymbolicPreprocessing(selected, polynomials, evaluatedResults);
-                NUtil::TPolynomialsPair<TCoef, TComp> result = NUtil::MatrixReduction(L);
+                NUtil::PolynomialsPair<TCoef, TComp> result = NUtil::MatrixReduction(L);
                 TPolynomialSet<TCoef, TComp> start;
                 for (const auto& pol : L.first) {
                     start.insert(pol);
@@ -224,15 +218,14 @@ namespace FF4 {
                 TPairsSet<TCoef, TComp> pairs_to_check;
                 TEvaluatedResults<TCoef, TComp> evaluatedResults;
                 for (auto& f : F) {
-                    f.Normalize();
                     UpdateCriticalPairs(polynomials, pairs_to_check, f);
                 }
 
                 while(!pairs_to_check.empty()) {
                     TPairsVector<TCoef, TComp> selection_group = Select(pairs_to_check);
-                    NUtil::TPolynomialsIndexes G = Reduce(selection_group, polynomials, evaluatedResults);
-                    for (size_t i : G) {
-                        UpdateCriticalPairs(polynomials, pairs_to_check, evaluatedResults.back().second[i]);
+                    NUtils::TPolynomials<TCoef, TComp> G = Reduce(selection_group, polynomials, evaluatedResults);
+                    for (auto& g : G) {
+                        UpdateCriticalPairs(polynomials, pairs_to_check, g);
                     }
                 }
                 UpdateBasis(polynomials, F);
