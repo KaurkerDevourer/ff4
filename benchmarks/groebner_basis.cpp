@@ -115,12 +115,9 @@ namespace  {
     }
 
 
-    void FindGroebnerBasisF4PrimeFieldBig(TPolynomials<PrimeField<1000000007>, GrevLexComp>& F, int timesToRun) {
+    void FindGroebnerBasisF4PrimeFieldBig(TPolynomials<PrimeField<1000000007>, GrevLexComp>& F) {
         #ifdef NDEBUG
-            for (int i = 0; i < timesToRun; i++) {
-                TPolynomials<PrimeField<1000000007>, GrevLexComp> F2 = F;
-                NAlgo::F4::FindGroebnerBasis(F2);
-            }
+            NAlgo::F4::FindGroebnerBasis(F);
         #else
             NAlgo::F4::FindGroebnerBasis(F);
             std::cout << F.size() << std::endl;
@@ -142,11 +139,9 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisOpenF4PrimeFieldBig(std::vector<std::string> variableName, std::vector<std::string> polynomialList, int timesToRun) {
+    void FindGroebnerBasisOpenF4PrimeFieldBig(std::vector<std::string> variableName, std::vector<std::string> polynomialList) {
         #ifdef NDEBUG
-            for (int i = 0; i < timesToRun; i++) {
-                std::vector<std::string> basis = groebnerBasisF4(1000000007, variableName.size(), variableName, polynomialList, 32, 0);
-            }
+            std::vector<std::string> basis = groebnerBasisF4(1000000007, variableName.size(), variableName, polynomialList, 1, 0);
         #else
             std::vector<std::string> basis = groebnerBasisF4(1000000007, variableName.size(), variableName, polynomialList, 1, 4);
             std::cout << basis.size() << std::endl;
@@ -580,7 +575,7 @@ void benchmark_cyclic6() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {p0, p1, p2, p3, p4, p5};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-6 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-6 ").call(test);
     }
 
     {
@@ -592,7 +587,7 @@ void benchmark_cyclic6() {
         polCyclic6.emplace_back("x0*x1*x2*x3*x4+x0*x1*x2*x3*x5+x0*x1*x2*x4*x5+x0*x1*x3*x4*x5+x0*x2*x3*x4*x5+x1*x2*x3*x4*x5");
         polCyclic6.emplace_back("x0*x1*x2*x3*x4*x5-1");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-6 ").call(variableName, polCyclic6, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-6 ").call(variableName, polCyclic6);
     }
 }
 
@@ -679,7 +674,7 @@ void benchmark_cyclic7() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {p0, p1, p2, p3, p4, p5, p6};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-7 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_cyclic-7 ").call(test);
     }
     {
         std::vector<std::string> polCyclic7;
@@ -691,7 +686,7 @@ void benchmark_cyclic7() {
         polCyclic7.emplace_back("x0*x1*x2*x3*x4*x5+x0*x1*x2*x3*x4*x6+x0*x1*x2*x3*x5*x6+x0*x1*x2*x4*x5*x6+x0*x1*x3*x4*x5*x6+x0*x2*x3*x4*x5*x6+x1*x2*x3*x4*x5*x6");
         polCyclic7.emplace_back("x0*x1*x2*x3*x4*x5*x6-1");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-7 ").call(variableName, polCyclic7, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_cyclic-7 ").call(variableName, polCyclic7);
     }
 }
 
@@ -818,7 +813,7 @@ void benchmark_katsura9() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {pk, p0, p1, p2, p3, p4, p5, p6, p7};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-9 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-9 ").call(test);
     }
 
     {
@@ -833,7 +828,7 @@ void benchmark_katsura9() {
         polKatsura9.emplace_back("x3^2+2*x2*x4+2*x1*x5+2*x0*x6+2*x1*x7+2*x2*x8-x6");
         polKatsura9.emplace_back("2*x3*x4+2*x2*x5+2*x1*x6+2*x0*x7+2*x1*x8-x7");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura9 ").call(variableName, polKatsura9, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura9 ").call(variableName, polKatsura9);
     }
 
 }
@@ -982,7 +977,7 @@ void benchmark_katsura10() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {pk, p0, p1, p2, p3, p4, p5, p6, p7, p8};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-10 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-10 ").call(test);
     }
 
     {
@@ -999,7 +994,7 @@ void benchmark_katsura10() {
         polKatsura10.emplace_back("x4^2+2*x3*x5+2*x2*x6+2*x1*x7+2*x0*x8+2*x1*x9-x8");
 
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura10 ").call(variableName, polKatsura10, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura10 ").call(variableName, polKatsura10);
     }
 
 }
@@ -1171,7 +1166,7 @@ void benchmark_katsura11() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {pk, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-11 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-11 ").call(test);
     }
 
     {
@@ -1188,7 +1183,7 @@ void benchmark_katsura11() {
         polKatsura11.emplace_back("x4^2+2*x3*x5+2*x2*x6+2*x1*x7+2*x0*x8+2*x1*x9+2*x2*x10-x8");
         polKatsura11.emplace_back("2*x4*x5+2*x3*x6+2*x2*x7+2*x1*x8+2*x0*x9+2*x1*x10-x9");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura11 ").call(variableName, polKatsura11, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura11 ").call(variableName, polKatsura11);
     }
 
 }
@@ -1384,7 +1379,7 @@ void benchmark_katsura12() {
 
         TPolynomials<PrimeField<1000000007>, GrevLexComp> test = {pk, p0, p1, p2, p3, p4, p5, p6, p7, p8, p9, p10};
 
-        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-12 ").call(test, 1);
+        test_time(FindGroebnerBasisF4PrimeFieldBig, "f4_katsura-12 ").call(test);
     }
 
     {
@@ -1402,7 +1397,7 @@ void benchmark_katsura12() {
         polKatsura12.emplace_back("2*x4*x5+2*x3*x6+2*x2*x7+2*x1*x8+2*x0*x9+2*x1*x10+2*x2*x11-x9");
         polKatsura12.emplace_back("x5^2+2*x4*x6+2*x3*x7+2*x2*x8+2*x1*x9+2*x0*x10+2*x1*x11-x10");
         std::vector<std::string> variableName = {"x0", "x1", "x2", "x3", "x4", "x5", "x6", "x7", "x8", "x9", "x10", "x11"};
-        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura12 ").call(variableName, polKatsura12, 1);
+        test_time(FindGroebnerBasisOpenF4PrimeFieldBig, "openf4_katsura12 ").call(variableName, polKatsura12);
     }
 
 }
