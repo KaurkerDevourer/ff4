@@ -15,8 +15,10 @@ namespace FF4 {
             template<typename TCoef, typename TComp>
             using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
 
+            using TPolynomialsIndexes = std::vector<size_t>;
+
             template<typename TCoef, typename TComp>
-            using PolynomialsPair = std::pair<NUtils::TPolynomials<TCoef, TComp>, NUtils::TPolynomials<TCoef, TComp>>;
+            using TPolynomialsPair = std::pair<TPolynomialsIndexes, NUtils::TPolynomials<TCoef, TComp>>;
 
             template <typename TCoef, typename TComp>
             size_t FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::unordered_map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
@@ -109,8 +111,8 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            PolynomialsPair<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const std::vector<NUtils::Term>& vTerms, size_t pivots) {
-                NUtils::TPolynomials<TCoef, TComp> reduced;
+            TPolynomialsPair<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const std::vector<NUtils::Term>& vTerms, size_t pivots) {
+                TPolynomialsIndexes reduced;
                 NUtils::TPolynomials<TCoef, TComp> evaluated;
                 reduced.reserve(matrix.N_ - pivots);
                 evaluated.reserve(matrix.N_);
@@ -123,12 +125,11 @@ namespace FF4 {
                         mons.emplace_back(vTerms[j], matrix(i, j));
                     }
                     if (!mons.empty()) {
-                        
-                        if (i > pivots) {
-                            auto reduced_mons = mons;
-                            reduced.emplace_back(std::move(reduced_mons));
+                        if (i >= pivots) {
+                            reduced.emplace_back(evaluated.size());
                         }
                         evaluated.emplace_back(std::move(mons));
+                        evaluated.back().Normalize();
                     }
                 }
                 return {reduced, evaluated};
@@ -136,19 +137,27 @@ namespace FF4 {
 
             template <typename TCoef>
             void TRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
+                std::vector<size_t> next;
+                next.reserve(matrix.M_ - pivots);
                 for (size_t j = pivots - 1; j > 0; j--) {
+                    for (size_t k = pivots; k < matrix.M_; k++) {
+                        if (matrix(j, k) != 0) {
+                            next.push_back(k);
+                        }
+                    }
                     for (size_t i = 0; i < j; i++) {
                         if (matrix(i, j) == 0) {
                             continue;
                         }
                         TCoef factor = matrix(i, j);
 
-                        for (size_t k = pivots; k < matrix.M_; k++) {
-                            matrix(i, k) -= factor * matrix(j, k);
+                        for (size_t k = 0; k < next.size(); k++) {
+                            matrix(i, next[k]) -= factor * matrix(j, next[k]);
                         }
 
                         matrix(i, j) = 0;
                     }
+                    next.clear();
                 }
             }
 
@@ -168,7 +177,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            PolynomialsPair<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
+            TPolynomialsPair<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
                 TTermSet<TComp>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
