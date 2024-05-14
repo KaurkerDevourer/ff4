@@ -13,48 +13,50 @@ namespace FF4 {
             , M_(m)
             , pivots_(pivots)
             {
-                A_.resize(pivots_ * pivots_);
-                B_.resize((M_ - pivots_) * pivots_);
-                C_.resize((N_ - pivots_) * pivots_);
-                D_.resize((M_ - pivots_) * (N_ - pivots_));
+                data_.resize(N_ * M_);
+                offset_b_ = pivots_ * pivots_;
+                offset_c_ = M_ * pivots_;
+                offset_d_ = offset_c_ + (N_ - pivots_) * pivots_;
             }
 
             TCoef& operator()(size_t i, size_t j) {
                 bool top = (i < pivots_);
                 bool left = (j < pivots_);
-                if (left && top) {
-                    return A_[i * pivots_ + j];
-                } else if (!left && top) {
-                    return B_[i * (M_ - pivots_) + (j - pivots_)];
-                } else if (left && !top) {
-                    return C_[(i - pivots_) * pivots_ + j];
-                } else {
-                    return D_[(i - pivots_) * (N_ - pivots_) + (j - pivots_)];
+                if (top && left) { // A
+                    return data_[i * pivots_ + j];
                 }
+                if (top && !left) { // B
+                    return data_[offset_b_ + i * (M_ - pivots_) + (j - pivots_)];
+                }
+                if (left) {
+                    return data_[offset_c_ + (i - pivots_) * pivots_ + j];
+                }
+                return data_[offset_d_ + (i - pivots_) * (M_ - pivots_) + (j - pivots_)];
             }
 
             const TCoef& operator()(size_t i, size_t j) const {
                 bool top = (i < pivots_);
                 bool left = (j < pivots_);
-                if (left && top) {
-                    return A_[i * pivots_ + j];
-                } else if (!left && top) {
-                    return B_[i * (M_ - pivots_) + (j - pivots_)];
-                } else if (left && !top) {
-                    return C_[(i - pivots_) * pivots_ + j];
-                } else {
-                    return D_[(i - pivots_) * (N_ - pivots_) + (j - pivots_)];
+                if (top && left) { // A
+                    return data_[i * pivots_ + j];
                 }
+                if (top && !left) { // B
+                    return data_[offset_b_ + i * (M_ - pivots_) + (j - pivots_)];
+                }
+                if (left) {
+                    return data_[offset_c_ + (i - pivots_) * pivots_ + j];
+                }
+                return data_[offset_d_ + (i - pivots_) * (M_ - pivots_) + (j - pivots_)];
             }
 
             size_t N_;
             size_t M_;
             size_t pivots_;
         private:
-            std::vector<TCoef> A_;
-            std::vector<TCoef> B_;
-            std::vector<TCoef> C_;
-            std::vector<TCoef> D_;
+            std::vector<TCoef> data_;
+            size_t offset_b_;
+            size_t offset_c_;
+            size_t offset_d_;
         };
     }
 }

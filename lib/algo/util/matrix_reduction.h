@@ -34,7 +34,6 @@ namespace FF4 {
                 }
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size(), F.size() - swp);
-
                 cnt = diffSet.size() - 1;
                 for (const auto& term : diffSet) {
                     if (Mp.find(term) == Mp.end()) {
@@ -130,6 +129,7 @@ namespace FF4 {
             void TRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
                 for (size_t j = pivots - 1; j > 0; j--) {
                     std::vector<size_t> next;
+                    next.reserve((matrix.M_ - pivots) / 2);
                     for (size_t k = pivots; k < matrix.M_; k++) {
                         if (matrix(j, k) != 0) {
                             next.push_back(k);
@@ -154,6 +154,7 @@ namespace FF4 {
             void AXPY(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
                 for (size_t i = 0; i < pivots; i++) {
                     std::vector<size_t> next;
+                    next.reserve((matrix.M_ - pivots) / 2);
                     for (size_t j = pivots; j < matrix.M_; j++) {
                         if (matrix(i, j) != 0) {
                             next.push_back(j);
