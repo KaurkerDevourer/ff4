@@ -21,6 +21,14 @@ void test_term() {
     ASSERT_EQUAL(a * b, Term({2, 7, 11}));
     ASSERT_EQUAL(a / b, Term({2, 1, 1}));
 
+    Term c({1, 0, 2});
+    auto flex = c.GetAllDivisors();
+    std::vector<Term> expected{Term({1, 0, 2}), Term({0, 0, 2}), Term({0, 0, 1}), Term({0}), Term({1, 0, 1}), Term({1})};
+    ASSERT_EQUAL(flex.size(), expected.size());
+    for (size_t i = 0; i < expected.size(); i++) {
+        ASSERT_EQUAL(flex[i], expected[i]);
+    }
+
 
     std::cout << "Successfully tested Term" << std::endl;
 }

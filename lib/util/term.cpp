@@ -30,7 +30,7 @@ namespace FF4 {
             data_.resize(sz);
         }
 
-        size_t Term::size() const {
+        size_t Term::size() const noexcept {
             return data_.size();
         }
 
@@ -60,6 +60,15 @@ namespace FF4 {
 
         uint64_t Term::TotalDegree() const noexcept {
             return sum_;
+        }
+
+        std::vector<Term> Term::GetAllDivisors() noexcept {
+            std::vector<Term> divisors = {(*this)};
+            FillDivisors(divisors, 0);
+            for (auto& div : divisors) {
+                div.Normalize();
+            }
+            return divisors;
         }
 
         Term& Term::operator/=(const Term& other) noexcept {
@@ -167,11 +176,23 @@ namespace FF4 {
             return term;
         }
 
-        void Term::Normalize() {
+        void Term::Normalize() noexcept {
             while(data_.size() > 1 && data_.back() == 0) {
                 data_.pop_back();
             }
         }
 
+        void Term::FillDivisors(std::vector<Term>& divisors, size_t idx) noexcept {
+            for (size_t i = idx; i < data_.size(); i++) {
+                if (data_[i] != 0) {
+                    data_[i]--;
+                    sum_--;
+                    divisors.push_back((*this));
+                    FillDivisors(divisors, i);
+                    data_[i]++;
+                    sum_++;
+                }
+            }
+        }
     }
 }

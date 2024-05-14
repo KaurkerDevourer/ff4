@@ -48,7 +48,7 @@ namespace FF4 {
             template <typename TCoef, typename TComp>
             NUtil::TSymbolicPreprocessingResult<TCoef, TComp> SymbolicPreprocessing(TPairsVector<TCoef, TComp>& selected, const TPolynomialSet<TCoef, TComp>& polynomials) {
                 NUtils::TPolynomials<TCoef, TComp> L;
-                L.reserve(selected.size() * 2);
+                L.reserve(selected.size() * 3);
                 for (const auto& pair : selected) {
                     L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft());
                     L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight());
