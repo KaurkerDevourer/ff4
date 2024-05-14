@@ -161,12 +161,29 @@ namespace FF4 {
                 return *this;
             }
 
+            Polynomial& operator*=(const Term& term) noexcept {
+                for (size_t i = 0; i < monomials_.size(); i++) {
+                    monomials_[i] *= term;
+                }
+                return *this;
+            }
+
             friend Polynomial operator*(Polynomial left, const Monomial<TCoef>& right) noexcept {
                 left *= right;
                 return left;
             }
 
             friend Polynomial operator*(const Monomial<TCoef>& left, Polynomial right) noexcept {
+                right *= left;
+                return right;
+            }
+
+            friend Polynomial operator*(Polynomial left, const Term& right) noexcept {
+                left *= right;
+                return left;
+            }
+
+            friend Polynomial operator*(const Term& left, Polynomial right) noexcept {
                 right *= left;
                 return right;
             }

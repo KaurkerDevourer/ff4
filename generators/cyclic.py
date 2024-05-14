@@ -1,8 +1,9 @@
 n = 7
+mod = 7583
 # generator for my lib
 
 
-print("std::vector<Monomial<PrimeField<31>>> mon0;")
+print("std::vector<Monomial<PrimeField<" + str(mod) + ">>> mon0;")
 print()
 
 kk = ""
@@ -11,14 +12,14 @@ for i in range(n):
     if i != n - 1:
         kk += ", "
 
-print("mon0.push_back(Monomial(Term({" + kk + "}), PrimeField<31>(1)));")
-print("mon0.push_back(Monomial(Term({0}), PrimeField<31>(-1)));")
+print("mon0.push_back(Monomial(Term({" + kk + "}), PrimeField<" + str(mod) + ">(1)));")
+print("mon0.push_back(Monomial(Term({0}), PrimeField<" + str(mod) + ">(-1)));")
 print()
-print("Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));")
+print("Polynomial<PrimeField<" + str(mod) + ">, GrevLexComp> p0(std::move(mon0));")
 print()
 
 for i in range(1, n):
-    print("std::vector<Monomial<PrimeField<31>>> mon" + str(i) + ";")
+    print("std::vector<Monomial<PrimeField<" + str(mod) + ">>> mon" + str(i) + ";")
     print()
     l = i
     kkk = []
@@ -43,10 +44,10 @@ for i in range(1, n):
             if t != len(arr) - 1:
                 kk += ", "
         
-        print("mon" + str(i) + ".push_back(Monomial(Term({" + kk + "}), PrimeField<31>(1)));")
+        print("mon" + str(i) + ".push_back(Monomial(Term({" + kk + "}), PrimeField<" + str(mod) + ">(1)));")
 
     print()
-    print("Polynomial<PrimeField<31>, GrevLexComp> p" + str(i) + "(std::move(mon" + str(i) + "));")
+    print("Polynomial<PrimeField<" + str(mod) + ">, GrevLexComp> p" + str(i) + "(std::move(mon" + str(i) + "));")
     print()
 
 finish = ""
@@ -54,4 +55,4 @@ for i in range(n):
     finish += "p" + str(i)
     if i != n - 1:
         finish += ", "
-print("TPolynomials<PrimeField<31>, GrevLexComp> test = {" + finish + "};")
+print("TPolynomials<PrimeField<" + str(mod) + ">, GrevLexComp> test = {" + finish + "};")

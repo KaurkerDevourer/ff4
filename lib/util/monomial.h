@@ -75,8 +75,18 @@ namespace FF4 {
                 return *this;
             }
 
-            friend Monomial operator*(Monomial left, const TCoef& coef) noexcept {
-                left *= coef;
+            friend Monomial operator*(Monomial left, const TCoef& right) noexcept {
+                left *= right;
+                return left;
+            }
+
+            Monomial& operator*=(const Term& term) noexcept {
+                term_ *= term;
+                return *this;
+            }
+
+            friend Monomial operator*(Monomial left, const Term& right) noexcept {
+                left *= right;
                 return left;
             }
 

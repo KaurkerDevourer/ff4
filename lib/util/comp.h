@@ -8,7 +8,7 @@ namespace FF4 {
         class LexComp {
         public:
             bool operator()(const Term& left, const Term right) const noexcept {
-                return left < right;
+                return left.GetData() < right.GetData();
             }
 
             template <typename T>
