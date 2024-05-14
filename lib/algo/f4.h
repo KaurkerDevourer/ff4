@@ -71,7 +71,7 @@ namespace FF4 {
                 while(!diff.empty()) {
                     NUtils::Term term = *diff.begin();
                     diff.erase(diff.begin());
-                    done.insert(done.begin(), term);
+                    done.insert(term);
                     UpdateL(L, term, polynomials, diff, done);
                 }
 

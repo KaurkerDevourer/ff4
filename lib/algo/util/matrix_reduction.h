@@ -19,7 +19,6 @@ namespace FF4 {
             size_t FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::unordered_map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
                 size_t cnt = 0;
                 size_t swp = 0;
-                auto it = Mp.begin();
                 std::vector<bool> not_pivot(F.size());
                 for (size_t i = 0; i < F.size(); i++) {
                     auto [_, inserted] = leadingTerms.insert(F[i].GetLeadingTerm());
@@ -28,7 +27,7 @@ namespace FF4 {
                         swp++;
                         continue;
                     }
-                    it = Mp.insert(it, {F[i].GetLeadingTerm(), cnt});
+                    Mp[F[i].GetLeadingTerm()] = cnt;
                     vTerms[cnt] = F[i].GetLeadingTerm();
                     cnt++;
                 }
@@ -36,7 +35,7 @@ namespace FF4 {
                 cnt = diffSet.size() - 1;
                 for (const auto& term : diffSet) {
                     if (Mp.find(term) == Mp.end()) {
-                        it = Mp.insert(it, {term, cnt});
+                        Mp[term] = cnt;
                         vTerms[cnt] = term;
                         cnt--;
                     }
