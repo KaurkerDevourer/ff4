@@ -22,6 +22,10 @@ namespace FF4 {
             return data_[i];
         }
 
+        const std::vector<uint64_t>& Term::GetData() const {
+            return data_;
+        }
+
         void Term::resize(size_t sz) {
             data_.resize(sz);
         }
@@ -168,5 +172,6 @@ namespace FF4 {
                 data_.pop_back();
             }
         }
+
     }
 }

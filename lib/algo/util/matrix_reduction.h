@@ -3,7 +3,7 @@
 #include "../../util/comp.h"
 #include "../../util/matrix.h"
 #include <set>
-#include <map>
+#include <unordered_map>
 #include <cstring>
 
 namespace FF4 {
@@ -16,7 +16,7 @@ namespace FF4 {
             using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
 
             template <typename TCoef, typename TComp>
-            NUtils::Matrix<TCoef> FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, std::map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
+            size_t FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::unordered_map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
                 size_t cnt = 0;
                 size_t swp = 0;
                 auto it = Mp.begin();
@@ -33,7 +33,6 @@ namespace FF4 {
                     cnt++;
                 }
 
-                NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size(), F.size() - swp);
                 cnt = diffSet.size() - 1;
                 for (const auto& term : diffSet) {
                     if (Mp.find(term) == Mp.end()) {
@@ -65,7 +64,7 @@ namespace FF4 {
                     j++;
                 }
 
-                return matrix;
+                return F.size() - swp;
             }
 
             template <typename TCoef>
@@ -128,21 +127,14 @@ namespace FF4 {
             template <typename TCoef>
             void TRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
                 for (size_t j = pivots - 1; j > 0; j--) {
-                    std::vector<size_t> next;
-                    next.reserve((matrix.M_ - pivots) / 2);
-                    for (size_t k = pivots; k < matrix.M_; k++) {
-                        if (matrix(j, k) != 0) {
-                            next.push_back(k);
-                        }
-                    }
                     for (size_t i = 0; i < j; i++) {
                         if (matrix(i, j) == 0) {
                             continue;
                         }
                         TCoef factor = matrix(i, j);
 
-                        for (size_t k = 0; k < next.size(); k++) {
-                            matrix(i, next[k]) -= factor * matrix(j, next[k]);
+                        for (size_t k = pivots; k < matrix.M_; k++) {
+                            matrix(i, k) -= factor * matrix(j, k);
                         }
 
                         matrix(i, j) = 0;
@@ -153,19 +145,12 @@ namespace FF4 {
             template <typename TCoef>
             void AXPY(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
                 for (size_t i = 0; i < pivots; i++) {
-                    std::vector<size_t> next;
-                    next.reserve((matrix.M_ - pivots) / 2);
-                    for (size_t j = pivots; j < matrix.M_; j++) {
-                        if (matrix(i, j) != 0) {
-                            next.push_back(j);
-                        }
-                    }
                     for (size_t k = pivots; k < matrix.N_; k++) {
                         if (matrix(k, i) == 0) {
                             continue;
                         }
-                        for (size_t j = 0; j < next.size(); j++) {
-                            matrix(k, next[j]) -= matrix(k, i) * matrix(i, next[j]);
+                        for (size_t j = pivots; j < matrix.M_; j++) {
+                            matrix(k, j) -= matrix(k, i) * matrix(i, j);
                         }
                         matrix(k, i) = 0;
                     }
@@ -180,12 +165,12 @@ namespace FF4 {
                     return TComp()(b, a);
                 });
 
-                std::map<NUtils::Term, size_t> Mp;
+                std::unordered_map<NUtils::Term, size_t> Mp;
                 std::vector<NUtils::Term> vTerms(diffSet.size());
 
+                NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
                 TTermSet<TComp> leadingTerms;
-                NUtils::Matrix<TCoef> matrix = FillMatrixAndLeadingTerms(F, Mp, leadingTerms, vTerms, diffSet);
-                size_t pivots = matrix.pivots_;
+                size_t pivots = FillMatrixAndLeadingTerms(F, matrix, Mp, leadingTerms, vTerms, diffSet);
                 TRSM(matrix, pivots);
                 AXPY(matrix, pivots);
 

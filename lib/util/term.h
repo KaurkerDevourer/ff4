@@ -14,6 +14,7 @@ namespace FF4 {
 
                 uint64_t& operator[](size_t);
                 const uint64_t& operator[](size_t) const;
+                const std::vector<uint64_t>& GetData() const;
 
                 void resize(size_t);
                 size_t size() const;
@@ -45,4 +46,21 @@ namespace FF4 {
                 Degree sum_ = 0;
         };
     }
+}
+
+namespace std {
+    template <>
+    struct hash<FF4::NUtils::Term> {
+        size_t operator()(const FF4::NUtils::Term& t) const {
+            const std::vector<uint64_t>& data = t.GetData(); // https://stackoverflow.com/a/27216842
+            size_t seed = data.size();
+            for (auto x : data) {
+                x = ((x >> 32) ^ x) * 0x45d9f3b;
+                x = ((x >> 32) ^ x) * 0x45d9f3b;
+                x = (x >> 32) ^ x;
+                seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+            }
+            return seed;
+        }
+    };
 }
