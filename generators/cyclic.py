@@ -1,5 +1,5 @@
 n = 7
-mod = 7583
+mod = 1000000007
 # generator for my lib
 
 

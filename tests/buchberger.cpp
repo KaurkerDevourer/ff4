@@ -1,7 +1,7 @@
 #include <iostream>
 
 #include "../lib/algo/buchberger.h"
-#include "../lib/algo/buchberger_with_criteria.h"
+#include "../lib/algo/improved_buchberger.h"
 #include "../lib/util/rational.h"
 #include "../lib/algo/util/groebner_basis_util.h"
 #include "../lib/util/comp.h"
@@ -80,10 +80,10 @@ void test_buchberger() {
         Polynomial<Rational, LexComp> d(std::move(dmon));
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
-        std::cout << "Buchberger with criterias: " << test << std::endl;
-        FF4::NAlgo::Buchberger::FindGroebnerBasis(test);
+        std::cout << "Improved buchberger: " << test << std::endl;
+        FF4::NAlgo::ImprovedBuchberger::FindGroebnerBasis(test);
         assert(FF4::NAlgo::NUtil::CheckBasisIsGroebner(test));
-        std::cout << "Size of Groebner basis by Buchberger with criterias: " << test.size() << std::endl;
+        std::cout << "Size of Groebner basis by Improved buchberger: " << test.size() << std::endl;
         std::cout << test << std::endl;
     }
 }
