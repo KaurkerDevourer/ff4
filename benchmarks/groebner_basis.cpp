@@ -4,7 +4,7 @@
 #include "../external/GroebnerBasisFork/GroebnerLib/includes/F4GB.hpp"
 #include "benchmarking.h"
 #include "../lib/algo/buchberger.h"
-#include "../lib/algo/buchberger_with_criteria.h"
+#include "../lib/algo/improved_buchberger.h"
 #include "../lib/algo/f4.h"
 #include "../lib/util/rational.h"
 #include "../lib/util/prime_field.h"
@@ -49,6 +49,17 @@ namespace  {
         #endif
     }
 
+    void FindGroebnerBasisLibModular(gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp>& ideal) {
+        #ifdef NDEBUG
+            for (int i = 0; i < TimesToRun; i++) {
+                gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal2 = ideal;
+                ideal2.MakeGroebnerBasis();
+            }
+        #else
+            ideal.MakeGroebnerBasis();
+        #endif
+    }
+
     void FindGroebnerBasis(TPolynomials<Rational, LexComp>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
@@ -62,27 +73,50 @@ namespace  {
         #endif
     }
 
-    void FindGroebnerBasisWithCriterias(TPolynomials<Rational, LexComp>& F) {
+    void FindGroebnerBasisPrimeField(TPolynomials<PrimeField<31>, GrevLexComp>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
-                TPolynomials<Rational, LexComp> F2 = F;
-                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
+                TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
+                NAlgo::Buchberger::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
+            NAlgo::Buchberger::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
     }
 
-    void FindGroebnerBasisWithCriteriasPrimeField(TPolynomials<PrimeField<1000000007>, GrevLexComp>& F) {
+    void FindGroebnerBasisImprovedBuchberger(TPolynomials<Rational, LexComp>& F) {
         #ifdef NDEBUG
             for (int i = 0; i < TimesToRun; i++) {
-                TPolynomials<PrimeField<1000000007>, GrevLexComp> F2 = F;
-                NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F2);
+                TPolynomials<Rational, LexComp> F2 = F;
+                NAlgo::ImprovedBuchberger::FindGroebnerBasis(F2);
             }
         #else
-            NAlgo::BuchbergerWithCreteria::FindGroebnerBasis(F);
+            NAlgo::ImprovedBuchberger::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
+        #endif
+    }
+
+    void FindGroebnerBasisImprovedBuchbergerPrimeField(TPolynomials<PrimeField<31>, GrevLexComp>& F) {
+        #ifdef NDEBUG
+            for (int i = 0; i < TimesToRun; i++) {
+                TPolynomials<PrimeField<31>, GrevLexComp> F2 = F;
+                NAlgo::ImprovedBuchberger::FindGroebnerBasis(F2);
+            }
+        #else
+            NAlgo::ImprovedBuchberger::FindGroebnerBasis(F);
+            std::cout << F << std::endl;
+            assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
+        #endif
+    }
+
+    void FindGroebnerBasisImprovedBuchbergerPrimeFieldBig(TPolynomials<PrimeField<1000000007>, GrevLexComp>& F) {
+        #ifdef NDEBUG
+            NAlgo::ImprovedBuchberger::FindGroebnerBasis(F);
+        #else
+            NAlgo::ImprovedBuchberger::FindGroebnerBasis(F);
             std::cout << F << std::endl;
             assert(NAlgo::NUtil::CheckBasisIsGroebner(F));
         #endif
@@ -152,7 +186,7 @@ namespace  {
     }
 }
 
-void benchmark_cyclic4_rational() {
+void benchmark_buchberger_cyclic4_rational() {
     {
         std::vector<Monomial<Rational>> amon;
         amon.push_back(Monomial(Term({1, 1, 1, 1}), Rational(1)));
@@ -219,12 +253,466 @@ void benchmark_cyclic4_rational() {
         Polynomial<Rational, LexComp> d(std::move(dmon));
 
         TPolynomials<Rational, LexComp> test = {a, b, c, d};
-        test_time(FindGroebnerBasisWithCriterias, "buchberger_with_criterion_cyclic4_rational ").call(test);
+        test_time(FindGroebnerBasisImprovedBuchberger, "improved_buchberger_cyclic4_rational ").call(test);
     }
 }
 
 
-void benchmark_cyclic4_prime_field() {
+void benchmark_buchberger_cyclic4() {
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 1, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 0, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        std::vector<Monomial<PrimeField<31>>> dmon;
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
+        test_time(FindGroebnerBasisPrimeField, "buchberger_cyclic4 ").call(test);
+    }
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({1, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 1, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({1, 0, 1, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        std::vector<Monomial<PrimeField<31>>> dmon;
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
+        test_time(FindGroebnerBasisImprovedBuchbergerPrimeField, "improved_buchberger_cyclic4 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{1, 1, 1, 1}}, 1},
+            {{{0}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{1, 1, 1}}, 1},
+            {{{1, 1, 0, 1}}, 1},
+            {{{1, 0, 1, 1}}, 1},
+            {{{0, 1, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 1}}, 1},
+            {{{0, 1, 1}}, 1},
+            {{{1, 0, 0, 1}}, 1},
+            {{{0, 0, 1, 1}}, 1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0, 0, 0, 1}}, 1},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisLibModular, "GroebnerBasisLibBuchberger_cyclic4 ").call(ideal);
+    }
+}
+
+void benchmark_buchberger_katsura4() {
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        std::vector<Monomial<PrimeField<31>>> dmon;
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
+
+        test_time(FindGroebnerBasisImprovedBuchbergerPrimeField, "improved_buchberger_katsura4 ").call(test);
+    }
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        std::vector<Monomial<PrimeField<31>>> dmon;
+        dmon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        dmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        dmon.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> d(std::move(dmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c, d};
+
+        test_time(FindGroebnerBasisPrimeField, "buchberger_katsura4 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{2}}, 1},
+            {{{1}}, -1},
+            {{{0, 2}}, 2},
+            {{{0, 0, 2}}, 2},
+            {{{0, 0, 0, 2}}, 2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{1, 1}}, 2},
+            {{{0, 1, 1}}, 2},
+            {{{0, 1}}, -1},
+            {{{0, 0, 1, 1}}, 2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 0, 1}}, 2},
+            {{{0, 2}}, 1},
+            {{{0, 1, 0, 1}}, 2},
+            {{{0, 0, 1}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i4({
+            {{{1}}, 1},
+            {{{0, 1}}, 2},
+            {{{0, 0, 1}}, 2},
+            {{{0, 0, 0, 1}}, 2},
+            {{{0}}, -1},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3, i4});
+        test_time(FindGroebnerBasisLibModular, "GroebnerBasisLibBuchberger_katsura4 ").call(ideal);
+    }
+}
+
+void benchmark_buchberger_sym3_3() {
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({0, 1, 3}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({3, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({1, 3}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
+
+        test_time(FindGroebnerBasisImprovedBuchbergerPrimeField, "improved_buchberger_sym3_3 ").call(test);
+    }
+    {
+        std::vector<Monomial<PrimeField<31>>> amon;
+        amon.push_back(Monomial(Term({0, 1, 3}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        amon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> a(std::move(amon));
+
+        std::vector<Monomial<PrimeField<31>>> bmon;
+        bmon.push_back(Monomial(Term({3, 0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0, 1}), PrimeField<31>(1)));
+        bmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
+
+        std::vector<Monomial<PrimeField<31>>> cmon;
+        cmon.push_back(Monomial(Term({1, 3}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> c(std::move(cmon));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {a, b, c};
+
+        test_time(FindGroebnerBasisPrimeField, "buchberger_sym3_3 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{0, 1, 3}}, 1},
+            {{{1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{3, 0, 1}}, 1},
+            {{{0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 3}}, 1},
+            {{{0, 0, 1}}, 1},
+            {{{0}}, -2},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3});
+        test_time(FindGroebnerBasisLibModular, "GroebnerBasisLibBuchberger_sym3_3 ").call(ideal);
+    }
+}
+
+void benchmark_buchberger_katsura5(){
+    {
+        std::vector<Monomial<PrimeField<31>>> monk;
+
+        monk.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        monk.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> pk(std::move(monk));
+
+        std::vector<Monomial<PrimeField<31>>> mon0;
+
+        mon0.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        mon0.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
+
+        std::vector<Monomial<PrimeField<31>>> mon1;
+
+        mon1.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
+
+        std::vector<Monomial<PrimeField<31>>> mon2;
+
+        mon2.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
+
+        std::vector<Monomial<PrimeField<31>>> mon3;
+
+        mon3.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {pk, p0, p1, p2, p3};
+
+        test_time(FindGroebnerBasisImprovedBuchbergerPrimeField, "improved_buchberger_katsura5 ").call(test);
+    }
+    {
+        std::vector<Monomial<PrimeField<31>>> monk;
+
+        monk.push_back(Monomial(Term({1}), PrimeField<31>(1)));
+        monk.push_back(Monomial(Term({0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0, 0, 0, 0, 1}), PrimeField<31>(2)));
+        monk.push_back(Monomial(Term({0}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> pk(std::move(monk));
+
+        std::vector<Monomial<PrimeField<31>>> mon0;
+
+        mon0.push_back(Monomial(Term({2}), PrimeField<31>(1)));
+        mon0.push_back(Monomial(Term({0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({0, 0, 0, 0, 2}), PrimeField<31>(2)));
+        mon0.push_back(Monomial(Term({1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p0(std::move(mon0));
+
+        std::vector<Monomial<PrimeField<31>>> mon1;
+
+        mon1.push_back(Monomial(Term({1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 0, 0, 1, 1}), PrimeField<31>(2)));
+        mon1.push_back(Monomial(Term({0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p1(std::move(mon1));
+
+        std::vector<Monomial<PrimeField<31>>> mon2;
+
+        mon2.push_back(Monomial(Term({0, 2}), PrimeField<31>(1)));
+        mon2.push_back(Monomial(Term({1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1, 0, 1}), PrimeField<31>(2)));
+        mon2.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p2(std::move(mon2));
+
+        std::vector<Monomial<PrimeField<31>>> mon3;
+
+        mon3.push_back(Monomial(Term({0, 1, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 1, 0, 0, 1}), PrimeField<31>(2)));
+        mon3.push_back(Monomial(Term({0, 0, 0, 1}), PrimeField<31>(-1)));
+
+        Polynomial<PrimeField<31>, GrevLexComp> p3(std::move(mon3));
+
+        TPolynomials<PrimeField<31>, GrevLexComp> test = {pk, p0, p1, p2, p3};
+
+        test_time(FindGroebnerBasisPrimeField, "buchberger_katsura5 ").call(test);
+    }
+    {
+        gb::Polynomial<gb::fields::Modular<31>> i1({
+            {{{2}}, 1},
+            {{{0, 2}}, 2},
+            {{{0, 0, 2}}, 2},
+            {{{0, 0, 0, 2}}, 2},
+            {{{0, 0, 0, 0, 2}}, 2},
+            {{{1}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i2({
+            {{{1, 1}}, 2},
+            {{{0, 1, 1}}, 2},
+            {{{0, 0, 1, 1}}, 2},
+            {{{0, 0, 0, 1, 1}}, 2},
+            {{{0, 1}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i3({
+            {{{1, 0, 1}}, 2},
+            {{{0, 2}}, 1},
+            {{{0, 1, 0, 1}}, 2},
+            {{{0, 0, 1, 0, 1}}, 2},
+            {{{0, 0, 1}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i4({
+            {{{0, 1, 1}}, 2},
+            {{{1, 0, 0, 1}}, 2},
+            {{{0, 1, 0, 0, 1}}, 2},
+            {{{0, 0, 0, 1}}, -1},
+        });
+
+        gb::Polynomial<gb::fields::Modular<31>> i5({
+            {{{1}}, 1},
+            {{{0, 1}}, 2},
+            {{{0, 0, 1}}, 2},
+            {{{0, 0, 0, 1}}, 2},
+            {{{0, 0, 0, 0, 1}}, 2},
+            {{{0}}, -1},
+        });
+
+        gb::PolynomialSet<gb::fields::Modular<31>, gb::DegReLexComp> ideal({i1, i2, i3, i4, i5});
+        test_time(FindGroebnerBasisLibModular, "GroebnerBasisLibBuchberger_katsura5 ").call(ideal);
+    }
+}
+
+
+void benchmark_cyclic4() {
     {
         std::vector<Monomial<PrimeField<1000000007>>> amon;
         amon.push_back(Monomial(Term({1, 1, 1, 1}), PrimeField<1000000007>(1)));

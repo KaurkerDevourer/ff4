@@ -1,5 +1,5 @@
-n = 12
-mod = 1000000007
+n = 5
+mod = 31
 # generator for my lib
 
 print("std::vector<Monomial<PrimeField<" + str(mod) + ">>> monk;")

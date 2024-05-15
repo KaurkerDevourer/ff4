@@ -1,10 +1,17 @@
 #pragma once
 
 #include "../../util/polynomial.h"
+#include "../../util/critical_pair.h"
+#include <set>
 
 namespace FF4 {
     namespace NAlgo {
         namespace NUtil {
+            template <typename TCoef, typename TComp>
+            using TPairsSet = std::set<NUtils::CriticalPair<TCoef, TComp>, TComp>;
+
+            template <typename TCoef, typename TComp>
+            using TPolynomialSet = std::set<NUtils::Polynomial<TCoef, TComp>, TComp>;
 
             std::queue<std::pair<size_t, size_t>> GetPairsToCheck(size_t sz) {
                 std::queue<std::pair<size_t, size_t>> pairs_to_check;
@@ -16,8 +23,8 @@ namespace FF4 {
                 return pairs_to_check;
             }
 
-            template <typename TCoef, typename TComp>
-            bool InplaceReduceToZero(NUtils::Polynomial<TCoef, TComp>& F, const NUtils::TPolynomials<TCoef, TComp>& polynomialsSet) {
+            template <typename TCoef, typename TComp, typename TContainter>
+            bool InplaceReduceToZero(NUtils::Polynomial<TCoef, TComp>& F, const TContainter& polynomialsSet) {
                 if (F.IsZero()) {
                     return true;
                 }
@@ -35,11 +42,102 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            bool CheckProductCriteria(const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b) {
-                const NUtils::Monomial<TCoef>& am = a.GetLeadingMonomial();
-                const NUtils::Monomial<TCoef>& bm = b.GetLeadingMonomial();
-                const NUtils::Term t = gcd(am.GetTerm(), bm.GetTerm());
-                return t.IsOne();
+            void EraseByLcm(TPairsSet<TCoef, TComp>& pairs_to_check, const NUtils::Polynomial<TCoef, TComp>& f) {
+                for (auto it = pairs_to_check.begin(); it != pairs_to_check.end();) {
+                    if (gcd(f.GetLeadingTerm(), it->GetRightTerm()).IsOne()) {
+                        ++it;
+                        continue;
+                    }
+
+                    bool deleted = false;
+                    const NUtils::Term& left = it->GetGlcmTerm();
+                    for (auto jt = pairs_to_check.begin(); jt != pairs_to_check.end(); ++jt) {
+                        if (it == jt) {
+                            continue;
+                        }
+                        if (left.IsDivisibleBy(jt->GetGlcmTerm())) {
+                            it = pairs_to_check.erase(it);
+                            deleted = true;
+                            break;
+                        }
+                    }
+
+                    if (!deleted) {
+                        ++it;
+                    }
+                }
+            }
+
+            template <typename TCoef, typename TComp>
+            void EraseByLead(TPolynomialSet<TCoef, TComp>& polynomials, auto fit) {
+                for (auto it = polynomials.begin(); it != polynomials.end(); ) {
+                    if (it == fit) {
+                        ++it;
+                        continue;
+                    }
+                    if (it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
+                        it = polynomials.erase(it);
+                    } else {
+                        ++it;
+                    }
+                }
+            }
+
+            template <typename TCoef, typename TComp>
+            bool CheckLcm(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term& h) {
+                return cp.GetGlcmTerm().IsDivisibleBy(h) &&
+                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcmTerm() &&
+                    lcm(cp.GetRightTerm(), h) != cp.GetGlcmTerm();
+            }
+
+            template <typename TCoef, typename TComp>
+            void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
+                for (const auto& cp : old_crit_pairs) {
+                    if (cp.GetGlcmTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                        continue;
+                    }
+                    if (CheckLcm(cp, f.GetLeadingTerm())) {
+                        continue;
+                    }
+                    new_crit_pairs.insert(cp);
+                }
+            }
+
+            template <typename TCoef, typename TComp>
+            void InsertByGcd(TPairsSet<TCoef, TComp>& all_crit, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
+                for (const auto& cp : all_crit) {
+                    if (!gcd(f.GetLeadingTerm(), cp.GetRightTerm()).IsOne()) {
+                        new_crit_pairs.insert(cp);
+                    }
+                }
+            }
+
+            template <typename TCoef, typename TComp>
+            void UpdateCriticalPairs(TPolynomialSet<TCoef, TComp>& polynomials, TPairsSet<TCoef, TComp>& old_crit_pairs, NUtils::Polynomial<TCoef, TComp>& g) {
+                g.Normalize();
+                TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
+                auto [fit, _] = polynomials.insert(g);
+                for (auto it = polynomials.begin(); it != polynomials.end(); ++it) {
+                    if (it != fit && !it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
+                        all_crit.insert(NUtils::CriticalPair(*fit, *it));
+                    }
+                }
+
+                EraseByLcm(all_crit, *fit);
+                InsertByGcd(all_crit, new_crit_pairs, *fit);
+                InsertByLcm(old_crit_pairs, new_crit_pairs, *fit);
+                old_crit_pairs = std::move(new_crit_pairs);
+
+                EraseByLead(polynomials, fit);
+            }
+
+            template <typename TCoef, typename TComp>
+            void UpdateBasis(const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtils::TPolynomials<TCoef, TComp>& F) {
+                F.clear();
+                F.reserve(polynomials.size());
+                for (const auto& x : polynomials) {
+                    F.push_back(x);
+                }
             }
 
             template <typename TCoef, typename TComp>
@@ -61,12 +159,20 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
+            bool CheckProductCriteria(const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b) {
+                const NUtils::Monomial<TCoef>& am = a.GetLeadingMonomial();
+                const NUtils::Monomial<TCoef>& bm = b.GetLeadingMonomial();
+                const NUtils::Term t = gcd(am.GetTerm(), bm.GetTerm());
+                return t.IsOne();
+            }
+
+            template <typename TCoef, typename TComp>
             std::queue<std::pair<size_t, size_t> > GetPairsToCheckWithCriteria(const NUtils::TPolynomials<TCoef, TComp>& basis) {
                 std::queue<std::pair<size_t, size_t> > pairs_to_check;
                 std::vector<std::pair<NUtils::Term, std::pair<size_t, size_t>>> terms;
                 for (size_t i = 0; i < basis.size(); i++) {
                     for (size_t j = i + 1; j < basis.size(); j++) {
-                        if (NUtil::CheckProductCriteria(basis[i], basis[j])) {
+                        if (CheckProductCriteria(basis[i], basis[j])) {
                             continue;
                         }
                         bool isLcmCriteria = false;
