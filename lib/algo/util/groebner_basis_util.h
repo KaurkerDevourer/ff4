@@ -3,6 +3,7 @@
 #include "../../util/polynomial.h"
 #include "../../util/critical_pair.h"
 #include <set>
+#include <unordered_set>
 
 namespace FF4 {
     namespace NAlgo {

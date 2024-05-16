@@ -4,22 +4,24 @@
 #include "../../util/matrix.h"
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <cstring>
 
 namespace FF4 {
     namespace NAlgo {
         namespace NUtil {
-            template <typename TComp>
-            using TTermSet = std::set<NUtils::Term, TComp>;
+            using TTermHashSet = std::unordered_set<NUtils::Term, NUtils::TermHasher>;
 
             template<typename TCoef, typename TComp>
-            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
+            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, std::vector<NUtils::Term>>;
 
             template <typename TCoef, typename TComp>
-            size_t FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::unordered_map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
+            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::Term>& vTerms, const std::vector<NUtils::Term>& diffSet) {
                 size_t cnt = 0;
                 size_t swp = 0;
                 std::vector<bool> not_pivot(F.size());
+                TTermHashSet leadingTerms;
+                std::unordered_map<NUtils::Term, size_t, NUtils::TermHasher> Mp;
                 for (size_t i = 0; i < F.size(); i++) {
                     auto [_, inserted] = leadingTerms.insert(F[i].GetLeadingTerm());
                     if (!inserted) {
@@ -158,18 +160,16 @@ namespace FF4 {
 
             template <typename TCoef, typename TComp>
             NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
-                TTermSet<TComp>& diffSet = L.second;
+                std::vector<NUtils::Term>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
                     return TComp()(b, a);
                 });
 
-                std::unordered_map<NUtils::Term, size_t> Mp;
                 std::vector<NUtils::Term> vTerms(diffSet.size());
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
-                TTermSet<TComp> leadingTerms;
-                size_t pivots = FillMatrixAndLeadingTerms(F, matrix, Mp, leadingTerms, vTerms, diffSet);
+                size_t pivots = FillMatrix(F, matrix, vTerms, diffSet);
                 TRSM(matrix, pivots);
                 AXPY(matrix, pivots);
 

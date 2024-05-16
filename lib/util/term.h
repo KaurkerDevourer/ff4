@@ -7,19 +7,19 @@ namespace FF4 {
     namespace NUtils {
         class Term {
             public:
-            using Degree = uint64_t;
+            using Degree = uint16_t;
                 inline Term() = default;
 
-                Term(std::initializer_list<uint64_t>);
+                Term(std::initializer_list<uint16_t>);
 
-                uint64_t& operator[](size_t);
-                const uint64_t& operator[](size_t) const;
-                const std::vector<uint64_t>& GetData() const;
+                uint16_t& operator[](size_t);
+                const uint16_t& operator[](size_t) const;
+                const std::vector<uint16_t>& GetData() const;
 
                 void resize(size_t);
                 size_t size() const;
                 void reserve(size_t);
-                void push_back(uint64_t);
+                void push_back(uint16_t);
 
                 bool IsOne() const noexcept;
                 bool IsDivisibleBy(const Term&) const noexcept;
@@ -42,25 +42,19 @@ namespace FF4 {
                 friend std::ostream& operator<<(std::ostream&, const Term&) noexcept;
             private:
                 void Normalize();
-                std::vector<uint64_t> data_;
+                std::vector<uint16_t> data_;
                 Degree sum_ = 0;
         };
-    }
-}
 
-namespace std {
-    template <>
-    struct hash<FF4::NUtils::Term> {
-        size_t operator()(const FF4::NUtils::Term& t) const {
-            const std::vector<uint64_t>& data = t.GetData(); // https://stackoverflow.com/a/27216842
-            size_t seed = data.size();
-            for (auto x : data) {
-                x = ((x >> 32) ^ x) * 0x45d9f3b;
-                x = ((x >> 32) ^ x) * 0x45d9f3b;
-                x = (x >> 32) ^ x;
-                seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+        struct TermHasher {
+            size_t operator()(const FF4::NUtils::Term& t) const noexcept {
+                const std::vector<uint16_t>& data = t.GetData();
+                size_t seed = data.size();
+                for (auto x : data) {
+                    seed ^= x + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+                }
+                return seed;
             }
-            return seed;
-        }
-    };
+        };
+    }
 }

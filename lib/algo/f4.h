@@ -23,7 +23,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermSet<TComp>& diff, NUtil::TTermSet<TComp>& done) {
+            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermHashSet& diff, NUtil::TTermHashSet& done) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
                     if (term.IsDivisibleBy(t)) {
@@ -48,7 +48,7 @@ namespace FF4 {
                     L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight());
                 }
 
-                NUtil::TTermSet<TComp> diff;
+                NUtil::TTermHashSet diff;
                 for (const auto& l : L) {
                     auto it = diff.begin();
                     for (const auto& m : l.GetMonomials()) {
@@ -56,7 +56,7 @@ namespace FF4 {
                     }
                 }
 
-                NUtil::TTermSet<TComp> done;
+                NUtil::TTermHashSet done;
                 for (const auto& l : L) {
                     diff.erase(l.GetLeadingTerm());
                     done.insert(l.GetLeadingTerm());
@@ -68,8 +68,14 @@ namespace FF4 {
                     done.insert(term);
                     UpdateL(L, term, polynomials, diff, done);
                 }
+                std::vector<NUtils::Term> done_sorted;
+                done_sorted.reserve(done.size());
+                for (const auto& x : done) {
+                    done_sorted.push_back(std::move(x));
+                }
+                std::sort(done_sorted.begin(), done_sorted.end(), TComp());
 
-                return {L, done};
+                return {L, done_sorted};
             }
 
             template <typename TCoef, typename TComp>
