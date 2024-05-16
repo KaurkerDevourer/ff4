@@ -126,6 +126,26 @@ namespace FF4 {
             }
 
             template <typename TCoef>
+            void NOTRTSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
+                for (size_t i = 0; i < pivots; i++) {
+                    std::vector<size_t> next;
+                    for (size_t k = i; k < matrix.M_; k++) {
+                        if (matrix(i, k) != 0) {
+                            next.push_back(k);
+                        }
+                    }
+                    for (size_t j = pivots; j < matrix.N_; j++) {
+                        if (matrix(j, i) != 0) {
+                            TCoef factor = matrix(j, i);
+                            for (size_t k = 0; k < next.size(); k++) {
+                                matrix(j, next[k]) -= factor * matrix(i, next[k]);
+                            }
+                        }
+                    }
+                }
+            }
+
+            template <typename TCoef>
             void TRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
                 for (size_t j = pivots - 1; j > 0; j--) {
                     for (size_t i = 0; i < j; i++) {
@@ -170,8 +190,9 @@ namespace FF4 {
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
                 size_t pivots = FillMatrix(F, matrix, vTerms, diffSet);
-                TRSM(matrix, pivots);
-                AXPY(matrix, pivots);
+                NOTRTSM(matrix, pivots);
+                // TRSM(matrix, pivots);
+                // AXPY(matrix, pivots);
 
                 GaussElimination(matrix, pivots);
 
