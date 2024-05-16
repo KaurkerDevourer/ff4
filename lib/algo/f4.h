@@ -75,7 +75,7 @@ namespace FF4 {
                 }
                 std::sort(done_sorted.begin(), done_sorted.end(), TComp());
 
-                return {L, done_sorted};
+                return {std::move(L), std::move(done_sorted)};
             }
 
             template <typename TCoef, typename TComp>
