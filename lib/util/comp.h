@@ -11,6 +11,10 @@ namespace FF4 {
                 return left.GetData() < right.GetData();
             }
 
+            bool operator()(const TermRef& left, const TermRef& right) const noexcept {
+                return LexComp()(left.GetTerm(), right.GetTerm());
+            }
+
             template <typename T>
             bool operator()(const Monomial<T>& left, const Monomial<T>& right) const noexcept {
                 assert(left.GetCoef() != 0);
@@ -61,6 +65,10 @@ namespace FF4 {
                     return left.TotalDegree() < right.TotalDegree();
                 }
                 return RevLexComp()(left, right);
+            }
+
+            bool operator()(const TermRef& left, const TermRef& right) const noexcept {
+                return GrevLexComp()(left.GetTerm(), right.GetTerm());
             }
 
             template <typename T>

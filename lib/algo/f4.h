@@ -28,12 +28,12 @@ namespace FF4 {
                     const auto& t = polynomial.GetLeadingTerm();
                     if (term.IsDivisibleBy(t)) {
                         NUtils::Polynomial<TCoef, TComp> reducer = (term / t) * polynomial;
-                        for (const auto& m : reducer.GetMonomials()) {
+                        L.push_back(std::move(reducer));
+                        for (const auto& m : L.back().GetMonomials()) {
                             if (!done.contains(m.GetTerm())) {
                                 diff.insert(m.GetTerm());
                             }
                         }
-                        L.push_back(std::move(reducer));
                         break;
                     }
                 }
@@ -63,15 +63,15 @@ namespace FF4 {
                 }
 
                 while(!diff.empty()) {
-                    NUtils::Term term = *diff.begin();
-                    diff.erase(diff.begin());
-                    done.insert(term);
-                    UpdateL(L, term, polynomials, diff, done);
+                    const NUtils::TermRef& term = *diff.begin();
+                    auto extracted = diff.extract(diff.begin());
+                    done.insert(std::move(extracted));
+                    UpdateL(L, term.GetTerm(), polynomials, diff, done);
                 }
-                std::vector<NUtils::Term> done_sorted;
+                std::vector<NUtils::TermRef> done_sorted;
                 done_sorted.reserve(done.size());
-                for (const auto& x : done) {
-                    done_sorted.push_back(std::move(x));
+                for (auto& x : done) {
+                    done_sorted.push_back(x);
                 }
                 std::sort(done_sorted.begin(), done_sorted.end(), TComp());
 

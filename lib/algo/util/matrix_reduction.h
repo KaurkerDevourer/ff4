@@ -10,18 +10,18 @@
 namespace FF4 {
     namespace NAlgo {
         namespace NUtil {
-            using TTermHashSet = std::unordered_set<NUtils::Term, NUtils::TermHasher>;
+            using TTermHashSet = std::unordered_set<NUtils::TermRef, NUtils::TermRefHasher>;
 
             template<typename TCoef, typename TComp>
-            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, std::vector<NUtils::Term>>;
+            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, std::vector<NUtils::TermRef>>;
 
             template <typename TCoef, typename TComp>
-            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::Term>& vTerms, const std::vector<NUtils::Term>& diffSet) {
+            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::TermRef>& vTerms, const std::vector<NUtils::TermRef>& diffSet) {
                 size_t cnt = 0;
                 size_t swp = 0;
                 std::vector<bool> not_pivot(F.size());
                 TTermHashSet leadingTerms;
-                std::unordered_map<NUtils::Term, size_t, NUtils::TermHasher> Mp;
+                std::unordered_map<NUtils::TermRef, size_t, NUtils::TermRefHasher> Mp;
                 for (size_t i = 0; i < F.size(); i++) {
                     auto [_, inserted] = leadingTerms.insert(F[i].GetLeadingTerm());
                     if (!inserted) {
@@ -35,7 +35,7 @@ namespace FF4 {
                 }
 
                 cnt = diffSet.size() - 1;
-                for (const auto& term : diffSet) {
+                for (auto& term : diffSet) {
                     if (Mp.find(term) == Mp.end()) {
                         Mp[term] = cnt;
                         vTerms[cnt] = term;
@@ -107,7 +107,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const std::vector<NUtils::Term>& vTerms, size_t pivots) {
+            NUtils::TPolynomials<TCoef, TComp> GetReducedPolynomials(const NUtils::Matrix<TCoef>& matrix, const std::vector<NUtils::TermRef>& vTerms, size_t pivots) {
                 NUtils::TPolynomials<TCoef, TComp> reduced;
                 reduced.reserve(matrix.N_ - pivots);
                 for (size_t i = pivots; i < matrix.N_; i++) {
@@ -116,7 +116,7 @@ namespace FF4 {
                         if (matrix(i, j) == 0) {
                             continue;
                         }
-                        mons.emplace_back(vTerms[j], matrix(i, j));
+                        mons.emplace_back(vTerms[j].GetTerm(), matrix(i, j));
                     }
                     if (!mons.empty()) {
                         reduced.emplace_back(std::move(mons));
@@ -160,13 +160,13 @@ namespace FF4 {
 
             template <typename TCoef, typename TComp>
             NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
-                std::vector<NUtils::Term>& diffSet = L.second;
+                std::vector<NUtils::TermRef>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
                     return TComp()(b, a);
                 });
 
-                std::vector<NUtils::Term> vTerms(diffSet.size());
+                std::vector<NUtils::TermRef> vTerms(diffSet.size());
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
                 size_t pivots = FillMatrix(F, matrix, vTerms, diffSet);
