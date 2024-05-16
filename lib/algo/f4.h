@@ -44,8 +44,8 @@ namespace FF4 {
                 NUtils::TPolynomials<TCoef, TComp> L;
                 L.reserve(selected.size() * 3);
                 for (const auto& pair : selected) {
-                    L.push_back(pair.GetGlcmTerm() / pair.GetLeftTerm() * pair.GetLeft());
-                    L.push_back(pair.GetGlcmTerm() / pair.GetRightTerm() * pair.GetRight());
+                    L.push_back(pair.GetGlcm() / pair.GetLeftTerm() * pair.GetLeft());
+                    L.push_back(pair.GetGlcm() / pair.GetRightTerm() * pair.GetRight());
                 }
 
                 NUtil::TTermHashSet diff;

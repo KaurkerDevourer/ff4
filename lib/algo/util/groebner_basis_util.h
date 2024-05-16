@@ -51,12 +51,12 @@ namespace FF4 {
                     }
 
                     bool deleted = false;
-                    const NUtils::Term& left = it->GetGlcmTerm();
+                    const NUtils::Term& left = it->GetGlcm();
                     for (auto jt = pairs_to_check.begin(); jt != pairs_to_check.end(); ++jt) {
                         if (it == jt) {
                             continue;
                         }
-                        if (left.IsDivisibleBy(jt->GetGlcmTerm())) {
+                        if (left.IsDivisibleBy(jt->GetGlcm())) {
                             it = pairs_to_check.erase(it);
                             deleted = true;
                             break;
@@ -86,15 +86,15 @@ namespace FF4 {
 
             template <typename TCoef, typename TComp>
             bool CheckLcm(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term& h) {
-                return cp.GetGlcmTerm().IsDivisibleBy(h) &&
-                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcmTerm() &&
-                    lcm(cp.GetRightTerm(), h) != cp.GetGlcmTerm();
+                return cp.GetGlcm().IsDivisibleBy(h) &&
+                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcm() &&
+                    lcm(cp.GetRightTerm(), h) != cp.GetGlcm();
             }
 
             template <typename TCoef, typename TComp>
             void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (const auto& cp : old_crit_pairs) {
-                    if (cp.GetGlcmTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                    if (cp.GetGlcm().IsDivisibleBy(f.GetLeadingTerm())) {
                         continue;
                     }
                     if (CheckLcm(cp, f.GetLeadingTerm())) {

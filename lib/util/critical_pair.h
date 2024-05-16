@@ -8,11 +8,11 @@ namespace FF4 {
         template<typename TCoef, typename TComp>
         class CriticalPair {
             public:
-                CriticalPair(const NUtils::Polynomial<TCoef, TComp>& left, const NUtils::Polynomial<TCoef, TComp>& right)
+                CriticalPair(const Polynomial<TCoef, TComp>& left, const Polynomial<TCoef, TComp>& right)
                     : left_(left)
                     , right_(right)
-                    , Glcm_(Monomial(lcm(left.GetLeadingTerm(), right.GetLeadingTerm()), TCoef(1)))
-                    , degree_(Glcm_.GetTerm().TotalDegree())
+                    , Glcm_(lcm(left.GetLeadingTerm(), right.GetLeadingTerm()))
+                    , degree_(Glcm_.TotalDegree())
                 {
                 }
 
@@ -20,12 +20,8 @@ namespace FF4 {
                     return degree_;
                 }
 
-                const Monomial<TCoef>& GetGlcm() const noexcept {
+                const Term& GetGlcm() const noexcept {
                     return Glcm_;
-                }
-
-                const Term& GetGlcmTerm() const noexcept {
-                    return Glcm_.GetTerm();
                 }
 
                 const Polynomial<TCoef, TComp>& GetLeft() const noexcept {
@@ -45,13 +41,13 @@ namespace FF4 {
                 }
 
                 friend std::ostream& operator<<(std::ostream& out, const CriticalPair& cp) noexcept {
-                    return out << cp.degree_ << " | " << cp.GetLeftTerm() << " " << cp.GetRightTerm() << " : " << cp.GetGlcmTerm();
+                    return out << cp.degree_ << " | " << cp.GetLeftTerm() << " " << cp.GetRightTerm() << " : " << cp.GetGlcm();
                 }
 
             private:
-                const NUtils::Polynomial<TCoef, TComp>& left_;
-                const NUtils::Polynomial<TCoef, TComp>& right_;
-                Monomial<TCoef> Glcm_;
+                const Polynomial<TCoef, TComp>& left_;
+                const Polynomial<TCoef, TComp>& right_;
+                Term Glcm_;
                 Term::Degree degree_;
         };
     }
