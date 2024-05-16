@@ -2,12 +2,12 @@
 #include "../util/critical_pair.h"
 #include "util/groebner_basis_util.h"
 #include "util/matrix_reduction.h"
+#include <unordered_map>
 #include <cassert>
 
 namespace FF4 {
     namespace NAlgo {
         namespace F4 {
-
             template <typename TCoef, typename TComp>
             using TPairsVector = std::vector<NUtils::CriticalPair<TCoef, TComp>>;
 
@@ -23,14 +23,15 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermHashSet& diff, NUtil::TTermHashSet& done) {
+            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, size_t idx, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermHashSet& termsMap, std::vector<NUtils::Term>& terms) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
-                    if (term.IsDivisibleBy(t)) {
-                        NUtils::Polynomial<TCoef, TComp> reducer = (term / t) * polynomial;
+                    if (terms[idx].IsDivisibleBy(t)) {
+                        NUtils::Polynomial<TCoef, TComp> reducer = (terms[idx] / t) * polynomial;
                         for (const auto& m : reducer.GetMonomials()) {
-                            if (!done.contains(m.GetTerm())) {
-                                diff.insert(m.GetTerm());
+                            auto [_, inserted] = termsMap.insert(m.GetTerm());
+                            if (inserted) {
+                                terms.push_back(m.GetTerm());
                             }
                         }
                         L.push_back(std::move(reducer));
@@ -48,34 +49,27 @@ namespace FF4 {
                     L.push_back(pair.GetGlcm() / pair.GetRightTerm() * pair.GetRight());
                 }
 
-                NUtil::TTermHashSet diff;
+                NUtil::TTermHashSet termsMap;
+                std::vector<NUtils::Term> terms;
                 for (const auto& l : L) {
-                    auto it = diff.begin();
-                    for (const auto& m : l.GetMonomials()) {
-                        it = diff.insert(it, m.GetTerm());
+                    const std::vector<NUtils::Monomial<TCoef>>& monomials = l.GetMonomials();
+                    for (size_t i = 0; i < monomials.size(); i++) {
+                        auto [_, inserted] = termsMap.insert(monomials[i].GetTerm());
+                        if (inserted) {
+                            terms.push_back(monomials[i].GetTerm());
+                        }
                     }
                 }
 
-                NUtil::TTermHashSet done;
-                for (const auto& l : L) {
-                    diff.erase(l.GetLeadingTerm());
-                    done.insert(l.GetLeadingTerm());
+                size_t i = 0;
+                while(i < terms.size()) {
+                    UpdateL(L, i, polynomials, termsMap, terms);
+                    i++;
                 }
 
-                while(!diff.empty()) {
-                    NUtils::Term term = *diff.begin();
-                    diff.erase(diff.begin());
-                    done.insert(term);
-                    UpdateL(L, term, polynomials, diff, done);
-                }
-                std::vector<NUtils::Term> done_sorted;
-                done_sorted.reserve(done.size());
-                for (const auto& x : done) {
-                    done_sorted.push_back(std::move(x));
-                }
-                std::sort(done_sorted.begin(), done_sorted.end(), TComp());
+                std::sort(terms.begin(), terms.end(), TComp());
 
-                return {L, done_sorted};
+                return {L, terms};
             }
 
             template <typename TCoef, typename TComp>
