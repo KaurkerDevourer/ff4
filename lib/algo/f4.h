@@ -23,11 +23,11 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::Term& term, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermHashSet& diff, NUtil::TTermHashSet& done) {
+            void UpdateL(NUtils::TPolynomials<TCoef, TComp>& L, const NUtils::TermRef& term, const NUtil::TPolynomialSet<TCoef, TComp>& polynomials, NUtil::TTermHashSet& diff, NUtil::TTermHashSet& done) {
                 for (const auto& polynomial : polynomials) {
                     const auto& t = polynomial.GetLeadingTerm();
-                    if (term.IsDivisibleBy(t)) {
-                        NUtils::Polynomial<TCoef, TComp> reducer = (term / t) * polynomial;
+                    if (term.GetTerm().IsDivisibleBy(t)) {
+                        NUtils::Polynomial<TCoef, TComp> reducer = (term.GetTerm() / t) * polynomial;
                         for (const auto& m : reducer.GetMonomials()) {
                             if (!done.contains(m.GetTerm())) {
                                 diff.insert(m.GetTerm());
@@ -63,15 +63,15 @@ namespace FF4 {
                 }
 
                 while(!diff.empty()) {
-                    NUtils::Term term = *diff.begin();
-                    diff.erase(diff.begin());
-                    done.insert(term);
+                    const NUtils::TermRef& term = *diff.begin();
+                    auto extracted = diff.extract(diff.begin());
+                    done.insert(std::move(extracted));
                     UpdateL(L, term, polynomials, diff, done);
                 }
-                std::vector<NUtils::Term> done_sorted;
+                std::vector<NUtils::TermRef> done_sorted;
                 done_sorted.reserve(done.size());
                 for (const auto& x : done) {
-                    done_sorted.push_back(std::move(x));
+                    done_sorted.push_back(x);
                 }
                 std::sort(done_sorted.begin(), done_sorted.end(), TComp());
 
