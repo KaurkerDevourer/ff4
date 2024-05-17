@@ -56,45 +56,5 @@ namespace FF4 {
                 return seed;
             }
         };
-
-        class TermRef {
-            public:
-                TermRef() = default;
-
-                TermRef(const Term& term)
-                : term_(&term)
-                {}
-
-                TermRef(const TermRef& termRef) = default;
-
-                const Term& GetTerm() const {
-                    return *term_;
-                }
-
-                TermRef& operator=(const TermRef& termRef) {
-                    term_ = termRef.GetTermRef();
-                    return *this;
-                }
-
-                const Term* GetTermRef() const {
-                    return term_;
-                }
-
-                friend bool operator==(const TermRef& left, const TermRef& right) noexcept {
-                    return (*left.term_) == (*right.term_);
-                }
-
-            private:
-                const Term* term_;
-        };
-
-        struct TermRefHasher {
-            size_t operator()(const FF4::NUtils::TermRef& t) const noexcept {
-                if (t.GetTermRef() == nullptr) {
-                    return 0;
-                }
-                return TermHasher()(t.GetTerm());
-            }
-        };
     }
 }

@@ -63,12 +63,12 @@ namespace FF4 {
                 }
 
                 while(!diff.empty()) {
-                    const NUtils::TermRef& term = *diff.begin();
+                    const NUtils::Term& term = *diff.begin();
                     auto extracted = diff.extract(diff.begin());
                     done.insert(std::move(extracted));
-                    UpdateL(L, term.GetTerm(), polynomials, diff, done);
+                    UpdateL(L, term, polynomials, diff, done);
                 }
-                std::vector<NUtils::TermRef> done_sorted;
+                std::vector<NUtils::Term> done_sorted;
                 done_sorted.reserve(done.size());
                 for (auto& x : done) {
                     done_sorted.push_back(x);
