@@ -16,7 +16,7 @@ namespace FF4 {
             using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, std::vector<NUtils::Term>>;
 
             template <typename TCoef, typename TComp>
-            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::Term>& vTerms, const std::vector<NUtils::Term>& diffSet) {
+            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::Term>& vTerms, const std::vector<NUtils::Term>& diffSet, std::vector<std::vector<size_t> >& nnext) {
                 size_t cnt = 0;
                 size_t swp = 0;
                 std::vector<bool> not_pivot(F.size());
@@ -43,15 +43,21 @@ namespace FF4 {
                     }
                 }
 
+                nnext.reserve(F.size() - swp);
                 for (size_t i = 0, j = 0; i < F.size(); i++) {
                     if (not_pivot[i]) {
                         j++;
                         continue;
                     }
+                    std::vector<size_t> next;
+                    next.reserve(F[i].GetMonomials().size());
                     for (const auto& m : F[i].GetMonomials()) {
                         const auto& term = m.GetTerm();
-                        matrix(i - j, Mp[term]) = m.GetCoef();
+                        size_t column = Mp[term];
+                        matrix(i - j, column) = m.GetCoef();
+                        next.push_back(column);
                     }
+                    nnext.push_back(std::move(next));
                 }
 
                 for (size_t i = 0, j = 0; i < F.size(); i++) {
@@ -90,14 +96,8 @@ namespace FF4 {
                             }
                             TCoef factor = matrix(k, j);
                             if (factor != 0) {
-                                if (factor == 1) {
-                                    for (size_t q = j; q < matrix.M_; q++) {
-                                        matrix(k, q) -= matrix(i, q);
-                                    }
-                                } else {
-                                    for (size_t q = j; q < matrix.M_; q++) {
-                                        matrix(k, q) -= matrix(i, q) * factor;
-                                    }
+                                for (size_t q = j; q < matrix.M_; q++) {
+                                    matrix(k, q) -= matrix(i, q) * factor;
                                 }
                             }
                         }
@@ -126,25 +126,14 @@ namespace FF4 {
             }
 
             template <typename TCoef>
-            void NOTRTSM(NUtils::Matrix<TCoef>& matrix, size_t pivots) {
+            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext) {
                 for (size_t i = 0; i < pivots; i++) {
-                    std::vector<size_t> next;
-                    for (size_t k = i; k < matrix.M_; k++) {
-                        if (matrix(i, k) != 0) {
-                            next.push_back(k);
-                        }
-                    }
+                    const auto& next = nnext[i];
                     for (size_t j = pivots; j < matrix.N_; j++) {
                         if (matrix(j, i) != 0) {
                             TCoef factor = matrix(j, i);
-                            if (factor == 1) {
-                                for (size_t k = 0; k < next.size(); k++) {
-                                    matrix(j, next[k]) -= matrix(i, next[k]);
-                                }
-                            } else {
-                                for (size_t k = 0; k < next.size(); k++) {
-                                    matrix(j, next[k]) -= factor * matrix(i, next[k]);
-                                }
+                            for (size_t k = 0; k < next.size(); k++) {
+                                matrix(j, next[k]) -= factor * matrix(i, next[k]);
                             }
                         }
                     }
@@ -195,8 +184,9 @@ namespace FF4 {
                 std::vector<NUtils::Term> vTerms(diffSet.size());
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
-                size_t pivots = FillMatrix(F, matrix, vTerms, diffSet);
-                NOTRTSM(matrix, pivots);
+                std::vector<std::vector<size_t>> nnext;
+                size_t pivots = FillMatrix(F, matrix, vTerms, diffSet, nnext);
+                NOTRSM(matrix, pivots, nnext); // switch comments, to test gbla.
                 // TRSM(matrix, pivots);
                 // AXPY(matrix, pivots);
 
