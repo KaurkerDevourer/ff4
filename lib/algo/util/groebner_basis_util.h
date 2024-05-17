@@ -85,19 +85,9 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            bool CheckLcm(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term& h) {
-                return cp.GetGlcm().IsDivisibleBy(h) &&
-                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcm() &&
-                    lcm(cp.GetRightTerm(), h) != cp.GetGlcm();
-            }
-
-            template <typename TCoef, typename TComp>
             void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (const auto& cp : old_crit_pairs) {
                     if (cp.GetGlcm().IsDivisibleBy(f.GetLeadingTerm())) {
-                        continue;
-                    }
-                    if (CheckLcm(cp, f.GetLeadingTerm())) {
                         continue;
                     }
                     new_crit_pairs.insert(cp);

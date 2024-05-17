@@ -137,8 +137,14 @@ namespace FF4 {
                     for (size_t j = pivots; j < matrix.N_; j++) {
                         if (matrix(j, i) != 0) {
                             TCoef factor = matrix(j, i);
-                            for (size_t k = 0; k < next.size(); k++) {
-                                matrix(j, next[k]) -= factor * matrix(i, next[k]);
+                            if (factor == 1) {
+                                for (size_t k = 0; k < next.size(); k++) {
+                                    matrix(j, next[k]) -= matrix(i, next[k]);
+                                }
+                            } else {
+                                for (size_t k = 0; k < next.size(); k++) {
+                                    matrix(j, next[k]) -= factor * matrix(i, next[k]);
+                                }
                             }
                         }
                     }
