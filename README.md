@@ -1,7 +1,8 @@
 # ff4
 Fast f4 algorithm to find groebner basis
 
-If you want to build current benchmarks, and check results by yourself, first you need to download http://nauotit.github.io/openf4/
+Benchmarks divided into internal and external benchmarks. To run internal benchmarks, you need to just clone the repository and build cmake.
+If you want to run external benchmarks, and check results by yourself, first you need to download http://nauotit.github.io/openf4/
 
 Current benchmarks:
 | Name of test | Time |
