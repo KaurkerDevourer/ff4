@@ -3,6 +3,7 @@
 #include "../../util/polynomial.h"
 #include "../../util/critical_pair.h"
 #include <set>
+#include <unordered_set>
 
 namespace FF4 {
     namespace NAlgo {
@@ -50,12 +51,12 @@ namespace FF4 {
                     }
 
                     bool deleted = false;
-                    const NUtils::Term& left = it->GetGlcmTerm();
+                    const NUtils::Term& left = it->GetGlcm();
                     for (auto jt = pairs_to_check.begin(); jt != pairs_to_check.end(); ++jt) {
                         if (it == jt) {
                             continue;
                         }
-                        if (left.IsDivisibleBy(jt->GetGlcmTerm())) {
+                        if (left.IsDivisibleBy(jt->GetGlcm())) {
                             it = pairs_to_check.erase(it);
                             deleted = true;
                             break;
@@ -84,19 +85,54 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            bool CheckLcm(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term& h) {
-                return cp.GetGlcmTerm().IsDivisibleBy(h) &&
-                    lcm(cp.GetLeftTerm(), h) != cp.GetGlcmTerm() &&
-                    lcm(cp.GetRightTerm(), h) != cp.GetGlcmTerm();
+            bool VGBL(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term term) {
+                if (!term.IsDivisibleBy(gcd(cp.GetLeftTerm(), cp.GetRightTerm()))) {
+                    return false;
+                }
+                std::vector<uint16_t> p1 = cp.GetLeftTerm().GetData();
+                std::vector<uint16_t> p2 = term.GetData();
+                std::vector<uint16_t> p3 = cp.GetRightTerm().GetData();
+
+                if (p2.size() > p1.size() && p2.size() > p3.size()) {
+                    return false;
+                }
+
+                size_t sz = std::min(p2.size(), std::min(p1.size(), p3.size()));
+                for (size_t i = 0; i < sz; i++) {
+                    if (std::min(p1[i], p3[i]) == 0) {
+                        continue;
+                    }
+                    if (std::max(p1[i], p3[i]) >= p2[i]) {
+                        continue;
+                    }
+                    return false;
+                }
+                if (p2.size() > p1.size()) {
+                    for (size_t i = sz; i < std::min(p2.size(), p3.size()); i++) {
+                        if (p3[i] >= p2[i]) {
+                            continue;
+                        }
+                        return false;
+                    }
+                }
+                if (p2.size() > p3.size()) {
+                    for (size_t i = sz; i < std::min(p2.size(), p1.size()); i++) {
+                        if (p1[i] >= p2[i]) {
+                            continue;
+                        }
+                        return false;
+                    }
+                }
+                return true;
             }
 
             template <typename TCoef, typename TComp>
             void InsertByLcm(TPairsSet<TCoef, TComp>& old_crit_pairs, TPairsSet<TCoef, TComp>& new_crit_pairs, const NUtils::Polynomial<TCoef, TComp>& f) {
                 for (const auto& cp : old_crit_pairs) {
-                    if (cp.GetGlcmTerm().IsDivisibleBy(f.GetLeadingTerm())) {
+                    if (cp.GetGlcm().IsDivisibleBy(f.GetLeadingTerm())) {
                         continue;
                     }
-                    if (CheckLcm(cp, f.GetLeadingTerm())) {
+                    if (VGBL(cp, f.GetLeadingTerm())) {
                         continue;
                     }
                     new_crit_pairs.insert(cp);

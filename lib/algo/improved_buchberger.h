@@ -18,7 +18,7 @@ namespace FF4 {
                     NUtils::CriticalPair<TCoef, TComp> cp = (*pairs_to_check.begin());
                     pairs_to_check.erase(pairs_to_check.begin());
 
-                    NUtils::Polynomial<TCoef, TComp> S = cp.GetGlcmTerm() / cp.GetLeftTerm() * cp.GetLeft() - cp.GetGlcmTerm() / cp.GetRightTerm() * cp.GetRight();
+                    NUtils::Polynomial<TCoef, TComp> S = cp.GetGlcm() / cp.GetLeftTerm() * cp.GetLeft() - cp.GetGlcm() / cp.GetRightTerm() * cp.GetRight();
 
                     if (!NUtil::InplaceReduceToZero(S, polynomials)) {
                         NUtil::UpdateCriticalPairs(polynomials, pairs_to_check, S);

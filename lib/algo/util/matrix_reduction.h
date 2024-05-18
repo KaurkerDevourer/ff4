@@ -4,22 +4,24 @@
 #include "../../util/matrix.h"
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <cstring>
 
 namespace FF4 {
     namespace NAlgo {
         namespace NUtil {
-            template <typename TComp>
-            using TTermSet = std::set<NUtils::Term, TComp>;
+            using TTermHashSet = std::unordered_set<NUtils::Term, NUtils::TermHasher>;
 
             template<typename TCoef, typename TComp>
-            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, TTermSet<TComp>>;
+            using TSymbolicPreprocessingResult = std::pair<NUtils::TPolynomials<TCoef, TComp>, std::vector<NUtils::Term>>;
 
             template <typename TCoef, typename TComp>
-            size_t FillMatrixAndLeadingTerms(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::unordered_map<NUtils::Term, size_t>& Mp, TTermSet<TComp>& leadingTerms, std::vector<NUtils::Term>& vTerms, const TTermSet<TComp>& diffSet) {
+            size_t FillMatrix(NUtils::TPolynomials<TCoef, TComp>& F, NUtils::Matrix<TCoef>& matrix, std::vector<NUtils::Term>& vTerms, const std::vector<NUtils::Term>& diffSet, std::vector<std::vector<size_t> >& nnext) {
                 size_t cnt = 0;
                 size_t swp = 0;
                 std::vector<bool> not_pivot(F.size());
+                TTermHashSet leadingTerms;
+                std::unordered_map<NUtils::Term, size_t, NUtils::TermHasher> Mp;
                 for (size_t i = 0; i < F.size(); i++) {
                     auto [_, inserted] = leadingTerms.insert(F[i].GetLeadingTerm());
                     if (!inserted) {
@@ -33,7 +35,7 @@ namespace FF4 {
                 }
 
                 cnt = diffSet.size() - 1;
-                for (const auto& term : diffSet) {
+                for (auto& term : diffSet) {
                     if (Mp.find(term) == Mp.end()) {
                         Mp[term] = cnt;
                         vTerms[cnt] = term;
@@ -41,15 +43,21 @@ namespace FF4 {
                     }
                 }
 
+                nnext.reserve(F.size() - swp);
                 for (size_t i = 0, j = 0; i < F.size(); i++) {
                     if (not_pivot[i]) {
                         j++;
                         continue;
                     }
+                    std::vector<size_t> next;
+                    next.reserve(F[i].GetMonomials().size());
                     for (const auto& m : F[i].GetMonomials()) {
                         const auto& term = m.GetTerm();
-                        matrix(i - j, Mp[term]) = m.GetCoef();
+                        size_t column = Mp[term];
+                        matrix(i - j, column) = m.GetCoef();
+                        next.push_back(column);
                     }
+                    nnext.push_back(std::move(next));
                 }
 
                 for (size_t i = 0, j = 0; i < F.size(); i++) {
@@ -88,14 +96,8 @@ namespace FF4 {
                             }
                             TCoef factor = matrix(k, j);
                             if (factor != 0) {
-                                if (factor == 1) {
-                                    for (size_t q = j; q < matrix.M_; q++) {
-                                        matrix(k, q) -= matrix(i, q);
-                                    }
-                                } else {
-                                    for (size_t q = j; q < matrix.M_; q++) {
-                                        matrix(k, q) -= matrix(i, q) * factor;
-                                    }
+                                for (size_t q = j; q < matrix.M_; q++) {
+                                    matrix(k, q) -= matrix(i, q) * factor;
                                 }
                             }
                         }
@@ -121,6 +123,21 @@ namespace FF4 {
                     }
                 }
                 return reduced;
+            }
+
+            template <typename TCoef>
+            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext) {
+                for (size_t i = 0; i < pivots; i++) {
+                    const auto& next = nnext[i];
+                    for (size_t j = pivots; j < matrix.N_; j++) {
+                        if (matrix(j, i) != 0) {
+                            TCoef factor = matrix(j, i);
+                            for (size_t k = 0; k < next.size(); k++) {
+                                matrix(j, next[k]) -= factor * matrix(i, next[k]);
+                            }
+                        }
+                    }
+                }
             }
 
             template <typename TCoef>
@@ -158,20 +175,20 @@ namespace FF4 {
 
             template <typename TCoef, typename TComp>
             NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
-                TTermSet<TComp>& diffSet = L.second;
+                std::vector<NUtils::Term>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
                     return TComp()(b, a);
                 });
 
-                std::unordered_map<NUtils::Term, size_t> Mp;
                 std::vector<NUtils::Term> vTerms(diffSet.size());
 
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
-                TTermSet<TComp> leadingTerms;
-                size_t pivots = FillMatrixAndLeadingTerms(F, matrix, Mp, leadingTerms, vTerms, diffSet);
-                TRSM(matrix, pivots);
-                AXPY(matrix, pivots);
+                std::vector<std::vector<size_t>> nnext;
+                size_t pivots = FillMatrix(F, matrix, vTerms, diffSet, nnext);
+                NOTRSM(matrix, pivots, nnext); // switch comments, to test gbla.
+                // TRSM(matrix, pivots);
+                // AXPY(matrix, pivots);
 
                 GaussElimination(matrix, pivots);
 

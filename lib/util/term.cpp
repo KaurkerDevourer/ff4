@@ -3,10 +3,10 @@
 
 namespace FF4 {
     namespace NUtils {
-        Term::Term(std::initializer_list<uint64_t> il) {
+        Term::Term(std::initializer_list<uint16_t> il) {
             data_.resize(il.size());
             size_t i = 0;
-            for (uint64_t x : il) {
+            for (uint16_t x : il) {
                 data_[i] = x;
                 sum_ += x;
                 i++;
@@ -14,15 +14,15 @@ namespace FF4 {
             Normalize();
         }
 
-        uint64_t& Term::operator[](size_t i) {
+        uint16_t& Term::operator[](size_t i) {
             return data_[i];
         }
 
-        const uint64_t& Term::operator[](size_t i) const {
+        const uint16_t& Term::operator[](size_t i) const {
             return data_[i];
         }
 
-        const std::vector<uint64_t>& Term::GetData() const {
+        const std::vector<uint16_t>& Term::GetData() const {
             return data_;
         }
 
@@ -38,7 +38,7 @@ namespace FF4 {
             data_.reserve(sz);
         }
 
-        void Term::push_back(uint64_t value) {
+        void Term::push_back(uint16_t value) {
             data_.push_back(value);
         }
 
@@ -58,7 +58,7 @@ namespace FF4 {
             return true;
         };
 
-        uint64_t Term::TotalDegree() const noexcept {
+        Term::Degree Term::TotalDegree() const noexcept {
             return sum_;
         }
 

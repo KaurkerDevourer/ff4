@@ -147,7 +147,7 @@ void test_f4() {
         Polynomial<PrimeField<31>, GrevLexComp> b(std::move(bmon));
 
         std::vector<Monomial<PrimeField<31>>> cmon;
-        cmon.push_back(Monomial(Term({1, 3, 0}), PrimeField<31>(1)));
+        cmon.push_back(Monomial(Term({1, 3}), PrimeField<31>(1)));
         cmon.push_back(Monomial(Term({0, 0, 1}), PrimeField<31>(1)));
         cmon.push_back(Monomial(Term({0}), PrimeField<31>(-2)));
 
