@@ -2,6 +2,7 @@
 #include "../../util/polynomial.h"
 #include "../../util/comp.h"
 #include "../../util/matrix.h"
+#include "thread_pool.h"
 #include <set>
 #include <unordered_map>
 #include <unordered_set>
@@ -141,22 +142,22 @@ namespace FF4 {
                         }
                     }
                 } else {
+                    static ThreadPool pool(numThreads);
                     for (size_t i = 0; i < pivots; i++) {
                         const auto& next = nnext[i];
-                        std::vector<std::thread> p;
                         for (size_t j = pivots; j < matrix.N_; j++) {
                             if (matrix(j, i) != 0) {
-                                p.push_back(std::thread([&]() {
-                                    const auto local_next = next;
-                                    TCoef factor = matrix(j, i);
-                                    for (size_t k = 0; k < local_next.size(); k++) {
-                                        matrix(j, local_next[k]) -= factor * matrix(i, local_next[k]);
+                                std::function<void()> func = [&matrix, &next, j, i]() {
+                                    const std::vector<size_t> local_next = next;
+                                    if (matrix(j, i) != 0) {
+                                        TCoef factor = matrix(j, i);
+                                        for (size_t k = 0; k < local_next.size(); k++) {
+                                            matrix(j, local_next[k]) -= factor * matrix(i, local_next[k]);
+                                        }
                                     }
-                                }));
+                                };
+                                pool.enqueue(func);
                             }
-                        }
-                        for (size_t i = 0; i < p.size(); i++) {
-                            p[i].join();
                         }
                     }
                 }
