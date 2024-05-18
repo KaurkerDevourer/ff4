@@ -150,7 +150,7 @@ namespace  {
 
     void FindGroebnerBasisF4PrimeFieldBig(TPolynomials<PrimeField<1000000007>, GrevLexComp>& F) {
         #ifdef NDEBUG
-            NAlgo::F4::FindGroebnerBasis(F);
+            NAlgo::F4::FindGroebnerBasis(F, 32);
         #else
             NAlgo::F4::FindGroebnerBasis(F);
             std::cout << F.size() << std::endl;

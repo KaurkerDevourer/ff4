@@ -79,13 +79,14 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, NUtil::TPolynomialSet<TCoef, TComp>& polynomials) {
+            NUtils::TPolynomials<TCoef, TComp> Reduce(TPairsVector<TCoef, TComp>& selected, NUtil::TPolynomialSet<TCoef, TComp>& polynomials, size_t numThreads) {
                 NUtil::TSymbolicPreprocessingResult<TCoef, TComp> L = SymbolicPreprocessing(selected, polynomials);
-                return NUtil::MatrixReduction(L);
+                return NUtil::MatrixReduction(L, numThreads);
             }
 
             template <typename TCoef, typename TComp>
-            void FindGroebnerBasis(NUtils::TPolynomials<TCoef, TComp>& F) {
+            void FindGroebnerBasis(NUtils::TPolynomials<TCoef, TComp>& F, size_t numThreads = 1) {
+                assert(numThreads > 0);
                 NUtil::TPolynomialSet<TCoef, TComp> polynomials;
                 NUtil::TPairsSet<TCoef, TComp> pairs_to_check;
                 for (auto& f : F) {
@@ -94,7 +95,7 @@ namespace FF4 {
 
                 while(!pairs_to_check.empty()) {
                     TPairsVector<TCoef, TComp> selection_group = Select(pairs_to_check);
-                    NUtils::TPolynomials<TCoef, TComp> G = Reduce(selection_group, polynomials);
+                    NUtils::TPolynomials<TCoef, TComp> G = Reduce(selection_group, polynomials, numThreads);
                     for (auto& g : G) {
                         NUtil::UpdateCriticalPairs(polynomials, pairs_to_check, g);
                     }

@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <unordered_set>
 #include <cstring>
+#include <thread>
 
 namespace FF4 {
     namespace NAlgo {
@@ -126,15 +127,36 @@ namespace FF4 {
             }
 
             template <typename TCoef>
-            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext) {
-                for (size_t i = 0; i < pivots; i++) {
-                    const auto& next = nnext[i];
-                    for (size_t j = pivots; j < matrix.N_; j++) {
-                        if (matrix(j, i) != 0) {
-                            TCoef factor = matrix(j, i);
-                            for (size_t k = 0; k < next.size(); k++) {
-                                matrix(j, next[k]) -= factor * matrix(i, next[k]);
+            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext, size_t numThreads) {
+                if (numThreads == 1) {
+                    for (size_t i = 0; i < pivots; i++) {
+                        const auto& next = nnext[i];
+                        for (size_t j = pivots; j < matrix.N_; j++) {
+                            if (matrix(j, i) != 0) {
+                                TCoef factor = matrix(j, i);
+                                for (size_t k = 0; k < next.size(); k++) {
+                                    matrix(j, next[k]) -= factor * matrix(i, next[k]);
+                                }
                             }
+                        }
+                    }
+                } else {
+                    for (size_t i = 0; i < pivots; i++) {
+                        const auto& next = nnext[i];
+                        std::vector<std::thread> p;
+                        for (size_t j = pivots; j < matrix.N_; j++) {
+                            if (matrix(j, i) != 0) {
+                                p.push_back(std::thread([&]() {
+                                    const auto local_next = next;
+                                    TCoef factor = matrix(j, i);
+                                    for (size_t k = 0; k < local_next.size(); k++) {
+                                        matrix(j, local_next[k]) -= factor * matrix(i, local_next[k]);
+                                    }
+                                }));
+                            }
+                        }
+                        for (size_t i = 0; i < p.size(); i++) {
+                            p[i].join();
                         }
                     }
                 }
@@ -174,7 +196,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L) {
+            NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L, size_t numThreads) {
                 std::vector<NUtils::Term>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
@@ -186,7 +208,7 @@ namespace FF4 {
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
                 std::vector<std::vector<size_t>> nnext;
                 size_t pivots = FillMatrix(F, matrix, vTerms, diffSet, nnext);
-                NOTRSM(matrix, pivots, nnext); // switch comments, to test gbla.
+                NOTRSM(matrix, pivots, nnext, numThreads); // switch comments, to test gbla.
                 // TRSM(matrix, pivots);
                 // AXPY(matrix, pivots);
 
