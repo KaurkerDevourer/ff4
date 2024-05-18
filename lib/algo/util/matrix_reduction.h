@@ -128,7 +128,7 @@ namespace FF4 {
             }
 
             template <typename TCoef>
-            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext, size_t numThreads) {
+            void NOTRSM(NUtils::Matrix<TCoef>& matrix, size_t pivots, const std::vector<std::vector<size_t> >& nnext, size_t numThreads, ThreadPool& pool) {
                 if (numThreads == 1) {
                     for (size_t i = 0; i < pivots; i++) {
                         const auto& next = nnext[i];
@@ -142,9 +142,9 @@ namespace FF4 {
                         }
                     }
                 } else {
-                    static ThreadPool pool(numThreads);
                     for (size_t i = 0; i < pivots; i++) {
                         const auto& next = nnext[i];
+                        std::vector<std::future<void> > results;
                         for (size_t j = pivots; j < matrix.N_; j++) {
                             if (matrix(j, i) != 0) {
                                 std::function<void()> func = [&matrix, &next, j, i]() {
@@ -156,8 +156,11 @@ namespace FF4 {
                                         }
                                     }
                                 };
-                                pool.enqueue(func);
+                                results.push_back(pool.enqueue(func));
                             }
+                        }
+                        for (auto && r : results) {
+                            r.get();
                         }
                     }
                 }
@@ -197,7 +200,7 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L, size_t numThreads) {
+            NUtils::TPolynomials<TCoef, TComp> MatrixReduction(TSymbolicPreprocessingResult<TCoef, TComp>& L, size_t numThreads, ThreadPool& pool) {
                 std::vector<NUtils::Term>& diffSet = L.second;
                 NUtils::TPolynomials<TCoef, TComp>& F = L.first;
                 std::sort(F.begin(), F.end(), [](const NUtils::Polynomial<TCoef, TComp>& a, const NUtils::Polynomial<TCoef, TComp>& b){
@@ -209,7 +212,7 @@ namespace FF4 {
                 NUtils::Matrix<TCoef> matrix(F.size(), diffSet.size());
                 std::vector<std::vector<size_t>> nnext;
                 size_t pivots = FillMatrix(F, matrix, vTerms, diffSet, nnext);
-                NOTRSM(matrix, pivots, nnext, numThreads); // switch comments, to test gbla.
+                NOTRSM(matrix, pivots, nnext, numThreads, pool); // switch comments, to test gbla.
                 // TRSM(matrix, pivots);
                 // AXPY(matrix, pivots);
 
