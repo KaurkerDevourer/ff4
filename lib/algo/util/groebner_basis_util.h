@@ -70,21 +70,6 @@ namespace FF4 {
             }
 
             template <typename TCoef, typename TComp>
-            void EraseByLead(TPolynomialSet<TCoef, TComp>& polynomials, auto fit) {
-                for (auto it = polynomials.begin(); it != polynomials.end(); ) {
-                    if (it == fit) {
-                        ++it;
-                        continue;
-                    }
-                    if (it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
-                        it = polynomials.erase(it);
-                    } else {
-                        ++it;
-                    }
-                }
-            }
-
-            template <typename TCoef, typename TComp>
             bool VGBL(const NUtils::CriticalPair<TCoef, TComp>& cp, const NUtils::Term term) {
                 if (!term.IsDivisibleBy(gcd(cp.GetLeftTerm(), cp.GetRightTerm()))) {
                     return false;
@@ -154,7 +139,7 @@ namespace FF4 {
                 TPairsSet<TCoef, TComp> all_crit, new_crit_pairs;
                 auto [fit, _] = polynomials.insert(g);
                 for (auto it = polynomials.begin(); it != polynomials.end(); ++it) {
-                    if (it != fit && !it->GetLeadingTerm().IsDivisibleBy(fit->GetLeadingTerm())) {
+                    if (it != fit) {
                         all_crit.insert(NUtils::CriticalPair(*fit, *it));
                     }
                 }
@@ -163,8 +148,6 @@ namespace FF4 {
                 InsertByGcd(all_crit, new_crit_pairs, *fit);
                 InsertByLcm(old_crit_pairs, new_crit_pairs, *fit);
                 old_crit_pairs = std::move(new_crit_pairs);
-
-                EraseByLead(polynomials, fit);
             }
 
             template <typename TCoef, typename TComp>
