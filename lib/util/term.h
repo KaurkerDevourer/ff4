@@ -47,7 +47,7 @@ namespace FF4 {
         };
 
         struct TermHasher {
-            size_t operator()(const FF4::NUtils::Term& t) const noexcept {
+            size_t operator()(const FF4::NUtils::Term& t) const {
                 const std::vector<uint16_t>& data = t.GetData();
                 size_t seed = data.size();
                 for (auto x : data) {
